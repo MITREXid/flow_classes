@@ -1,9 +1,28 @@
 #ifndef DECLORATIONS_HPP
 #define DECLORATIONS_HPP
 
+// #if defined(__clang__)
+//   //clang
+// //   #define CLANG_COMPILER
+//   #define mode_work 1
+// #elif defined(__GNUC__) || defined(__GNUG__)
+// //   #define GCC_COMPILER
+//   #define mode_work 1
+// #elif defined(_MSC_VER)
+//   #define mode_work 1
+// //   #define MS_COMPILER
+// #else
+//   #define mode_work 0
+// #endif
 
+#ifdef ARDUINO
+  #define mode_work 0
+#else
+    
+  #define mode_work 1
+#endif
 
-#define mode_work 0 //1- c++, 0 - arduino
+// #define mode_work 0 //1- c++, 0 - arduino
 
 
 #if(mode_work)//c++

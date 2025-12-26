@@ -1,3 +1,5 @@
+#include "declorations.hpp"
+
 #if(mode_work)//c++
 #include "class_flow.ino"
 int main(){
