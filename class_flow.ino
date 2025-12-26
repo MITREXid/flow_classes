@@ -6,9 +6,10 @@
 Timer timer1;
 Timer timer2;
 
+
 void setup()
 {
-    Serial.begin(9600);
+    
     println("start");
 
     timer1.setTime(1000);
@@ -33,3 +34,7 @@ void loop()
     timer1.update();
     timer2.update();
 }
+
+
+
+

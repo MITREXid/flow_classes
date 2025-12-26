@@ -7,7 +7,7 @@ template <typename ENUM_STATE>
 class Universal_object
 {
 private://protected:
-    ENUM_STATE status = -1;
+    ENUM_STATE status;
 
 public:
     virtual ENUM_STATE getStatus() const { return status; }
