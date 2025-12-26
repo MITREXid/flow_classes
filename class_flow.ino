@@ -9,11 +9,13 @@ Timer timer2;
 
 void setup()
 {
-    
+    #if(!mode_work)//arduino
+        Serial.begin(9600);
+    #endif
     println("start");
 
     timer1.setTime(1000);
-    timer2.setTime(10000);
+    timer2.setTime(5000);
 
     timer1.setFuncEnd(
         []()
