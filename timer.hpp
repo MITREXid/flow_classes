@@ -3,6 +3,7 @@
 
 #include "declorations.hpp"
 #include "universal_object.hpp"
+
 enum state_Timer {stoped = 0, going = 1};
 class Timer: public Universal_object<state_Timer>{
     private:
@@ -12,6 +13,11 @@ class Timer: public Universal_object<state_Timer>{
         unsigned long time = 0;
         unsigned long timeStart = 0;
     public:
+        Timer(){};
+        Timer(unsigned long in_time):time(in_time){};
+        Timer(unsigned long in_time,  void (*ptr_func_in_start)(), void (*ptr_func_in_end)()):
+              time(in_time), ptr_func_do_when_end(ptr_func_in_start),
+              ptr_func_do_when_start(ptr_func_in_end){};
         void update();
         void restart();
         unsigned long getTime() const { return time; }
