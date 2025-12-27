@@ -64,23 +64,67 @@ Component::Component(state_Component curr_state, unsigned long in_time_open, uns
 
 void Component::setFuncEndOpen( void (*ptr_func_in)())
     {
+
+        static Component* currentComponent = nullptr;
+        static void (*currentFunc)() = nullptr;
+        
+        currentComponent = this;
+        currentFunc = ptr_func_in;
+
         setStatus(state_Component::open);
-        timer_opening.setFuncEnd(ptr_func_in);
-    }//надо добавить замену состояния на другое после выполнения функции закрытия 
+        timer_opening.setFuncEnd([](){
+            if(currentComponent) currentComponent->setStatus(state_Component::open);
+            if(currentFunc) currentFunc();
+        });
+    }
 void Component::setFuncStartOpen( void (*ptr_func_in)())
     {
+
+        static Component* currentComponent = nullptr;
+        static void (*currentFunc)() = nullptr;
+        
+        currentComponent = this;
+        currentFunc = ptr_func_in;
+
         setStatus(state_Component::in_going);
-        timer_opening.setFuncStart(ptr_func_in);
+        timer_opening.setFuncStart([](){
+            if(currentComponent) currentComponent->setStatus(state_Component::in_going);
+            if(currentFunc) currentFunc();
+        });
     }
 void Component::setFuncEndClose( void (*ptr_func_in)())
     {
-        setStatus(state_Component::close);
-        timer_closing.setFuncEnd(ptr_func_in);
+
+        static Component* currentComponent = nullptr;
+        static void (*currentFunc)() = nullptr;
+        
+        currentComponent = this;
+        currentFunc = ptr_func_in;
+
+        // setStatus(state_Component::close);
+        timer_closing.setFuncEnd([](){
+            if(currentComponent) currentComponent->setStatus(state_Component::close);
+            if(currentFunc) currentFunc();
+        });
     }
 void Component::setFuncStartClose( void (*ptr_func_in)())
     {
-        setStatus(state_Component::in_going);
-        timer_closing.setFuncStart(ptr_func_in);
+
+        static Component* currentComponent = nullptr;
+        static void (*currentFunc)() = nullptr;
+        
+        currentComponent = this;
+        currentFunc = ptr_func_in;
+        
+        timer_closing.setFuncStart([](){
+            if(currentComponent) currentComponent->setStatus(state_Component::in_going);
+            if(currentFunc) currentFunc();
+        });
+
+        // setStatus(state_Component::in_going);
+        // timer_opening.setFuncStart([](){(*ptr_func_in)(); this->setStatus(state_Component::in_going);});
+  
+        // timer_closing.setFuncStart(ptr_func_in);
     }
 
 

@@ -14,15 +14,28 @@ void setup()
     #endif
     println("start");
 
-    timer1.setTime(1000);
-    timer2.setTime(1000);
+    // timer1.setTime(1000);
+    // timer2.setTime(20000);
+
+
     comp.setTimeClosing(2000);
     comp.setTimeOpening(4000);
-    comp.close();
-    comp.setFuncStartOpen([](){println("StartOpen");});
-    comp.setFuncEndOpen([](){println("EndOpen");comp.close();});
-    comp.setFuncStartClose([](){println("StartClose");});
-    comp.setFuncEndClose([](){println("EndClose");comp.open();});
+
+
+
+    comp.setFuncStartOpen([](){
+        println("StartOpen");
+    });
+    comp.setFuncEndOpen([](){
+        println("EndOpen");
+        comp.close();
+    });
+    comp.setFuncStartClose([](){
+        println("StartClose");
+    });
+    comp.setFuncEndClose([](){
+        println("EndClose");comp.open();
+    });
 
 
     // timer1.setFuncEnd(
@@ -33,16 +46,19 @@ void setup()
     //             timer1.restart();
     //         }
     //     });
-    timer2.setFuncEnd([](){ println("end2");});
+    // timer2.setFuncEnd([](){ println("end");});
 
     // timer1.restart();
-    timer2.restart();
+    // timer2.restart();
+
+    comp.close();
+
     timer_delay_loop = millis();
 }
 
 void loop()
 {
-    if(millis() - timer_delay_loop >= 100){
+    if(millis() - timer_delay_loop >= 5000){
 
         timer_delay_loop = millis();
 
