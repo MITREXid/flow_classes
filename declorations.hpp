@@ -36,4 +36,26 @@
     #define println(val) Serial.println(val);//std::cout<<val
 #endif
 
+// Базовый класс для любого вызываемого объекта
+struct CallableBase {
+    virtual ~CallableBase() = default;
+    virtual void invoke() = 0;
+};
+
+// Шаблонный класс для хранения конкретного вызываемого объекта
+template<typename T>
+struct Callable : CallableBase {
+    T func;
+    
+    Callable(T f) : func(f) {}
+    void invoke() override { func(); }
+};
+ // Вспомогательный метод для безопасного удаления
+inline void deleteIfNotNull(CallableBase* &ptr) {
+    if (ptr != nullptr) {
+        delete ptr;
+        ptr = nullptr;
+    }
+}
+
 #endif // DECLORATIONS_HPP

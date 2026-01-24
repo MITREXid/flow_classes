@@ -9,6 +9,10 @@
 enum state_Component {close = 0, in_going = 1, open = 2};
 class Component: public Universal_object<state_Component>{
     private:
+        CallableBase* open_func_end = nullptr;
+        CallableBase* close_func_end = nullptr;
+        CallableBase* open_func_start = nullptr;
+        CallableBase* close_func_start = nullptr;
         Timer timer_closing;
         Timer timer_opening;
     public:
@@ -21,21 +25,56 @@ class Component: public Universal_object<state_Component>{
         Component(state_Component curr_state){setStatus(curr_state);};
         Component(state_Component curr_state, unsigned long in_time_open, unsigned long in_time_close);
 
-        void setFuncEndOpen(void(* ptr_func_in)());
-        void setFuncStartOpen(void(* ptr_func_in)());
-        void setFuncEndClose(void(* ptr_func_in)());
-        void setFuncStartClose(void(* ptr_func_in)());
-            
+        // void setFuncEndOpen(void(* ptr_func_in)());
+        // void setFuncStartOpen(void(* ptr_func_in)());
+        // void setFuncEndClose(void(* ptr_func_in)());
+        // void setFuncStartClose(void(* ptr_func_in)());
+
+        template<typename Func>
+        void setFuncStartOpen(Func f) {
+            open_func_start = new Callable<Func>(f);
+            timer_opening.setFuncStart([&](){
+                if(this !=nullptr) this->setStatus(state_Component::in_going);
+                open_func_start->invoke();
+            });
+        }
+        
+        template<typename Func>
+        void setFuncStartClose(Func f) {
+            close_func_start = new Callable<Func>(f);
+            timer_closing.setFuncStart([&](){
+                if(this !=nullptr) this->setStatus(state_Component::in_going);
+                close_func_start->invoke();
+            });
+        }
+        
+        template<typename Func>
+        void setFuncEndOpen(Func f) {
+            open_func_end = new Callable<Func>(f);
+            timer_opening.setFuncEnd([&](){
+                if(this !=nullptr) this->setStatus(state_Component::open);
+                open_func_end->invoke();
+            });
+        }
+        
+        template<typename Func>
+        void setFuncEndClose(Func f) {
+            close_func_end = new Callable<Func>(f);
+            timer_closing.setFuncEnd([&](){
+                if(this !=nullptr) this->setStatus(state_Component::close);
+                close_func_end->invoke();
+            });
+        }  
         virtual void update();
         virtual void open();
         virtual void close();
 };
 
 void Component::update(){
-    if(getStatus() == state_Component::in_going){
-        timer_closing.update();
-        timer_opening.update();
-    }
+    // if(getStatus() == state_Component::in_going){
+    timer_closing.update();
+    timer_opening.update();
+    // }
 }
 void Component::open(){
     if(getStatus() == state_Component::close){
@@ -62,71 +101,6 @@ Component::Component(state_Component curr_state, unsigned long in_time_open, uns
     timer_closing.setTime(in_time_close);
 }
 
-
-void Component::setFuncEndOpen( void (*ptr_func_in)())
-    {
-
-        static Component* currentComponent = nullptr;
-        static void (*currentFunc)() = nullptr;
-        
-        currentComponent = this;
-        currentFunc = ptr_func_in;
-
-        setStatus(state_Component::open);
-        timer_opening.setFuncEnd([](){
-            if(currentComponent) currentComponent->setStatus(state_Component::open);
-            if(currentFunc) currentFunc();
-        });
-    }
-void Component::setFuncStartOpen( void (*ptr_func_in)())
-    {
-
-        static Component* currentComponent = nullptr;
-        static void (*currentFunc)() = nullptr;
-        
-        currentComponent = this;
-        currentFunc = ptr_func_in;
-
-        setStatus(state_Component::in_going);
-        timer_opening.setFuncStart([](){
-            if(currentComponent) currentComponent->setStatus(state_Component::in_going);
-            if(currentFunc) currentFunc();
-        });
-    }
-void Component::setFuncEndClose( void (*ptr_func_in)())
-    {
-
-        static Component* currentComponent = nullptr;
-        static void (*currentFunc)() = nullptr;
-        
-        currentComponent = this;
-        currentFunc = ptr_func_in;
-
-        // setStatus(state_Component::close);
-        timer_closing.setFuncEnd([](){
-            if(currentComponent) currentComponent->setStatus(state_Component::close);
-            if(currentFunc) currentFunc();
-        });
-    }
-void Component::setFuncStartClose( void (*ptr_func_in)())
-    {
-
-        static Component* currentComponent = nullptr;
-        static void (*currentFunc)() = nullptr;
-        
-        currentComponent = this;
-        currentFunc = ptr_func_in;
-        
-        timer_closing.setFuncStart([](){
-            if(currentComponent) currentComponent->setStatus(state_Component::in_going);
-            if(currentFunc) currentFunc();
-        });
-
-        // setStatus(state_Component::in_going);
-        // timer_opening.setFuncStart([](){(*ptr_func_in)(); this->setStatus(state_Component::in_going);});
-  
-        // timer_closing.setFuncStart(ptr_func_in);
-    }
 
 
 #endif // COMPONENT_HPP
