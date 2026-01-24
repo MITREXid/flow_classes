@@ -13,7 +13,7 @@ public:
     virtual ENUM_STATE getStatus() const { return status; }
     virtual void setStatus(ENUM_STATE status_) { status = status_; }
     //ф-иф для вызова и обновления внутренних данных
-    virtual void update();
+    virtual void update() = 0;
 };
 
 template <typename ENUM_STATE>

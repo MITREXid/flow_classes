@@ -17,6 +17,7 @@ class Component: public Universal_object<state_Component>{
 
         void setTimeClosing(unsigned long in_time)
             {timer_closing.setTime(in_time);}
+        Component(){setStatus(state_Component::close);};
         Component(state_Component curr_state){setStatus(curr_state);};
         Component(state_Component curr_state, unsigned long in_time_open, unsigned long in_time_close);
 
