@@ -6,7 +6,7 @@
 
 //Конструктор надо вызывать или в setup или в loop чтобы не было проблем с инициализацией
 class Actuator: public Component{
-private:
+protected:
     Shared_power_5V& PWM;
     int control_pin = -1; 
 public:
@@ -17,8 +17,6 @@ public:
 Actuator::Actuator(state_Component first_state, Shared_power_5V &PWM_, int control_pin_)
   : PWM{PWM_}, control_pin{control_pin_}
 {
-    // static int control_pin_local = control_pin;
-    // static Shared_power_5V &PWM_local = PWM;
     this->setTimeClosing(3000);
     this->setTimeOpening(3000);
 
@@ -57,10 +55,32 @@ Actuator::Actuator(state_Component first_state, Shared_power_5V &PWM_, int contr
     }
 }
 
-    void Actuator::update(){
-        Component::update();
-        PWM.update();
-    }
+void Actuator::update(){
+    Component::update();
+    PWM.update();
+}
+
+
+
+    //Конструктор надо вызывать или в setup или в loop чтобы не было проблем с инициализацией
+class Clapan: public Actuator{
+public:
+    
+    Clapan(state_Component first_state, Shared_power_5V &PWM_, int control_pin_);
+    void update();
+};
+ 
+Clapan::Clapan(state_Component first_state, Shared_power_5V &PWM_, int control_pin_)
+    :Actuator(first_state, PWM_, control_pin_)
+{
+    this->setTimeClosing(500);
+    this->setTimeOpening(500);
+}
+
+void Clapan::update(){
+    Actuator::update();
+    PWM.update();
+}
 
 
 #endif // OTHER_COMPONENTS_HPP

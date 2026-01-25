@@ -9,7 +9,7 @@
 // Component comp(state_Component::open);
 Shared_power_5V PWM(A1);
 Actuator* act= nullptr; 
-Actuator* act2= nullptr; 
+Clapan* act2= nullptr; 
 
 unsigned long timer_delay_loop ;
 unsigned long timer_event;
@@ -21,7 +21,7 @@ void setup()
         Serial.begin(9600);
     #endif
     act = new Actuator(state_Component::close, PWM, 10);
-    act2 = new Actuator(state_Component::open, PWM, 11);;
+    act2 = new Clapan(state_Component::open, PWM, 11);;
     println("start");
 
     // act2.close();
