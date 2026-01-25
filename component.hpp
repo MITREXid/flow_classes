@@ -15,16 +15,19 @@ class Component: public Universal_object<state_Component>{
         CallableBase* close_func_start = nullptr;
         Timer timer_closing;
         Timer timer_opening;
+        state_Component default_state = state_Component::close;
     public:
         void setTimeOpening(unsigned long in_time)
             {timer_opening.setTime(in_time);}
 
         void setTimeClosing(unsigned long in_time)
             {timer_closing.setTime(in_time);}
-        Component(){setStatus(state_Component::close);};
-        Component(state_Component curr_state){setStatus(curr_state);};
+        Component(){setStatus(default_state);};
+        Component(state_Component curr_state){default_state = curr_state; setStatus(default_state);};
         Component(state_Component curr_state, unsigned long in_time_open, unsigned long in_time_close);
-
+        
+        bool can_open(){ return (getStatus() == state_Component::close); }
+        bool can_close(){ return (getStatus() == state_Component::open); }
         // void setFuncEndOpen(void(* ptr_func_in)());
         // void setFuncStartOpen(void(* ptr_func_in)());
         // void setFuncEndClose(void(* ptr_func_in)());
@@ -68,6 +71,24 @@ class Component: public Universal_object<state_Component>{
         virtual void update();
         virtual void open();
         virtual void close();
+        // virtual void stop_doing();
+
+        virtual ~Component(){
+            deleteIfNotNull(open_func_end);
+            deleteIfNotNull(close_func_end);
+            deleteIfNotNull(open_func_start);
+            deleteIfNotNull(close_func_start);
+        }
+
+        virtual void to_default() {
+            if(default_state == state_Component::close){
+                setStatus(state_Component::open);
+                close();
+            }else if(default_state == state_Component::open){
+                setStatus(state_Component::close);
+                open();
+            }
+        }
 };
 
 void Component::update(){
@@ -77,7 +98,7 @@ void Component::update(){
     // }
 }
 void Component::open(){
-    if(getStatus() == state_Component::close){
+    if(can_open()){
         // setStatus(state_Component::in_going);
         timer_opening.restart();
         timer_closing.stop();
@@ -86,7 +107,7 @@ void Component::open(){
     }
 }
 void Component::close(){
-    if(getStatus() == state_Component::open){
+    if(can_close()){
         // setStatus(state_Component::in_going);
         timer_closing.restart();
         timer_opening.stop();
@@ -96,11 +117,17 @@ void Component::close(){
 }
 
 Component::Component(state_Component curr_state, unsigned long in_time_open, unsigned long in_time_close){
-    setStatus(curr_state);
+
+    default_state = curr_state;
+    setStatus(default_state);
     timer_opening.setTime(in_time_open);
     timer_closing.setTime(in_time_close);
 }
 
 
+// void Component::stop_doing(){
+//     timer_closing.stop();
+//     timer_opening.stop();
+// }
 
 #endif // COMPONENT_HPP
