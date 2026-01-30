@@ -18,10 +18,10 @@ class Component: public Universal_object<state_Component>{
         state_Component default_state = state_Component::close;
     public:
         
-        // //Конструктор
-        // Component(){
-        //     setStatus(default_state);
-        // };
+        //Конструктор
+        Component(){
+            //ни чего не делает
+        };
 
         /// @brief конструктор задает начальные параметры
         /// @param curr_state состояние по умолчанию
@@ -35,6 +35,10 @@ class Component: public Universal_object<state_Component>{
         /// @param in_time_open время на открытие 
         /// @param in_time_close время на закрытие
         Component(state_Component curr_state, unsigned long in_time_open, unsigned long in_time_close){
+            if(curr_state == in_going){
+                println("Not correct start state. set close");
+                curr_state = state_Component::close;
+            }
             default_state = curr_state;
             setStatus(default_state);
             timer_opening.setTime(in_time_open);
