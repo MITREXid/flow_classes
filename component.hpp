@@ -17,69 +17,51 @@ class Component: public Universal_object<state_Component>{
         Timer timer_opening;
         state_Component default_state = state_Component::close;
     public:
-        void setTimeOpening(unsigned long in_time)
-            {timer_opening.setTime(in_time);}
+        
+        // //Конструктор
+        // Component(){
+        //     setStatus(default_state);
+        // };
 
-        void setTimeClosing(unsigned long in_time)
-            {timer_closing.setTime(in_time);}
-        Component(){setStatus(default_state);};
-        Component(state_Component curr_state){default_state = curr_state; setStatus(default_state);};
-        Component(state_Component curr_state, unsigned long in_time_open, unsigned long in_time_close);
-        
-        bool can_open(){ return (getStatus() == state_Component::close); }
-        bool can_close(){ return (getStatus() == state_Component::open); }
-        // void setFuncEndOpen(void(* ptr_func_in)());
-        // void setFuncStartOpen(void(* ptr_func_in)());
-        // void setFuncEndClose(void(* ptr_func_in)());
-        // void setFuncStartClose(void(* ptr_func_in)());
+        /// @brief конструктор задает начальные параметры
+        /// @param curr_state состояние по умолчанию
+        Component(state_Component curr_state){
+            default_state = curr_state; 
+            setStatus(default_state);
+        };
 
-        template<typename Func>
-        void setFuncStartOpen(Func f) {
-            open_func_start = new Callable<Func>(f);
-            timer_opening.setFuncStart([&](){
-                if(this !=nullptr) this->setStatus(state_Component::in_going);
-                open_func_start->invoke();
-            });
+        /// @brief конструктор задает начальные параметры
+        /// @param curr_state состояние по умолчанию
+        /// @param in_time_open время на открытие 
+        /// @param in_time_close время на закрытие
+        Component(state_Component curr_state, unsigned long in_time_open, unsigned long in_time_close){
+            default_state = curr_state;
+            setStatus(default_state);
+            timer_opening.setTime(in_time_open);
+            timer_closing.setTime(in_time_close);
         }
         
-        template<typename Func>
-        void setFuncStartClose(Func f) {
-            close_func_start = new Callable<Func>(f);
-            timer_closing.setFuncStart([&](){
-                if(this !=nullptr) this->setStatus(state_Component::in_going);
-                close_func_start->invoke();
-            });
-        }
-        
-        template<typename Func>
-        void setFuncEndOpen(Func f) {
-            open_func_end = new Callable<Func>(f);
-            timer_opening.setFuncEnd([&](){
-                if(this !=nullptr) this->setStatus(state_Component::open);
-                open_func_end->invoke();
-            });
-        }
-        
-        template<typename Func>
-        void setFuncEndClose(Func f) {
-            close_func_end = new Callable<Func>(f);
-            timer_closing.setFuncEnd([&](){
-                if(this !=nullptr) this->setStatus(state_Component::close);
-                close_func_end->invoke();
-            });
-        }  
+        //ф-ии управления
+
+        //ф-ия инициализации
+        virtual void init();
+        //ф-ия обновления текущего состояния(и выполнения действий в связи с этим), её надо переодически вызывать(часто)
         virtual void update();
+        //сигнал на открытия
         virtual void open();
+        //сигнал на закрытие
         virtual void close();
-        // virtual void stop_doing();
-
-        virtual ~Component(){
-            deleteIfNotNull(open_func_end);
-            deleteIfNotNull(close_func_end);
-            deleteIfNotNull(open_func_start);
-            deleteIfNotNull(close_func_start);
+        
+        //ф-ии для проверки можем ли открыть/закрыть
+        ///CHEKME может нужно переделать т.к. если мы открыты то как бы тоже можем открыться, или переписать обе на тему != going
+        bool can_open(){ 
+            return (getStatus() == state_Component::close); 
+        }
+        bool can_close(){ 
+            return (getStatus() == state_Component::open); 
         }
 
+        //ф-ии для привеления к состоянию поумолчанию(оно задается в конструкторе)
         virtual void to_default() {
             if(default_state == state_Component::close){
                 setStatus(state_Component::open);
@@ -89,17 +71,73 @@ class Component: public Universal_object<state_Component>{
                 open();
             }
         }
+
+
+
+        virtual ~Component(){
+            deleteIfNotNull(open_func_end);
+            deleteIfNotNull(close_func_end);
+            deleteIfNotNull(open_func_start);
+            deleteIfNotNull(close_func_start);
+        }
+
+
+        void setTimeOpening(unsigned long in_time)//установка времени открытия
+            {timer_opening.setTime(in_time);}
+
+        void setTimeClosing(unsigned long in_time)//установка времени закрытия
+            {timer_closing.setTime(in_time);}
+
+
+        //ф-ии для установки функции вызываемой при старте открытия 
+        template<typename Func>
+        void setFuncStartOpen(Func f) {
+            open_func_start = new Callable<Func>(f);
+            timer_opening.setFuncStart([&](){
+                if(this !=nullptr) this->setStatus(state_Component::in_going);
+                open_func_start->invoke();
+            });
+        }
+        
+        //ф-ии для установки функции вызываемой при старте закрытия
+        template<typename Func>
+        void setFuncStartClose(Func f) {
+            close_func_start = new Callable<Func>(f);
+            timer_closing.setFuncStart([&](){
+                if(this !=nullptr) this->setStatus(state_Component::in_going);
+                close_func_start->invoke();
+            });
+        }
+        
+        //ф-ии для установки функции вызываемой при окончании открытия
+        template<typename Func>
+        void setFuncEndOpen(Func f) {
+            open_func_end = new Callable<Func>(f);
+            timer_opening.setFuncEnd([&](){
+                if(this !=nullptr) this->setStatus(state_Component::open);
+                open_func_end->invoke();
+            });
+        }
+        
+        //ф-ии для установки функции вызываемой при окончании закрытия
+        template<typename Func>
+        void setFuncEndClose(Func f) {
+            close_func_end = new Callable<Func>(f);
+            timer_closing.setFuncEnd([&](){
+                if(this !=nullptr) this->setStatus(state_Component::close);
+                close_func_end->invoke();
+            });
+        }  
+
+        
 };
 
 void Component::update(){
-    // if(getStatus() == state_Component::in_going){
     timer_closing.update();
     timer_opening.update();
-    // }
 }
 void Component::open(){
     if(can_open()){
-        // setStatus(state_Component::in_going);
         timer_opening.restart();
         timer_closing.stop();
     }else{
@@ -108,7 +146,6 @@ void Component::open(){
 }
 void Component::close(){
     if(can_close()){
-        // setStatus(state_Component::in_going);
         timer_closing.restart();
         timer_opening.stop();
     }else{
@@ -116,14 +153,9 @@ void Component::close(){
     }
 }
 
-Component::Component(state_Component curr_state, unsigned long in_time_open, unsigned long in_time_close){
-
-    default_state = curr_state;
-    setStatus(default_state);
-    timer_opening.setTime(in_time_open);
-    timer_closing.setTime(in_time_close);
+void Component::init(){
+    to_default();
 }
-
 
 // void Component::stop_doing(){
 //     timer_closing.stop();
