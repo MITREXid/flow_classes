@@ -16,8 +16,8 @@ public:
 Actuator::Actuator(state_Component first_state, Shared_power_5V &PWM_, int control_pin_)
     : Component{
         first_state, //состояние по умолчанию
-        1300, //время открытия
-        1300 //время закрытия
+        700, //время открытия
+        700 //время закрытия
     },
     PWM{PWM_},
     control_pin{control_pin_}

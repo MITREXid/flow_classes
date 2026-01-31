@@ -3,129 +3,187 @@
 #include "universal_object.hpp"
 #include "other_components.hpp"
 #include "Shared_power_5V.hpp"
-enum state_Magistral {not_defined = 0, in_magistral = 1, air_off = 2, air_on = 3, in_gate = 4, full_open = 11};
+
+enum state_Magistral {
+    default_ = 0,//в нем стоим пока не запустимя
+    going_to_gate = 5,//высыпаем зерно в шлюз
+    all_close = 1,//все закрто
+    in_magistral = 2,//в этом стотоянии ждем пока всё высыыпется в трубу
+    air_on = 4,//в этом состоянии мы открываем шаровый (закрываем всё остальное) и ждем пока зерно дойдет до конца магистали
+    full_open = 11//режим прочистки
+};
+
+enum status_Magistral{
+    waiting_new = 0,
+    process_doing = 1
+};
+
+struct magistral_data{//у каждого состояния есть момент нахождения в этом стотоянии и когда можжно из него уходить
+    state_Magistral state;
+    status_Magistral status;
+    bool flag_stop = false;//усли останавливаемся то надо довести дело до конца и остановиться
+};
+
 class Magistral{//}: public Universal_object<state_Magistral>{
 private:
     Actuator *actuator;
     Clapan *clapan;
     Ball_cran *ball_cran;
-    state_Magistral state;
+    magistral_data data;
+    uint32_t time_to_start = 0;//время старта
+    //количество времени со старта, спустя которое мы переходим из текущего(название времени) в следующее стотояние
+    struct _times_turn_to{
+        // uint32_t default_ = 0;//из него выходм только по стрту
+        uint32_t going_to_gate = 700;
+        uint32_t all_close = 1300;
+        uint32_t in_magistral = 2000;
+        uint32_t air_on = 22000;
+        // uint32_t full_open = 1300;//не известно нужно ли время
+    }times_turn_to;
+
 public:
     Magistral(Shared_power_5V &PWM_, int control_pin_actuator, int control_pin_clapan, int control_pin_ball_cran)
     {
         actuator = new Actuator(state_Component::close, PWM_, control_pin_actuator);
-        clapan = new Clapan(state_Component::open, PWM_, control_pin_clapan);
+        clapan = new Clapan(state_Component::close, PWM_, control_pin_clapan);
         ball_cran = new Ball_cran(state_Component::close, control_pin_ball_cran);
-        state = state_Magistral::in_magistral;
+        data.state = state_Magistral::default_;
     }
+    void init();
     void turn_to(state_Magistral next_state);
     void update();
+    void logic();//Для объединения логики поведения(используется в update())
+    void start();
+    void stop();
 };
 
-void Magistral::update()
-{
-}
 
 void Magistral::turn_to(state_Magistral next_state){
-    // if(actuator->getStatus() == state_Component::in_going ||
-    //    clapan->getStatus() == state_Component::in_going ||
-    //    ball_cran->getStatus() == state_Component::in_going){
-    //     return;
-    // }
     switch(next_state){
-        case state_Magistral::not_defined:
-            // actuator->stop_doing();
-            // clapan->stop_doing();
-            // ball_cran->stop_doing();
+        case state_Magistral::default_://всё закрыто поумолчанию
+                actuator->close();
+                clapan->close();
+                ball_cran->close();
+                data.state = state_Magistral::default_;
             break;
         case state_Magistral::in_magistral://актуатор закрыт клапан открыт шаровой кран закрыт
-            // if(clapan->can_open()){
                 clapan->open();
-            // }else{
-            //     println("cannot turn to in_magistral: clapan not close");
-            //     return;
-            // }
-            // if(ball_cran->can_close()){
                 ball_cran->close();
-            // }else{
-            //     println("cannot turn to in_magistral: ball_cran not open");
-            //     return;
-            // }
-            // if(actuator->can_close()){
                 actuator->close();
-            // }else{
-            //     println("cannot turn to in_magistral: actuator not open");
-            //     return;
-            // }
-            state = state_Magistral::in_magistral;
+                data.state = state_Magistral::in_magistral;
             break;
-        case state_Magistral::air_off://актуатор открыт клапан закрыт шаровой кран закрыт
-            // if(actuator->can_open()){
-                actuator->open();
-            // }else{
-            //     println("cannot turn to air_off: actuator not open");
-            //     return;
-            // }
-            // if(clapan->can_close()){
-                clapan->close();
-            // }else{
-            //     println("cannot turn to air_off: clapan not open");
-            //     return;
-            // }
-            // if(ball_cran->can_close()){
+        case state_Magistral::all_close://актуатор закрыт клапан открыт шаровой кран закрыт
+                clapan->open();
                 ball_cran->close();
-            // }else{
-            //     println("cannot turn to air_off: ball_cran not open");
-            //     return;
-            // }
-            state = state_Magistral::air_off;
+                actuator->close();
+            data.state = state_Magistral::all_close;
             break;
         case state_Magistral::air_on://актуатор открыт клапан закрыт шаровой кран открыт
-            // if(actuator->can_open()){
                 actuator->open();
-            // }else{
-            //     println("cannot turn to air_on: actuator not open");
-            //     return;
-            // }
-            // if(clapan->can_close()){
                 clapan->close();
-            // }else{
-            //     println("cannot turn to air_on: clapan not open");
-            //     return;
-            // }
-            // if(ball_cran->can_open()){
                 ball_cran->open();
-            // }else{
-            //     println("cannot turn to air_on: ball_cran not open");
-            //     return;
-            // }
-            state = state_Magistral::air_on;
+            data.state = state_Magistral::air_on;
             break;
-        case state_Magistral::in_gate://актуатор открыт клапан закрыт шаровой кран закрыт
-            // if(actuator->can_open()){
+        case state_Magistral::going_to_gate://актуатор открыт клапан закрыт шаровой кран закрыт
                 actuator->open();
-            // }else{
-            //     println("cannot turn to in_gate: actuator not open");
-            //     return;
-            // }
-            // if(clapan->can_close()){
                 clapan->close();
-            // }else{
-            //     println("cannot turn to in_gate: clapan not open");
-            //     return;
-            // }
-            // if(ball_cran->can_close()){
                 ball_cran->close();
-            // }else{
-            //     println("cannot turn to in_gate: ball_cran not open");
-            //     return;
-            // }
-            state = state_Magistral::in_gate;
+            data.state = state_Magistral::going_to_gate;
             break;
         case state_Magistral::full_open:
             println("not implemented full_open");
             break;
     };
+}
+
+
+void Magistral::init()
+{
+    clapan->init();
+    actuator->init();
+    ball_cran->init();
+}
+
+
+void Magistral::update()
+{
+    clapan->update();
+    actuator->update();
+    ball_cran->update();
+
+    logic();
+    
+}
+
+
+void Magistral::start(){
+    if(data.state != state_Magistral::default_){
+        print("already started magistral");
+        return;
+    }
+    data.status = status_Magistral::process_doing;
+    time_to_start = millis();
+    turn_to(state_Magistral::going_to_gate);
+    println("=========turn_to(state_Magistral::going_to_gate);");
+    print("=========time start: ");
+    println(time_to_start);
+}
+
+void Magistral::stop(){
+    data.flag_stop = true;
+    println("=========flag_stop");
+}
+
+
+void Magistral::logic(){
+    if(
+        clapan->getStatus() == state_Component::in_going ||
+        actuator->getStatus() == state_Component::in_going ||
+        ball_cran->getStatus() == state_Component::in_going
+    ){
+        data.status = status_Magistral::process_doing;
+        return;
+    }else{
+        data.status = status_Magistral::waiting_new;
+    }
+    if(data.state == state_Magistral::default_){
+        return;
+    }
+    uint32_t cur_time = millis() - time_to_start;
+    //сначала вызов turn_to происходит открытие или закрытие чего-то потом мы тут анализируем и переходим на что-то следующее
+    if(data.state == state_Magistral::going_to_gate && times_turn_to.going_to_gate <cur_time){
+        turn_to(state_Magistral::all_close);
+        print("=========");
+        print(cur_time);
+        println("=====turn_to(state_Magistral::all_close);");
+    }
+    if(data.state == state_Magistral::all_close && times_turn_to.all_close <cur_time){
+        turn_to(state_Magistral::in_magistral);
+        print("=========");
+        print(cur_time);
+        println("=========turn_to(state_Magistral::in_magistral);");
+    }
+    if(data.state == state_Magistral::in_magistral && times_turn_to.in_magistral<cur_time){
+        turn_to(state_Magistral::air_on);
+        print("=========");
+        print(cur_time);
+        println("=========turn_to(state_Magistral::air_on);");
+    }
+    if(data.state == state_Magistral::air_on && times_turn_to.air_on<cur_time){
+            time_to_start = millis();//обнуляем вреия для нового цикла
+        if(data.flag_stop == true){
+            turn_to(state_Magistral::default_);
+        println("=========stooooooooooooop");
+        print("=========");
+        print(cur_time);
+            println("=========turn_to(state_Magistral::default_);");
+        }else{
+            turn_to(state_Magistral::going_to_gate);
+            print("=========");
+            print(cur_time);
+            println("=========turn_to(state_Magistral::going_to_gate);");
+        }
+    }
 }
 
 #endif // MAGISTRAL_HPP

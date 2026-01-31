@@ -3,6 +3,7 @@
 #include "component.hpp" 
 #include "other_components.hpp"
 #include "component.hpp"
+#include "magistral.hpp"
 
 // Timer timer1;
 // Timer timer2;
@@ -11,6 +12,8 @@ Shared_power_5V PWM(A1);
 Actuator act(state_Component::close, PWM, 10);
 Clapan act2(state_Component::open, PWM, 11);
 Ball_cran act3(state_Component::close, 12);
+
+Magistral mag(PWM,10,11,12);
 
 unsigned long timer_delay_loop ;
 unsigned long timer_event;
@@ -22,9 +25,10 @@ void setup()
         Serial.begin(9600);
     #endif
     println("start");
-    act.init();
-    act2.init();
-    act3.init();
+    // act.init();
+    // act2.init();
+    // act3.init();
+    mag.init();
     timer_delay_loop = millis();
     timer_event = millis();
     state = 0;
@@ -32,12 +36,13 @@ void setup()
 
 void loop()
 {
-    if(millis() - timer_delay_loop >= 100){
+    if(millis() - timer_delay_loop >= 20){
 
         timer_delay_loop = millis();
-        act.update();
-        act2.update();
-        act3.update();
+        mag.update();
+        // act.update();
+        // act2.update();
+        // act3.update();
         // print("act3(");
         // print(millis());
         // print(") status: ");
@@ -47,17 +52,27 @@ void loop()
         // print(") status: ");
         // println(act2.getStatus());
     }
-    if(millis() - timer_event >= 10000 && state == 0) {
+    if(millis() - timer_event >= 7000 && state == 0) {
         timer_event = millis();
-        act.open();
+        mag.start();
+        // act.open();
         // act2.open();
         // act3.open();
         ++state;
     }
-    if(millis() - timer_event >= 7000 && state == 1) {
+    if(millis() - timer_event >= 30000 && state == 1) {
         timer_event = millis();
-        // act.close();
-        act2.close();
+        mag.stop();
+        // // act.close();
+        // act2.close();
+        // act3.close();
+        ++state;
+    }
+     if(millis() - timer_event >= 40000 && state == 2) {
+        timer_event = millis();
+        mag.start();
+        // // act.close();
+        // act2.close();
         // act3.close();
         ++state;
     }

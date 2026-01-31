@@ -30,6 +30,8 @@
     #define HIGH "HIGH"
     #define LOW "LOW"
     #define A1 15
+    #define print(val) std::cout<<"("<<millis()<<")"<<val
+    #define println(val) std::cout<<"("<<millis()<<")"<<val<<std::endl
 #else//arduino
     #define start_def 
     #define print(val) Serial.print(val);//std::cout<<val
