@@ -60,7 +60,7 @@ void loop()
         // act3.open();
         ++state;
     }
-    if(millis() - timer_event >= 30000 && state == 1) {
+    if(millis() - timer_event >= 40000 && state == 1) {
         timer_event = millis();
         mag.stop();
         // // act.close();
@@ -68,7 +68,7 @@ void loop()
         // act3.close();
         ++state;
     }
-     if(millis() - timer_event >= 40000 && state == 2) {
+     if(millis() - timer_event >= 10000 && state == 2) {
         timer_event = millis();
         mag.start();
         // // act.close();
