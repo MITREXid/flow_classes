@@ -13,15 +13,15 @@ enum state_Magistral {
     full_open = 11//режим прочистки
 };
 
-enum status_Magistral{
-    waiting_new = 0,
-    process_doing = 1
-};
+// enum status_Magistral{
+//     waiting_new = 0,
+//     process_doing = 1
+// };
 
 struct magistral_data{//у каждого состояния есть момент нахождения в этом стотоянии и когда можжно из него уходить
     state_Magistral state;
-    status_Magistral status;
-    bool flag_stop = false;//усли останавливаемся то надо довести дело до конца и остановиться
+    // status_Magistral status;
+    bool flag_stop = true;//усли останавливаемся то надо довести дело до конца и остановиться
 };
 
 class Magistral{//}: public Universal_object<state_Magistral>{
@@ -72,14 +72,14 @@ void Magistral::turn_to(state_Magistral next_state){
                 actuator->close();
                 data.state = state_Magistral::in_magistral;
             break;
-        case state_Magistral::all_close://актуатор закрыт клапан открыт шаровой кран закрыт
-                clapan->open();
+        case state_Magistral::all_close://актуатор закрыт клапан закрыт шаровой кран закрыт
+                clapan->close();
                 ball_cran->close();
                 actuator->close();
             data.state = state_Magistral::all_close;
             break;
-        case state_Magistral::air_on://актуатор открыт клапан закрыт шаровой кран открыт
-                actuator->open();
+        case state_Magistral::air_on://актуатор закрыт клапан закрыт шаровой кран открыт
+                actuator->close();
                 clapan->close();
                 ball_cran->open();
             data.state = state_Magistral::air_on;
@@ -121,12 +121,11 @@ void Magistral::start(){
         print("already started magistral");
         return;
     }
-    data.status = status_Magistral::process_doing;
-    time_to_start = millis();
-    turn_to(state_Magistral::going_to_gate);
-    println("=========turn_to(state_Magistral::going_to_gate);");
-    print("=========time start: ");
-    println(time_to_start);
+    
+    // data.status = status_Magistral::process_doing;
+    data.flag_stop = false;
+    turn_to(state_Magistral::default_);
+    println("=========turn_to(state_Magistral::default_);");
 }
 
 void Magistral::stop(){
@@ -141,48 +140,46 @@ void Magistral::logic(){
         actuator->getStatus() == state_Component::in_going ||
         ball_cran->getStatus() == state_Component::in_going
     ){
-        data.status = status_Magistral::process_doing;
+        // data.status = status_Magistral::process_doing;
         return;
     }else{
-        data.status = status_Magistral::waiting_new;
+        // data.status = status_Magistral::waiting_new;
     }
     if(data.state == state_Magistral::default_){
-        return;
+        if(data.flag_stop == true){
+            // println("=========stooooooooim");
+            return;
+        }else{
+            time_to_start = millis();
+            println("=========turn_to(state_Magistral::going_to_gate);");
+            turn_to(state_Magistral::going_to_gate);
+        }
     }
     uint32_t cur_time = millis() - time_to_start;
     //сначала вызов turn_to происходит открытие или закрытие чего-то потом мы тут анализируем и переходим на что-то следующее
     if(data.state == state_Magistral::going_to_gate && times_turn_to.going_to_gate <cur_time){
-        turn_to(state_Magistral::all_close);
         print("=========");
         print(cur_time);
         println("=====turn_to(state_Magistral::all_close);");
+        turn_to(state_Magistral::all_close);
     }
     if(data.state == state_Magistral::all_close && times_turn_to.all_close <cur_time){
-        turn_to(state_Magistral::in_magistral);
         print("=========");
         print(cur_time);
         println("=========turn_to(state_Magistral::in_magistral);");
+        turn_to(state_Magistral::in_magistral);
     }
     if(data.state == state_Magistral::in_magistral && times_turn_to.in_magistral<cur_time){
-        turn_to(state_Magistral::air_on);
         print("=========");
         print(cur_time);
         println("=========turn_to(state_Magistral::air_on);");
+        turn_to(state_Magistral::air_on);
     }
     if(data.state == state_Magistral::air_on && times_turn_to.air_on<cur_time){
-            time_to_start = millis();//обнуляем вреия для нового цикла
-        if(data.flag_stop == true){
-            turn_to(state_Magistral::default_);
-        println("=========stooooooooooooop");
         print("=========");
         print(cur_time);
-            println("=========turn_to(state_Magistral::default_);");
-        }else{
-            turn_to(state_Magistral::going_to_gate);
-            print("=========");
-            print(cur_time);
-            println("=========turn_to(state_Magistral::going_to_gate);");
-        }
+        println("=========turn_to(state_Magistral::default_);");
+        turn_to(state_Magistral::default_);
     }
 }
 

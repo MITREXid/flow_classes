@@ -141,19 +141,27 @@ void Component::update(){
     timer_opening.update();
 }
 void Component::open(){
-    if(can_open()){
+    if(getStatus()==state_Component::in_going){
+        println("cant open: in going");
+        return;
+    }
+    if(getStatus()==state_Component::close){
         timer_opening.restart();
         timer_closing.stop();
     }else{
-        println("already open or in going");
+        println("cant open: already open");
     }
 }
 void Component::close(){
-    if(can_close()){
+    if(getStatus()==state_Component::in_going){
+        println("cant close: in going");
+        return;
+    }
+    if(getStatus()==state_Component::open){
         timer_closing.restart();
         timer_opening.stop();
     }else{
-        println("already close or in going");
+        println("cant close: already close");
     }
 }
 
