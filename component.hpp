@@ -52,9 +52,9 @@ class Component: public Universal_object<state_Component>{
         //ф-ия обновления текущего состояния(и выполнения действий в связи с этим), её надо переодически вызывать(часто)
         virtual void update();
         //сигнал на открытия
-        virtual void open();
+        virtual bool open();
         //сигнал на закрытие
-        virtual void close();
+        virtual bool close();
         
         //ф-ии для проверки можем ли открыть/закрыть
         ///CHEKME может нужно переделать т.к. если мы открыты то как бы тоже можем открыться, или переписать обе на тему != going
@@ -140,10 +140,10 @@ void Component::update(){
     timer_closing.update();
     timer_opening.update();
 }
-void Component::open(){
+bool Component::open(){
     if(getStatus()==state_Component::in_going){
         println("cant open: in going");
-        return;
+        return false;//не смогли открыть
     }
     if(getStatus()==state_Component::close){
         timer_opening.restart();
@@ -151,11 +151,12 @@ void Component::open(){
     }else{
         println("cant open: already open");
     }
+    return true;
 }
-void Component::close(){
+bool Component::close(){
     if(getStatus()==state_Component::in_going){
         println("cant close: in going");
-        return;
+        return false;//не смогли закрыть
     }
     if(getStatus()==state_Component::open){
         timer_closing.restart();
@@ -163,6 +164,7 @@ void Component::close(){
     }else{
         println("cant close: already close");
     }
+    return true;
 }
 
 void Component::init(){

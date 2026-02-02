@@ -34,8 +34,8 @@
     #define println(val) std::cout<<"("<<millis()<<")"<<val<<std::endl
 #else//arduino
     #define start_def 
-    #define print(val) Serial.print(val);//std::cout<<val
-    #define println(val) Serial.println(val);//std::cout<<val
+    #define print(val) Serial.print(F(val));//std::cout<<val
+    #define println(val) Serial.println(F(val));//std::cout<<val
 #endif
 
 // Базовый класс для любого вызываемого объекта
