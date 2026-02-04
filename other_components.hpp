@@ -23,26 +23,33 @@ Actuator::Actuator(state_Component first_state, Shared_power_5V &PWM_, int contr
     control_pin{control_pin_}
 {
 
+    int val = freeRAM();
+    println(freeRAM());
     this->setFuncStartOpen([&](){
-        println("Start Open Actuator");  
+        d_println("Start Open Actuator");  
         pinMode(control_pin, LOW);
         PWM.voltageON();
     });
 
     this->setFuncEndOpen([&](){
-        println("End Open Actuator");
+        d_println("End Open Actuator");
        PWM.voltageOFF();
     });
 
     this->setFuncStartClose([&](){
-        println("Start Close Actuator"); 
+        d_println("Start Close Actuator"); 
         pinMode(control_pin, HIGH);
        PWM.voltageON();
     });
     this->setFuncEndClose([&](){
-        println("End Close Actuator"); 
+        d_println("End Close Actuator"); 
        PWM.voltageOFF();
     });
+
+    
+    println(freeRAM());
+    println("??===");
+    println(val-freeRAM());
 }
 
 void Actuator::update(){
@@ -75,23 +82,23 @@ Clapan::Clapan(state_Component first_state, Shared_power_5V &PWM_, int control_p
 
     
     this->setFuncStartOpen([&](){
-        println("Start Open Clapan");  
+        d_println("Start Open Clapan");  
         pinMode(control_pin, LOW);
         PWM.voltageON();
     });
 
     this->setFuncEndOpen([&](){
-        println("End Open Clapan");
+        d_println("End Open Clapan");
        PWM.voltageOFF();
     });
 
     this->setFuncStartClose([&](){
-        println("Start Close Clapan"); 
+        d_println("Start Close Clapan"); 
         pinMode(control_pin, HIGH);
        PWM.voltageON();
     });
     this->setFuncEndClose([&](){
-        println("End Close Clapan"); 
+        d_println("End Close Clapan"); 
        PWM.voltageOFF();
     });
 
@@ -123,20 +130,20 @@ Ball_cran::Ball_cran(state_Component first_state, int control_pin_)
 {
    
     this->setFuncStartOpen([&](){
-        println("Start Open Ball_cran");  
+        d_println("Start Open Ball_cran");  
         pinMode(control_pin, LOW);
     });
 
     this->setFuncEndOpen([&](){
-        println("End Open Ball_cran");
+        d_println("End Open Ball_cran");
     });
 
     this->setFuncStartClose([&](){
-        println("Start Close Ball_cran"); 
+        d_println("Start Close Ball_cran"); 
         pinMode(control_pin, HIGH);
     });
     this->setFuncEndClose([&](){
-        println("End Close Ball_cran"); 
+        d_println("End Close Ball_cran"); 
     });
 }
 

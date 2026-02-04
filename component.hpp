@@ -36,7 +36,7 @@ class Component: public Universal_object<state_Component>{
         /// @param in_time_close время на закрытие
         Component(state_Component curr_state, unsigned long in_time_open, unsigned long in_time_close){
             if(curr_state == in_going){
-                println("Not correct start state. set close");
+                d_println("Not correct start state. set close");
                 curr_state = state_Component::close;
             }
             default_state = curr_state;
@@ -48,13 +48,13 @@ class Component: public Universal_object<state_Component>{
         //ф-ии управления
 
         //ф-ия инициализации
-        virtual void init();
+        void init();
         //ф-ия обновления текущего состояния(и выполнения действий в связи с этим), её надо переодически вызывать(часто)
-        virtual void update();
+        void update();
         //сигнал на открытия
-        virtual bool open();
+        bool open();
         //сигнал на закрытие
-        virtual bool close();
+        bool close();
         
         //ф-ии для проверки можем ли открыть/закрыть
         ///CHEKME может нужно переделать т.к. если мы открыты то как бы тоже можем открыться, или переписать обе на тему != going
@@ -66,7 +66,7 @@ class Component: public Universal_object<state_Component>{
         }
 
         //ф-ии для привеления к состоянию поумолчанию(оно задается в конструкторе)
-        virtual void to_default() {
+        void to_default() {
             if(default_state == state_Component::close){
                 setStatus(state_Component::open);
                 close();
@@ -78,7 +78,7 @@ class Component: public Universal_object<state_Component>{
 
 
 
-        virtual ~Component(){
+        ~Component(){
             deleteIfNotNull(open_func_end);
             deleteIfNotNull(close_func_end);
             deleteIfNotNull(open_func_start);
@@ -142,27 +142,27 @@ void Component::update(){
 }
 bool Component::open(){
     if(getStatus()==state_Component::in_going){
-        println("cant open: in going");
+        d_println("cant open: in going");
         return false;//не смогли открыть
     }
     if(getStatus()==state_Component::close){
         timer_opening.restart();
         timer_closing.stop();
     }else{
-        println("cant open: already open");
+        d_println("cant open: already open");
     }
     return true;
 }
 bool Component::close(){
     if(getStatus()==state_Component::in_going){
-        println("cant close: in going");
+        d_println("cant close: in going");
         return false;//не смогли закрыть
     }
     if(getStatus()==state_Component::open){
         timer_closing.restart();
         timer_opening.stop();
     }else{
-        println("cant close: already close");
+        d_println("cant close: already close");
     }
     return true;
 }

@@ -10,16 +10,16 @@ private://protected:
     ENUM_STATE status;
 
 public:
-    virtual ENUM_STATE getStatus() const { return status; }
-    virtual void setStatus(ENUM_STATE status_) { status = status_; }
+    ENUM_STATE getStatus() const { return status; }
+    void setStatus(ENUM_STATE status_) { status = status_; }
     //ф-иф для вызова и обновления внутренних данных
-    virtual void update() = 0;
+    // virtual void update() = 0;
 };
 
-template <typename ENUM_STATE>
-inline void Universal_object<ENUM_STATE>::update()
-{
+// template <typename ENUM_STATE>
+// inline void Universal_object<ENUM_STATE>::update()
+// {
 
-}
+// }
 
 #endif // UNIVERSAL_OBJECT_HPP

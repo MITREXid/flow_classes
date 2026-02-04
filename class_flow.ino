@@ -5,6 +5,9 @@
 #include "component.hpp"
 #include "magistral.hpp"
 
+
+
+
 // Timer timer1;
 // Timer timer2;
 // Component comp(state_Component::open);
@@ -28,6 +31,20 @@ void setup()
         Serial.begin(9600);
     #endif
     println("start");
+    int val = freeRAM();
+    println(freeRAM());
+// Magistral mag1(PWM,10,11,12);
+Actuator *act = new Actuator ( state_Component::close, PWM, 10);
+// Clapan *act2 = new Clapan (state_Component::open, PWM, 11);
+// Ball_cran *act3 = new Ball_cran (state_Component::close, 12);
+// Component *comp = new Component{
+//         0, //состояние по умолчанию
+//         700, //время открытия
+//         700 //время закрытия
+//     };
+    println(freeRAM());
+    println("===");
+    println(val-freeRAM());
     // act.init();
     // act2.init();
     // act3.init();
@@ -44,6 +61,7 @@ void loop()
 {
     if(millis() - timer_delay_loop >= 20){
 
+    // println(freeRAM());
         timer_delay_loop = millis();
         mag.update();
     // mag1.update();
@@ -52,14 +70,14 @@ void loop()
         // act.update();
         // act2.update();
         // act3.update();
-        // print("act3(");
-        // print(millis());
-        // print(") status: ");
-        // println(act3.getStatus());
-        // print("act_2(");
-        // print(millis());
-        // print(") status: ");
-        // println(act2.getStatus());
+        // d_print("act3(");
+        // d_print(millis());
+        // d_print(") status: ");
+        // d_println(act3.getStatus());
+        // d_print("act_2(");
+        // d_print(millis());
+        // d_print(") status: ");
+        // d_println(act2.getStatus());
     }
     if(millis() - timer_event >= 7000 && state == 0) {
         timer_event = millis();
