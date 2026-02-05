@@ -69,26 +69,21 @@ private:
     one_state_Magistral* current_state = mag_start_state;
 
 public:
-    Magistral(Shared_power_5V &PWM_, int control_pin_actuator, int control_pin_clapan, int control_pin_ball_cran)
+    Magistral(Shared_power_5V &PWM_, char control_pin_actuator, char control_pin_clapan, char control_pin_ball_cran)
     {
         
-    print("???");
-    println(freeRAM());
         actuator = new Actuator(state_Component::close, PWM_, control_pin_actuator);
         clapan = new Clapan(state_Component::close, PWM_, control_pin_clapan);
         ball_cran = new Ball_cran(state_Component::close, control_pin_ball_cran);
         // data.state = state_Magistral::default_;
-    print("???");
-    println(freeRAM());
 
         //далее указываем алгоритм работы
-        // mag_state_5 = new one_state_Magistral(state_Magistral::air_on, 22000, nullptr/*mag_state_2*/, nullptr/*mag_start_state*/);
-        // mag_state_4 = new one_state_Magistral(state_Magistral::in_magistral, 2000, mag_state_5,nullptr);
-        // mag_state_3 = new one_state_Magistral(state_Magistral::all_close, 1000, mag_state_4,nullptr);
-        // mag_state_2 = new one_state_Magistral(state_Magistral::going_to_gate, 700, mag_state_3,nullptr, true, 0);
-        mag_start_state = new one_state_Magistral(state_Magistral::all_close, 500, nullptr, nullptr/*mag_state_2*/, true, 1);
-    print("???");
-    println(freeRAM());
+        mag_state_5 = new one_state_Magistral(state_Magistral::air_on, 22000, mag_state_2, mag_start_state);
+        mag_state_4 = new one_state_Magistral(state_Magistral::in_magistral, 2000, mag_state_5,nullptr);
+        mag_state_3 = new one_state_Magistral(state_Magistral::all_close, 1000, mag_state_4,nullptr);
+        mag_state_2 = new one_state_Magistral(state_Magistral::going_to_gate, 700, mag_state_3,nullptr, true, 0);
+        mag_start_state = new one_state_Magistral(state_Magistral::all_close, 500, nullptr, mag_state_2, true, 1);
+
         mag_state_5->conditional_path = mag_start_state;
         mag_state_5->next_state = mag_state_2;
 

@@ -30,44 +30,71 @@
     #define HIGH "HIGH"
     #define LOW "LOW"
     #define A1 15
-    #define d_print(val) std::cout<<"("<<millis()<<")"<<val
-    #define d_println(val) std::cout<<"("<<millis()<<")"<<val<<std::endl
+    #define d_print(val) std::cout<</*"("<<millis()<<")"<<*/val
+    #define d_println(val) std::cout<</*"("<<millis()<<")"<<*/val<<std::endl
     #define print(val) std::cout<<"("<<millis()<<")"<<val
     #define println(val) std::cout<<"("<<millis()<<")"<<val<<std::endl
-#else//arduino
-    #define start_def 
-    #define d_print(val) ;//Serial.d_print(val);//std::cout<<val
-    #define d_println(val) ;//Serial.d_println(val);//std::cout<<val
-    #define print(val) Serial.print(val);//std::cout<<val
-    #define println(val) Serial.println(val);//std::cout<<val
-#endif
-
-// Базовый класс для любого вызываемого объекта
-struct CallableBase {
-    virtual ~CallableBase() = default;
-    virtual void invoke() = 0;
-};
-
-// Шаблонный класс для хранения конкретного вызываемого объекта
-template<typename T>
-struct Callable : CallableBase {
-    T func;
-    
-    Callable(T f) : func(f) {}
-    void invoke() override { func(); }
-};
- // Вспомогательный метод для безопасного удаления
-inline void deleteIfNotNull(CallableBase* &ptr) {
-    if (ptr != nullptr) {
-        delete ptr;
-        ptr = nullptr;
+    inline int freeRAM() {
+        return -1;
+        // extern int __heap_start, *__brkval;
+        // int v;
+        // return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
     }
-}
+#else//arduino
+    #include <Arduino.h>
+    #define start_def 
+    #define d_print(val) Serial.print(val);//std::cout<<val
+    #define d_println(val) Serial.println(val);//std::cout<<val
+    // #define print(val) Serial.print(val);//std::cout<<val
+    // #define println(val) Serial.println(val);//std::cout<<val
 
+    
 inline int freeRAM() {
   extern int __heap_start, *__brkval;
   int v;
   return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
 }
+
+#endif
+
+// // Базовый класс для любого вызываемого объекта
+// struct CallableBase {
+//     virtual ~CallableBase() = default;
+//     virtual void invoke() = 0;
+// };
+
+// // Шаблонный класс для хранения конкретного вызываемого объекта
+// template<typename T>
+// struct Callable : CallableBase {
+//     T func;
+    
+//     Callable(T f) : func(f) {}
+//     void invoke() override { func(); }
+// };
+//  // Вспомогательный метод для безопасного удаления
+// inline void deleteIfNotNull(CallableBase* &ptr) {
+//     if (ptr != nullptr) {
+//         delete ptr;
+//         ptr = nullptr;
+//     }
+// }
+
+
+// // Используйте этот макрос для большинства случаев
+// #define DEFINE_ARDUINO_CALLBACK(name, ret, ...) \
+//     typedef ret (*name##_t)(__VA_ARGS__); \
+//     struct name { \
+//         name##_t func; \
+//         constexpr name() : func(nullptr) {} \
+//         constexpr name(name##_t f) : func(f) {} \
+//         template<typename F> \
+//         constexpr name(F f) : func(f) {} \
+//         constexpr ret operator()(__VA_ARGS__ args) const { \
+//             return func ? func(args) : (ret)0; \
+//         } \
+//         constexpr operator bool() const { return func != nullptr; } \
+//         constexpr static uint8_t memory() { return sizeof(name); } \
+//     }
+
 
 #endif // DECLORATIONS_HPP

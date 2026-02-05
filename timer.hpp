@@ -7,97 +7,60 @@
 
 
 enum state_Timer {stoped = 0, going = 1};
-
+template<
+    typename type_Data_start,
+    typename type_Data_end,
+    typename StartFunc = void(*)(type_Data_start),
+    typename EndFunc = void(*)(type_Data_end)
+   >
 class Timer : public Universal_object<state_Timer> {
 private:
-    CallableBase* func_end = nullptr;
-    CallableBase* func_start = nullptr;
+    StartFunc func_start = nullptr;
+    EndFunc func_end = nullptr;
+    type_Data_start start_Data;
+    type_Data_end end_Data;
     unsigned long time = 0;
     unsigned long timeStart = 0;
     
 public:
     Timer() = default;
     
-    Timer(unsigned long in_time) : time(in_time) {}
-    
-    template<typename FuncStart, typename FuncEnd>
-    Timer(unsigned long in_time, FuncStart start_func, FuncEnd end_func) : 
-          time(in_time) {
-        setFuncStart(start_func);
-        setFuncEnd(end_func);
-    }
-    
-    ~Timer() {
-        deleteIfNotNull(func_end);
-        deleteIfNotNull(func_start);
-    }
-    
-    // Запрещаем копирование, чтобы избежать проблем с владением указателей
-    Timer(const Timer&) = delete;
-    Timer& operator=(const Timer&) = delete;
-    
-    // Разрешаем перемещение
-    Timer(Timer&& other) noexcept 
-        : func_end(other.func_end), func_start(other.func_start),
-          time(other.time), timeStart(other.timeStart) {
-        other.func_end = nullptr;
-        other.func_start = nullptr;
-    }
-    
-    Timer& operator=(Timer&& other) noexcept {
-        if (this != &other) {
-            deleteIfNotNull(func_end);
-            deleteIfNotNull(func_start);
-            
-            func_end = other.func_end;
-            func_start = other.func_start;
-            time = other.time;
-            timeStart = other.timeStart;
-            
-            other.func_end = nullptr;
-            other.func_start = nullptr;
-        }
-        return *this;
-    }
+    Timer(
+            unsigned long in_time,
+            type_Data_start *start_D = nullptr,
+            type_Data_end *end_D = nullptr,
+            StartFunc start = nullptr,
+            EndFunc end = nullptr
+        ) 
+        : time(in_time), func_start(start), func_end(end), start_Data(start_D), end_Data(end_D)  {}
     
     void update() {
-        if(getStatus() == state_Timer::stoped){
-            return;
-        }
-        if(millis() - timeStart >= time){
+        if(getStatus() == state_Timer::stoped) return;
+        if(millis() - timeStart >= time) {
             setStatus(state_Timer::stoped);
-            if(func_end != nullptr){
-                func_end->invoke();
-            }
+            if(func_end) func_end(end_Data);
         }
     }
     
     void restart() {
         setStatus(state_Timer::going);
         timeStart = millis();
-        if(func_start != nullptr){
-            func_start->invoke();
-        }
+        if(func_start) func_start(start_Data);
     }
     
+    void setFuncStart(StartFunc f) { func_start = f; }
+    void setFuncEnd(EndFunc f) { func_end = f; }
+    void setDataStart(type_Data_start d) { start_Data = d; }
+    void setDataEnd(type_Data_end d) { end_Data = d; }
+      
+    //останавливает таймер, не вызывает функцию EndFunc
     void stop() {
         setStatus(state_Timer::stoped);
     }
-    
+
     unsigned long getTime() const { return time; }
     void setTime(unsigned long time_) { time = time_; }
     
-    template<typename Func>
-    void setFuncEnd(Func f) {
-        deleteIfNotNull(func_end);
-        func_end = new Callable<Func>(f);
-    }
-    
-    template<typename Func>
-    void setFuncStart(Func f) {
-        deleteIfNotNull(func_start);
-        func_start = new Callable<Func>(f);
-    }
 };
 
 #endif // TIMER_HPP

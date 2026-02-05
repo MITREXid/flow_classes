@@ -5,9 +5,9 @@
 class Shared_power_5V{//здесь статус это число тех кому ещё нужно питание
 private:
     int state=0;
-    int control_pin = -1;
+    char control_pin = -1;
 public:
-    Shared_power_5V(int control_pin_);
+    Shared_power_5V(char control_pin_);
     void voltageON();
     void voltageOFF();
     void update();
@@ -16,7 +16,7 @@ public:
 
 };
 
-Shared_power_5V::Shared_power_5V(int control_pin_){
+Shared_power_5V::Shared_power_5V(char control_pin_){
     control_pin = control_pin_;
     setStatus(0);
     pinMode(control_pin, OUTPUT);

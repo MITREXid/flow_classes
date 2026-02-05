@@ -5,18 +5,16 @@
 #include "component.hpp"
 #include "magistral.hpp"
 
-
+#include "config.hpp"
 
 
 // Timer timer1;
 // Timer timer2;
 // Component comp(state_Component::open);
 Shared_power_5V PWM(A1);
-// Actuator act(state_Component::close, PWM, 10);
-// Clapan act2(state_Component::open, PWM, 11);
-// Ball_cran act3(state_Component::close, 12);
-
-Magistral mag(PWM,10,11,12);
+// Actuator *act;
+Ball_cran act3(state_Component::close, 12);
+// Magistral mag(PWM,10,11,12);
 // Magistral mag1(PWM,10,11,12);
 // Magistral mag2(PWM,10,11,12);
 // Magistral mag3(PWM,10,11,12);
@@ -29,12 +27,12 @@ void setup()
 {
     #if(!mode_work)//arduino
         Serial.begin(9600);
+        Serial.println("start");
+        int val = freeRAM();
+        Serial.println(freeRAM());
     #endif
-    println("start");
-    int val = freeRAM();
-    println(freeRAM());
-// Magistral mag1(PWM,10,11,12);
-Actuator *act = new Actuator ( state_Component::close, PWM, 10);
+Magistral mag1(PWM,10,11,12);
+// act = new Actuator ( state_Component::close, PWM, 10);
 // Clapan *act2 = new Clapan (state_Component::open, PWM, 11);
 // Ball_cran *act3 = new Ball_cran (state_Component::close, 12);
 // Component *comp = new Component{
@@ -42,13 +40,16 @@ Actuator *act = new Actuator ( state_Component::close, PWM, 10);
 //         700, //время открытия
 //         700 //время закрытия
 //     };
-    println(freeRAM());
-    println("===");
-    println(val-freeRAM());
+
+    #if(!mode_work)//arduino
+        Serial.println(freeRAM());
+        Serial.println("===");
+        Serial.println(val-freeRAM());
+    #endif
     // act.init();
     // act2.init();
     // act3.init();
-    mag.init();
+    // mag.init();
     // mag1.init();
     // mag2.init();
     // mag3.init();
@@ -63,13 +64,13 @@ void loop()
 
     // println(freeRAM());
         timer_delay_loop = millis();
-        mag.update();
+        // mag.update();
     // mag1.update();
     // mag2.update();
     // mag3.update();
-        // act.update();
+        // act->update();
         // act2.update();
-        // act3.update();
+        act3.update();
         // d_print("act3(");
         // d_print(millis());
         // d_print(") status: ");
@@ -81,26 +82,28 @@ void loop()
     }
     if(millis() - timer_event >= 7000 && state == 0) {
         timer_event = millis();
-        mag.start();
+        // mag.start();
+        // act->open();
     // mag1.start();
     // mag2.start();
     // mag3.start();
         // act.open();
         // act2.open();
-        // act3.open();
+        act3.open();
         ++state;
     }
-    if(millis() - timer_event >= 30000 && state == 1) {
+    if(millis() - timer_event >= 15000 && state == 1) {
         timer_event = millis();
-        mag.stop();
+        // mag.stop();
+        // act->close();
         // // act.close();
         // act2.close();
-        // act3.close();
+        act3.close();
         ++state;
     }
      if(millis() - timer_event >= 40000 && state == 2) {
         timer_event = millis();
-        mag.start();
+        // mag.start();
         // // act.close();
         // act2.close();
         // act3.close();
