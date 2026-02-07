@@ -9,30 +9,34 @@
 enum state_Component {close = 0, in_going = 1, open = 2};
 
 // Базовый класс без виртуальных функций
-template<
-    typename OpenStartData,
-    typename OpenEndData,
-    typename CloseStartData,
-    typename CloseEndData,
-    typename OpenStartFunc = void(*)(OpenStartData),
-    typename OpenEndFunc = void(*)(OpenEndData),
-    typename CloseStartFunc  = void(*)(CloseStartData),
-    typename CloseEndFunc  = void(*)(CloseEndData)
-     >
 class Component : public Universal_object<state_Component> {
 protected:
-    // Указываем шаблонные параметры для Timer
-    Timer<CloseStartData, CloseEndData> timer_closing;
-    Timer<OpenStartData, OpenEndData> timer_opening;
+    Timer timer_closing;
+    Signal<> SigStartClose, SigEndClose;
+    Timer timer_opening;
+    Signal<> SigStartOpen, SigEndOpen;
     state_Component default_state = state_Component::close;
     
+    virtual void funcSigStartOpen(){};
+    virtual void funcSigEndOpen(){};
+    virtual void funcSigStartClose(){};
+    virtual void funcSigEndClose(){};
 public:
-    Component() = default;
+    Component(){
+        //     d_println("privisal");
+        //     d_println(&SigStartClose);
+
+        // timer_closing.setSignalStart(&SigStartClose);
+        // timer_closing.setSignalEnd(&SigEndClose);
+        // timer_opening.setSignalStart(&SigStartOpen);
+        // timer_opening.setSignalEnd(&SigEndOpen);
+    }
     
 
         /// @brief конструктор задает начальные параметры
         /// @param curr_state состояние по умолчанию
     Component(state_Component curr_state) {
+        Component();
         if(curr_state == in_going) {
             d_println("Not correct start state. set close");
             curr_state = state_Component::close;
@@ -45,7 +49,12 @@ public:
         /// @param curr_state состояние по умолчанию
         /// @param in_time_open время на открытие 
         /// @param in_time_close время на закрытие    
-    Component(state_Component curr_state, unsigned long in_time_open, unsigned long in_time_close) {
+    Component(
+        state_Component curr_state, 
+        unsigned long in_time_open, 
+        unsigned long in_time_close
+    ) {
+        Component();
         if(curr_state == in_going) {
             d_println("Not correct start state. set close");
             curr_state = state_Component::close;
@@ -54,7 +63,6 @@ public:
         setStatus(default_state);
         timer_opening.setTime(in_time_open);
         timer_closing.setTime(in_time_close);
-      
     }
     
 
@@ -62,6 +70,21 @@ public:
     void update() {
         timer_closing.update();
         timer_opening.update();
+
+        if(SigEndClose.isTrueAndNotCheked()){  
+            funcSigEndClose();
+        }
+        if(SigStartOpen.isTrueAndNotCheked()){  
+            funcSigStartOpen();
+        }
+        if(SigStartClose.isTrueAndNotCheked()){  
+            funcSigStartClose();
+        }
+        if(SigEndOpen.isTrueAndNotCheked()){  
+            funcSigEndOpen();
+        }
+
+
     }
     
     bool open() {
@@ -102,7 +125,12 @@ public:
         }
     }
     
+    //в конструкторе не работает setSignal, видимо меняются адреса
     void init() {
+        timer_closing.setSignalStart(&SigStartClose);
+        timer_closing.setSignalEnd(&SigEndClose);
+        timer_opening.setSignalStart(&SigStartOpen);
+        timer_opening.setSignalEnd(&SigEndOpen);
         to_default();
     }
     
@@ -118,46 +146,6 @@ public:
     bool can_open() { return (getStatus() == state_Component::close); }
     bool can_close() { return (getStatus() == state_Component::open); }
     
-
-
-
-//set func
-
-    void setFuncEndOpen(OpenEndFunc f)
-    {
-        timer_opening.setFuncEnd(f);
-    }
-    void setFuncStartOpen(OpenStartFunc f)
-    {
-        timer_opening.setFuncStart(f);
-    }
-
-    void setFuncEndClose(CloseEndFunc f)
-    {
-        timer_closing.setFuncEnd(f);
-    }
-    void setFuncStartClose(CloseStartFunc f)
-    {
-        timer_closing.setFuncStart(f);
-    }
-//set data
-    void setDataEndOpen(OpenEndData f)
-    {
-        timer_opening.setDataEnd(f);
-    }
-    void setDataStartOpen(OpenStartData&f)
-    {
-        timer_opening.setDataStart(f);
-    }
-
-    void setDataEndClose(CloseEndData f)
-    {
-        timer_closing.setDataEnd(f);
-    }
-    void setDataStartClose(CloseStartData f)
-    {
-        timer_closing.setDataStart(f);
-    }
 };
 
 

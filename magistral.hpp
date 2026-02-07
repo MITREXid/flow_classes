@@ -142,6 +142,7 @@ void Magistral::init()
     clapan->init();
     actuator->init();
     ball_cran->init();
+    
 }
 
 

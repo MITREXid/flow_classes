@@ -5,19 +5,20 @@
 #include "component.hpp"
 #include "magistral.hpp"
 
-#include "config.hpp"
-
 
 // Timer timer1;
 // Timer timer2;
 // Component comp(state_Component::open);
 Shared_power_5V PWM(A1);
 // Actuator *act;
-Ball_cran act3(state_Component::close, 12);
-// Magistral mag(PWM,10,11,12);
+// Ball_cran act3(state_Component::close, 12);
+Magistral mag(PWM,10,11,12);
 // Magistral mag1(PWM,10,11,12);
 // Magistral mag2(PWM,10,11,12);
 // Magistral mag3(PWM,10,11,12);
+// Signal<> sig_start;
+// Signal<> sig_end;
+// Timer t1(1000, &sig_start, &sig_end, nullptr);
 
 unsigned long timer_delay_loop ;
 unsigned long timer_event;
@@ -49,13 +50,15 @@ Magistral mag1(PWM,10,11,12);
     // act.init();
     // act2.init();
     // act3.init();
-    // mag.init();
+    mag.init();
     // mag1.init();
     // mag2.init();
     // mag3.init();
     timer_delay_loop = millis();
     timer_event = millis();
     state = 0;
+    // t1.restart();
+        d_print("Staart");
 }
 
 void loop()
@@ -63,14 +66,18 @@ void loop()
     if(millis() - timer_delay_loop >= 20){
 
     // println(freeRAM());
+    // t1.update();
+    // if(sig_end.isTrueAndNotCheked()){
+    //     d_print("Stoop");
+    // }
         timer_delay_loop = millis();
-        // mag.update();
+        mag.update();
     // mag1.update();
     // mag2.update();
     // mag3.update();
         // act->update();
         // act2.update();
-        act3.update();
+        // act3.update();
         // d_print("act3(");
         // d_print(millis());
         // d_print(") status: ");
@@ -82,14 +89,14 @@ void loop()
     }
     if(millis() - timer_event >= 7000 && state == 0) {
         timer_event = millis();
-        // mag.start();
+        mag.start();
         // act->open();
     // mag1.start();
     // mag2.start();
     // mag3.start();
         // act.open();
         // act2.open();
-        act3.open();
+        // act3.open();
         ++state;
     }
     if(millis() - timer_event >= 15000 && state == 1) {
@@ -98,7 +105,7 @@ void loop()
         // act->close();
         // // act.close();
         // act2.close();
-        act3.close();
+        // act3.close();
         ++state;
     }
      if(millis() - timer_event >= 40000 && state == 2) {

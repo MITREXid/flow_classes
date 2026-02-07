@@ -21,7 +21,7 @@
 
 
     #define pinMode(a,b)  d_print("pinMode(");\
-                           d_print(a);\
+                           d_print((int)a);\
                            d_print(", ");\
                            d_print(b);\
                            d_println(")");

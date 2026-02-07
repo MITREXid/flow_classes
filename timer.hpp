@@ -6,56 +6,112 @@
 
 
 
+//становится в 1
+template <typename Sta = bool> 
+class Signal{
+protected:
+ Sta state;
+ bool checked = false;
+
+public:
+    bool isChecked(){
+        return checked;
+    }
+    void setState(Sta st){
+        checked = false;
+        state =st;
+    }
+    Sta getState(){
+        checked = true;
+        return state;
+    }
+    bool isTrueAndNotCheked(){
+        if(!isChecked() && getState() == true){
+            return true;
+        }
+        return false;
+    } 
+};
+
+
+
 enum state_Timer {stoped = 0, going = 1};
-template<
-    typename type_Data_start,
-    typename type_Data_end,
-    typename StartFunc = void(*)(type_Data_start),
-    typename EndFunc = void(*)(type_Data_end)
-   >
+
 class Timer : public Universal_object<state_Timer> {
 private:
-    StartFunc func_start = nullptr;
-    EndFunc func_end = nullptr;
-    type_Data_start start_Data;
-    type_Data_end end_Data;
+    Signal<> *signal_start = nullptr;
+    Signal<> *signal_end = nullptr;
+    Signal<> *signal_stop = nullptr;
     unsigned long time = 0;
     unsigned long timeStart = 0;
     
 public:
     Timer() = default;
     
-    Timer(
-            unsigned long in_time,
-            type_Data_start *start_D = nullptr,
-            type_Data_end *end_D = nullptr,
-            StartFunc start = nullptr,
-            EndFunc end = nullptr
-        ) 
-        : time(in_time), func_start(start), func_end(end), start_Data(start_D), end_Data(end_D)  {}
     
+    /// @brief конструктор
+    /// @param in_signal_start ссылка насигнальнуб переменную старта
+    /// @param in_signal_end ссылка насигнальнуб переменную конца работы
+    /// @param in_signal_stop ссылка насигнальнуб переменную острановки
+    /// если не нужен какоё-то сигнал задать nullptr
+     Timer(
+            unsigned long in_time, 
+            Signal<> *in_signal_start,
+            Signal<> *in_signal_end,
+            Signal<> *in_signal_stop 
+        ) 
+        : time(in_time), 
+        signal_start(in_signal_start), 
+        signal_end(in_signal_end), 
+        signal_stop(in_signal_stop)  
+        {}
+
     void update() {
         if(getStatus() == state_Timer::stoped) return;
         if(millis() - timeStart >= time) {
             setStatus(state_Timer::stoped);
-            if(func_end) func_end(end_Data);
+            if(signal_start !=nullptr){
+                signal_start->setState(0);
+            }
+            if(signal_end !=nullptr){
+                signal_end->setState(1);
+            }
+            if(signal_stop !=nullptr){
+                signal_stop->setState(0);
+            }
         }
     }
     
     void restart() {
         setStatus(state_Timer::going);
         timeStart = millis();
-        if(func_start) func_start(start_Data);
+        if(signal_start !=nullptr){
+            signal_start->setState(1);
+        }
+        if(signal_end !=nullptr){
+            signal_end->setState(0);
+        }
+        if(signal_stop !=nullptr){
+            signal_stop->setState(0);
+        }
     }
     
-    void setFuncStart(StartFunc f) { func_start = f; }
-    void setFuncEnd(EndFunc f) { func_end = f; }
-    void setDataStart(type_Data_start d) { start_Data = d; }
-    void setDataEnd(type_Data_end d) { end_Data = d; }
+    void setSignalStart(Signal<> *f) {  signal_start = f;}
+    void setSignalEnd(Signal<> *f) { signal_end = f; }
+    void setSignalStop(Signal<> *f) { signal_stop = f; }
       
     //останавливает таймер, не вызывает функцию EndFunc
     void stop() {
         setStatus(state_Timer::stoped);
+        if(signal_start !=nullptr){
+            signal_start->setState(0);
+        }
+        if(signal_end !=nullptr){
+            signal_end->setState(0);
+        }
+        if(signal_stop !=nullptr){
+            signal_stop->setState(1);
+        }
     }
 
     unsigned long getTime() const { return time; }
