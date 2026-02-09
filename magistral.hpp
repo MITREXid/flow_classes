@@ -3,6 +3,9 @@
 #include "universal_object.hpp"
 #include "other_components.hpp"
 #include "Shared_power_5V.hpp"
+#include "math.h"
+
+typedef uint16_t Time_in_this;
 
 enum state_Magistral {
     going_to_gate = 1,//высыпаем зерно в шлюз
@@ -12,83 +15,185 @@ enum state_Magistral {
     full_open = 11//режим прочистки
 };
 
+
 class one_state_Magistral{
     public:
-        // one_state_Magistral(state_Magistral curr_state_, uint32_t time_in_this_, one_state_Magistral *next_state_, one_state_Magistral *conditional_path_)
-        // :curr_state{curr_state_}, time_in_this{time_in_this_}, next_state{next_state_}, conditional_path{conditional_path_}{}
-        
-        one_state_Magistral(
-            state_Magistral curr_state_,
-            uint32_t time_in_this_,
-            one_state_Magistral *next_state_,
-            one_state_Magistral *conditional_path_,
-            bool flag_reset_timer_ = false,
-            int setup_this = 0//нужно для огочтб в конструкотре задатьуказатель на себя
-        )
-            :curr_state{curr_state_},
-            time_in_this{time_in_this_},
-            next_state{next_state_},
-            conditional_path{conditional_path_},
-            flag_reset_timer{flag_reset_timer_}
-        {
-            if(setup_this==1){
-                next_state = this;
-                return;
-            }else if(setup_this==2){
-                conditional_path = this;
-                return;
+       
+         one_state_Magistral(
+            uint8_t kol_path_,
+            uint8_t kol_users_/*количество магистралей которые будет использовать это состояние*/
+         ){
+           
+            if(kol_path_ < 1){
+                 kol_path=kol_path_;
+            }else{
+                kol_path_ = 1;
             }
+            if(kol_users < 1){
+                 kol_users=kol_users_;
+            }else{
+                kol_users = 1;
+            }
+
+            choose_path = (uint8_t *)calloc(
+                sizeof(uint8_t) * ceil(kol_users), 
+                sizeof(uint8_t)
+            );
+            flag_reset_timer = (uint8_t *)calloc(
+                sizeof(uint8_t) * ceil(kol_users/8), 
+                sizeof(uint8_t)
+            );
+
+            paths = (one_state_Magistral **)calloc(
+                sizeof(one_state_Magistral *) * kol_path, 
+                sizeof(one_state_Magistral *)
+            );
+            paths[0] = this;
+
+         }
+         
+         Time_in_this get_time_in_this(){
+            return time_in_this;
+         }
+         void set_time_in_this(Time_in_this val){
+            time_in_this = val;
+         }
+
+         state_Magistral get_curr_state(){
+            return curr_state;
+         }
+         void set_curr_state(state_Magistral val){
+            curr_state = val;
+         }
+
+         one_state_Magistral *get_next_state(uint8_t user){
+            if(inRangeUsers(user) && inRangePaths(get_choose_path(user))){
+                return paths[get_choose_path(user)];
+            }
+            d_println("ERROR: get_next_state in one_state_Magistral");
+            return nullptr;
+         }
+
+        void set_path(uint8_t path, one_state_Magistral * st){
+            if(inRangePaths(path)){
+                paths[path] = st;
+            }
+            d_println("ERROR: set_path in one_state_Magistral");
+         }
+
+          uint8_t get_choose_path(uint8_t user){
+            if(inRangeUsers(user)){
+                return choose_path[user];
+            }
+            d_println("ERROR: get_choose_path in one_state_Magistral");
+            return 0;
+         }
+
+         void set_choose_path(uint8_t user, uint8_t path){
+            if(inRangeUsers(user) && inRangePaths(path)){
+                choose_path[user] = path;
+            }
+            d_println("ERROR: set_choose_path in one_state_Magistral");
+         }
+
+
+        void set_flag_reset_timer(uint8_t user, bool val){
+            if(inRangeUsers(user)){
+                flag_reset_timer[user] = val;
+            }
+            d_println("ERROR: set_flag_reset_timer in one_state_Magistral");
         }
 
-        uint32_t time_in_this = 0;
-        one_state_Magistral *next_state = nullptr;
-        one_state_Magistral *conditional_path = nullptr;//если choose_conditional = true
+         bool get_flag_reset_timer(uint8_t user){
+            if(inRangeUsers(user)){
+                return flag_reset_timer[user];
+            }
+            d_println("ERROR: get_flag_reset_timer in one_state_Magistral");
+             return false;
+        }
+
+private:
+        uint8_t kol_path = 1;
+        uint8_t kol_users = 1;
+        Time_in_this time_in_this = 0;
+        one_state_Magistral **paths = nullptr;//все возможные пути
         state_Magistral curr_state;
-        bool choose_conditional = false;
-        bool flag_reset_timer = false;
+        uint8_t *choose_path = nullptr;//куда дальше переходим
+        uint8_t *flag_reset_timer = nullptr;
+
+        bool inRangeUsers(uint8_t u){
+            if(u<kol_users-1){
+                return true;
+            }
+            d_println("ERROR: inRangeUsers = false in one_state_Magistral");
+            return false;
+        }
+       bool inRangePaths(uint8_t p){
+            if(p<kol_path-1){
+                return true;
+            }
+            d_println("ERROR: inRangePaths = false in one_state_Magistral");
+            return false;
+       }
 
 };
+
+one_state_Magistral * setup_alg_magistral(int kol_users){
+    one_state_Magistral* mag_start_state = new one_state_Magistral(2, kol_users);
+    mag_start_state->set_curr_state(state_Magistral::all_close);
+    mag_start_state->set_time_in_this(500);
+    one_state_Magistral* going_to_gate_ = new one_state_Magistral(1, kol_users);
+    mag_start_state->set_curr_state(state_Magistral::going_to_gate);
+    mag_start_state->set_time_in_this(700);
+    one_state_Magistral* all_close_ = new one_state_Magistral(1, kol_users);
+    mag_start_state->set_curr_state(state_Magistral::all_close);
+    mag_start_state->set_time_in_this(1000);
+    one_state_Magistral* in_magistral_ = new one_state_Magistral(1, kol_users);
+    mag_start_state->set_curr_state(state_Magistral::in_magistral);
+    mag_start_state->set_time_in_this(2000);
+    one_state_Magistral* air_on_ = new one_state_Magistral(2, kol_users);
+    mag_start_state->set_curr_state(state_Magistral::air_on);
+    mag_start_state->set_time_in_this(22000);
+
+
+
+    air_on_->set_path(0,going_to_gate_);//на выход
+    air_on_->set_path(1,mag_start_state);//продолжить цикл
+    in_magistral_->set_path(0,air_on_);
+    all_close_->set_path(0,in_magistral_);
+    going_to_gate_->set_path(0,all_close_);
+    mag_start_state->set_path(1,going_to_gate_);
+    for(uint8_t i = 0;i<kol_users;++i){
+        going_to_gate_->set_flag_reset_timer(i,true);
+        mag_start_state->set_flag_reset_timer(i,true);
+    }
+}
+
+
 
 
 class Magistral{//}: public Universal_object<state_Magistral>{
 private:
 
-    one_state_Magistral* mag_state_5;
-    one_state_Magistral* mag_state_4;
-    one_state_Magistral* mag_state_3;
-    one_state_Magistral* mag_state_2;
-    one_state_Magistral* mag_start_state;
-
-
+   
+    uint8_t id  = 0;
     Actuator *actuator;
     Clapan *clapan;
     Ball_cran *ball_cran;
     uint32_t time_to_start_new_state = 0;//время старта
     // bool was_reset_time = false;//для того чтоб в состоянии в котором надо обнулить вермя не обнулять его бесконечно
 
-    one_state_Magistral* current_state = mag_start_state;
+    one_state_Magistral* current_state ;
+    one_state_Magistral* start_state ;
 
 public:
-    Magistral(Shared_power_5V &PWM_, char control_pin_actuator, char control_pin_clapan, char control_pin_ball_cran)
+    Magistral(uint8_t id, Shared_power_5V &PWM_, char control_pin_actuator, char control_pin_clapan, char control_pin_ball_cran, one_state_Magistral* current_ste)
     {
-        
+        start_state = current_ste;
         actuator = new Actuator(state_Component::close, PWM_, control_pin_actuator);
         clapan = new Clapan(state_Component::close, PWM_, control_pin_clapan);
         ball_cran = new Ball_cran(state_Component::close, control_pin_ball_cran);
-        // data.state = state_Magistral::default_;
-
-        //далее указываем алгоритм работы
-        mag_state_5 = new one_state_Magistral(state_Magistral::air_on, 22000, mag_state_2, mag_start_state);
-        mag_state_4 = new one_state_Magistral(state_Magistral::in_magistral, 2000, mag_state_5,nullptr);
-        mag_state_3 = new one_state_Magistral(state_Magistral::all_close, 1000, mag_state_4,nullptr);
-        mag_state_2 = new one_state_Magistral(state_Magistral::going_to_gate, 700, mag_state_3,nullptr, true, 0);
-        mag_start_state = new one_state_Magistral(state_Magistral::all_close, 500, nullptr, mag_state_2, true, 1);
-
-        mag_state_5->conditional_path = mag_start_state;
-        mag_state_5->next_state = mag_state_2;
-
-        current_state = mag_start_state;
-
+        current_state = current_ste;
     }
     void init();
     void turn_to(state_Magistral next_state);
@@ -96,12 +201,12 @@ public:
     void logic();//Для объединения логики поведения(используется в update())
     void start();
     void stop();
-    state_Magistral getState(one_state_Magistral* st = nullptr);
-    one_state_Magistral* getNextState(one_state_Magistral* st = nullptr);
-    uint32_t getTimeInState(one_state_Magistral* st = nullptr);
-    void setPathFlag( bool val,one_state_Magistral* st = nullptr);
-    bool getPathFlag(one_state_Magistral* st = nullptr);
-    bool getFlagResetTimer(one_state_Magistral* st = nullptr);
+    // state_Magistral getState(one_state_Magistral* st = nullptr);
+    // one_state_Magistral* getNextState(one_state_Magistral* st = nullptr);
+    // uint32_t getTimeInState(one_state_Magistral* st = nullptr);
+    // void setPathFlag( bool val,one_state_Magistral* st = nullptr);
+    // bool getPathFlag(one_state_Magistral* st = nullptr);
+    // bool getFlagResetTimer(one_state_Magistral* st = nullptr);
 };
 
 
@@ -158,7 +263,7 @@ void Magistral::update()
 
 
 void Magistral::start(){
-    if(current_state != mag_start_state){
+    if(current_state == start_state){
         /**
          * не знаю что выбрать учитывая возможность разных режимов
          * current_state != mag_start_state
@@ -173,12 +278,12 @@ void Magistral::start(){
          * остояние когда мы работаем в штатном режиме и будет презапуск жопа и т д
          * 
          */
-        d_println("not in strted state");
-        return;
-    }
     d_println("========start");
-    setPathFlag(true, mag_start_state);
-    setPathFlag(false, mag_state_5);
+    current_state->set_choose_path(id,1);
+    return;
+    }
+        d_println("not in started state");
+        return;
     // time_to_start = millis();
 }
 
@@ -218,57 +323,57 @@ void Magistral::logic(){
 
 
 
-    state_Magistral Magistral::getState(one_state_Magistral* st){
-        if(st==nullptr){
-            st = current_state;
-        }
-        if(st==nullptr){d_println("AAAA nullptr getState");}
-        return st->curr_state;
-    }
-    one_state_Magistral* Magistral::getNextState(one_state_Magistral* st){
-        if(st==nullptr){
-            st = current_state;
-        }
-        if(st==nullptr){d_println("AAAA nullptr getNextState");}
-        if(st->choose_conditional){
-            if(st->conditional_path == nullptr){
-                d_println("AAAA nullptr getNextState st->conditional_path");
-            }
-            return st->conditional_path;
-        }else{
-            if(st->next_state == nullptr){
-                d_println("AAAA nullptr getNextState st->next_state");
-            }
-            return st->next_state;
-        }
-    }
-    uint32_t Magistral::getTimeInState(one_state_Magistral* st){
-        if(st==nullptr){
-            st = current_state;
-        }
-        if(st==nullptr){d_println("AAAA nullptr getTimeInState");}
-        return st->time_in_this;
-    }
-    void Magistral::setPathFlag(bool val, one_state_Magistral* st){
-        if(st==nullptr){
-            st = current_state;
-        }
-        if(st==nullptr){d_println("AAAA nullptr setPathFlag");}
-        st->choose_conditional = val;
-    }
-    bool Magistral::getPathFlag(one_state_Magistral* st){
-        if(st==nullptr){
-            st = current_state;
-        }
-        if(st==nullptr){d_println("AAAA nullptr getPathFlag");}
-        return st->choose_conditional;
-    }
+    // state_Magistral Magistral::getState(one_state_Magistral* st){
+    //     if(st==nullptr){
+    //         st = current_state;
+    //     }
+    //     if(st==nullptr){d_println("AAAA nullptr getState");}
+    //     return st->curr_state;
+    // }
+    // one_state_Magistral* Magistral::getNextState(one_state_Magistral* st){
+    //     if(st==nullptr){
+    //         st = current_state;
+    //     }
+    //     if(st==nullptr){d_println("AAAA nullptr getNextState");}
+    //     if(st->choose_conditional){
+    //         if(st->conditional_path == nullptr){
+    //             d_println("AAAA nullptr getNextState st->conditional_path");
+    //         }
+    //         return st->conditional_path;
+    //     }else{
+    //         if(st->next_state == nullptr){
+    //             d_println("AAAA nullptr getNextState st->next_state");
+    //         }
+    //         return st->next_state;
+    //     }
+    // }
+    // uint32_t Magistral::getTimeInState(one_state_Magistral* st){
+    //     if(st==nullptr){
+    //         st = current_state;
+    //     }
+    //     if(st==nullptr){d_println("AAAA nullptr getTimeInState");}
+    //     return st->time_in_this;
+    // }
+    // void Magistral::setPathFlag(bool val, one_state_Magistral* st){
+    //     if(st==nullptr){
+    //         st = current_state;
+    //     }
+    //     if(st==nullptr){d_println("AAAA nullptr setPathFlag");}
+    //     st->choose_conditional = val;
+    // }
+    // bool Magistral::getPathFlag(one_state_Magistral* st){
+    //     if(st==nullptr){
+    //         st = current_state;
+    //     }
+    //     if(st==nullptr){d_println("AAAA nullptr getPathFlag");}
+    //     return st->choose_conditional;
+    // }
 
-    bool Magistral::getFlagResetTimer(one_state_Magistral* st){
-        if(st==nullptr){
-            st = current_state;
-        }
-        if(st==nullptr){d_println("AAAA nullptr getFlagResetTimer");}
-        return st->flag_reset_timer;
-    }
+    // bool Magistral::getFlagResetTimer(one_state_Magistral* st){
+    //     if(st==nullptr){
+    //         st = current_state;
+    //     }
+    //     if(st==nullptr){d_println("AAAA nullptr getFlagResetTimer");}
+    //     return st->flag_reset_timer;
+    // }
 #endif // MAGISTRAL_HPP

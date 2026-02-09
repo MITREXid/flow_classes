@@ -22,15 +22,7 @@ protected:
     virtual void funcSigStartClose(){};
     virtual void funcSigEndClose(){};
 public:
-    Component(){
-        //     d_println("privisal");
-        //     d_println(&SigStartClose);
-
-        // timer_closing.setSignalStart(&SigStartClose);
-        // timer_closing.setSignalEnd(&SigEndClose);
-        // timer_opening.setSignalStart(&SigStartOpen);
-        // timer_opening.setSignalEnd(&SigEndOpen);
-    }
+    Component(){}
     
 
         /// @brief конструктор задает начальные параметры

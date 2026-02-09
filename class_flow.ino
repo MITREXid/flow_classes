@@ -12,7 +12,7 @@
 Shared_power_5V PWM(A1);
 // Actuator *act;
 // Ball_cran act3(state_Component::close, 12);
-Magistral mag(PWM,10,11,12);
+Magistral mag(PWM,10,11,12, &mag_start_state);
 // Magistral mag1(PWM,10,11,12);
 // Magistral mag2(PWM,10,11,12);
 // Magistral mag3(PWM,10,11,12);

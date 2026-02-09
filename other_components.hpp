@@ -11,8 +11,7 @@ protected:
 public:
     Actuator(state_Component first_state, Shared_power_5V &PWM_, int control_pin_);
     void update();
-
-    
+      
     void funcSigStartOpen(){
         d_println("Start Open Actuator");  
         pinMode(control_pin, LOW);
