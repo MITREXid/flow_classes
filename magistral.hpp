@@ -289,17 +289,15 @@ void Magistral::start(){
 
 void Magistral::stop(){
     d_println("========stop");
-    setPathFlag(false, mag_start_state);
-    setPathFlag(true, mag_state_5);
+    start_state->set_choose_path(id,0);//зацйиклились на себя
+    // setPathFlag(false, mag_start_state);
+    // setPathFlag(true, mag_state_5);
 }
 
 
 void Magistral::logic(){
     
-        // d_print("========start time: ");
-        // d_println(time_to_start_new_state);
-        // d_print("========state: ");
-        // d_println(getState());
+
     if(
         clapan->getStatus() == state_Component::in_going ||
         actuator->getStatus() == state_Component::in_going ||
@@ -307,16 +305,17 @@ void Magistral::logic(){
     ){
         return;
     }
+    
 
     uint32_t curr_time = millis() - time_to_start_new_state;
-    if(getTimeInState() < curr_time){
+    if(current_state->get_time_in_this() < curr_time){
         
         d_print("========state: ");
-        d_println(getState());
-        current_state = getNextState();
-        turn_to(getState());
+        d_println(current_state->get_curr_state());
+        current_state = current_state->get_next_state(id);
+        turn_to(current_state->get_curr_state());
         d_print("->");
-        d_println(getState());
+        d_println(current_state->get_curr_state());
     }
 
 }
