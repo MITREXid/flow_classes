@@ -18,20 +18,31 @@ struct state_Flow{
     }staging = str_staging::go;
 };
 
-
+#define kol_mag_ 3
 class Flow: public Universal_object<state_Flow>{
     private:
-        one_state_Magistral * start_state;
+        Data_alg data_alg;
         Shared_power_5V *PWM;
     public:
-        Magistral *group[3];
+        Magistral *group[kol_mag_];
         Magistral *solo;
     Flow(uint8_t p_pwm,uint8_t p_act_1, uint8_t p_clap_1, uint8_t p_ball_1 ){
-        start_state = setup_alg_magistral(4);
+        data_alg = setup_alg_magistral(4);
         PWM = new Shared_power_5V(p_pwm);
-        solo = new Magistral(0x0, *PWM, p_act_1,p_clap_1, p_ball_1, start_state);
+        solo = new Magistral(0x0, *PWM, p_act_1,p_clap_1, p_ball_1, data_alg);
     }
-        
+    void init(){
+        solo->init();
+    }
+    void update(){
+         solo->update();
+    }
+    void start_solo(){
+         solo->start();
+    }
+    void stop_solo(){
+         solo->stop();
+    }
 
 };
 

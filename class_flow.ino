@@ -4,7 +4,7 @@
 #include "other_components.hpp"
 #include "component.hpp"
 #include "magistral.hpp"
-
+#include "flow.hpp"
 
 // Timer timer1;
 // Timer timer2;
@@ -12,7 +12,8 @@
 Shared_power_5V PWM(A1);
 // Actuator *act;
 // Ball_cran act3(state_Component::close, 12);
-Magistral mag(PWM,10,11,12, &mag_start_state);
+// Magistral mag(PWM,10,11,12, &mag_start_state);
+Flow flow(10,11,12,13);
 // Magistral mag1(PWM,10,11,12);
 // Magistral mag2(PWM,10,11,12);
 // Magistral mag3(PWM,10,11,12);
@@ -32,7 +33,9 @@ void setup()
         int val = freeRAM();
         Serial.println(freeRAM());
     #endif
-Magistral mag1(PWM,10,11,12);
+    
+    // Flow flow1(10,11,12,13);
+// Magistral mag1(PWM,10,11,12);
 // act = new Actuator ( state_Component::close, PWM, 10);
 // Clapan *act2 = new Clapan (state_Component::open, PWM, 11);
 // Ball_cran *act3 = new Ball_cran (state_Component::close, 12);
@@ -50,7 +53,8 @@ Magistral mag1(PWM,10,11,12);
     // act.init();
     // act2.init();
     // act3.init();
-    mag.init();
+    flow.init();
+    // mag.init();
     // mag1.init();
     // mag2.init();
     // mag3.init();
@@ -71,7 +75,7 @@ void loop()
     //     d_print("Stoop");
     // }
         timer_delay_loop = millis();
-        mag.update();
+        // mag.update();
     // mag1.update();
     // mag2.update();
     // mag3.update();
@@ -87,9 +91,11 @@ void loop()
         // d_print(") status: ");
         // d_println(act2.getStatus());
     }
-    if(millis() - timer_event >= 7000 && state == 0) {
+    if(millis() - timer_event >= 10000 && state == 0) {
         timer_event = millis();
-        mag.start();
+
+    flow.start_solo();
+        // mag.start();
         // act->open();
     // mag1.start();
     // mag2.start();
@@ -99,8 +105,9 @@ void loop()
         // act3.open();
         ++state;
     }
-    if(millis() - timer_event >= 15000 && state == 1) {
+    if(millis() - timer_event >= 60000 && state == 1) {
         timer_event = millis();
+        flow.stop_solo();
         // mag.stop();
         // act->close();
         // // act.close();
