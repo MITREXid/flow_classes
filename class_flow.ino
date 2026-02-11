@@ -75,7 +75,7 @@ void loop()
     //     d_print("Stoop");
     // }
         timer_delay_loop = millis();
-        // mag.update();
+        flow.update();
     // mag1.update();
     // mag2.update();
     // mag3.update();
@@ -91,7 +91,7 @@ void loop()
         // d_print(") status: ");
         // d_println(act2.getStatus());
     }
-    if(millis() - timer_event >= 10000 && state == 0) {
+    if(millis() - timer_event >= 7000 && state == 0) {
         timer_event = millis();
 
     flow.start_solo();

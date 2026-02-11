@@ -27,7 +27,7 @@ private:
       Data_alg &data_alg;
 
 public:
-    Magistral(uint8_t id, Shared_power_5V &PWM_, char control_pin_actuator, char control_pin_clapan, char control_pin_ball_cran, Data_alg& d_)
+    Magistral(uint8_t id, Shared_power_5V &PWM_, uint8_t control_pin_actuator, uint8_t control_pin_clapan, uint8_t control_pin_ball_cran, Data_alg& d_)
     :data_alg{d_}
     {
         current_state = data_alg.start_state;

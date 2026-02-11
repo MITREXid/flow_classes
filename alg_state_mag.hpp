@@ -14,22 +14,22 @@ class one_state_Magistral{
          ){
            
             if(kol_path_ < 1){
-                 kol_path=kol_path_;
-            }else{
                 kol_path_ = 1;
+            }else{
+                 kol_path=kol_path_;
             }
             if(kol_users < 1){
-                 kol_users=kol_users_;
-            }else{
                 kol_users = 1;
+            }else{
+                 kol_users=kol_users_;
             }
 
             choose_path = (uint8_t *)calloc(
-                sizeof(uint8_t) * ceil(kol_users), 
+                sizeof(uint8_t) * kol_users, 
                 sizeof(uint8_t)
             );
             flag_reset_timer = (uint8_t *)calloc(
-                sizeof(uint8_t) * ceil(kol_users/8), 
+                sizeof(uint8_t) * kol_users/* ceil(kol_users/8)*/,//если нужно будет оптимизировать bool по 1 бит вместо 1 байта, но проблема в функции округления 
                 sizeof(uint8_t)
             );
 
@@ -66,6 +66,7 @@ class one_state_Magistral{
         void set_path(uint8_t path, one_state_Magistral * st){
             if(inRangePaths(path)){
                 paths[path] = st;
+                return;
             }
             d_println("ERROR: set_path in one_state_Magistral");
          }
@@ -81,6 +82,7 @@ class one_state_Magistral{
          void set_choose_path(uint8_t user, uint8_t path){
             if(inRangeUsers(user) && inRangePaths(path)){
                 choose_path[user] = path;
+                return;
             }
             d_println("ERROR: set_choose_path in one_state_Magistral");
          }
@@ -89,6 +91,7 @@ class one_state_Magistral{
         void set_flag_reset_timer(uint8_t user, bool val){
             if(inRangeUsers(user)){
                 flag_reset_timer[user] = val;
+                return;
             }
             d_println("ERROR: set_flag_reset_timer in one_state_Magistral");
         }
@@ -111,14 +114,14 @@ private:
         uint8_t *flag_reset_timer = nullptr;
 
         bool inRangeUsers(uint8_t u){
-            if(u<kol_users-1){
+            if(u<kol_users){
                 return true;
             }
             d_println("ERROR: inRangeUsers = false in one_state_Magistral");
             return false;
         }
        bool inRangePaths(uint8_t p){
-            if(p<kol_path-1){
+            if(p<kol_path){
                 return true;
             }
             d_println("ERROR: inRangePaths = false in one_state_Magistral");
@@ -132,22 +135,22 @@ struct Data_alg{
     one_state_Magistral * main_exit_cycle =nullptr;  
 };
 
-Data_alg setup_alg_magistral(int kol_users){
+Data_alg setup_alg_magistral(uint8_t kol_users){
     one_state_Magistral* mag_start_state = new one_state_Magistral(2, kol_users);
     mag_start_state->set_curr_state(state_Magistral::all_close);
     mag_start_state->set_time_in_this(500);
     one_state_Magistral* going_to_gate_ = new one_state_Magistral(1, kol_users);
-    mag_start_state->set_curr_state(state_Magistral::going_to_gate);
-    mag_start_state->set_time_in_this(700);
+    going_to_gate_->set_curr_state(state_Magistral::going_to_gate);
+    going_to_gate_->set_time_in_this(700);
     one_state_Magistral* all_close_ = new one_state_Magistral(1, kol_users);
-    mag_start_state->set_curr_state(state_Magistral::all_close);
-    mag_start_state->set_time_in_this(1000);
+    all_close_->set_curr_state(state_Magistral::all_close);
+    all_close_->set_time_in_this(1000);
     one_state_Magistral* in_magistral_ = new one_state_Magistral(1, kol_users);
-    mag_start_state->set_curr_state(state_Magistral::in_magistral);
-    mag_start_state->set_time_in_this(2000);
+    in_magistral_->set_curr_state(state_Magistral::in_magistral);
+    in_magistral_->set_time_in_this(2000);
     one_state_Magistral* air_on_ = new one_state_Magistral(2, kol_users);
-    mag_start_state->set_curr_state(state_Magistral::air_on);
-    mag_start_state->set_time_in_this(22000);
+    air_on_->set_curr_state(state_Magistral::air_on);
+    air_on_->set_time_in_this(22000);
 
 
 
