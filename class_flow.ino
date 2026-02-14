@@ -14,13 +14,14 @@ Shared_power_5V PWM(A1);
 // Ball_cran act3(state_Component::close, 12);
 // Magistral mag(PWM,10,11,12, &mag_start_state);
 Flow flow(10,11,12,13);
+// Flow * flow2;
 // Magistral mag1(PWM,10,11,12);
 // Magistral mag2(PWM,10,11,12);
 // Magistral mag3(PWM,10,11,12);
 // Signal<> sig_start;
 // Signal<> sig_end;
 // Timer t1(1000, &sig_start, &sig_end, nullptr);
-
+Data_alg dalg;
 unsigned long timer_delay_loop ;
 unsigned long timer_event;
 unsigned long state;
@@ -34,8 +35,12 @@ void setup()
         Serial.println(freeRAM());
     #endif
     
+// flow2 = new Flow(10,11,12,13);
+    // flow2->init();
     // Flow flow1(10,11,12,13);
-// Magistral mag1(PWM,10,11,12);
+// Magistral mag1(0, PWM,10,11,12, dalg);//149
+dalg = setup_alg_magistral(4);//168
+    flow.init();
 // act = new Actuator ( state_Component::close, PWM, 10);
 // Clapan *act2 = new Clapan (state_Component::open, PWM, 11);
 // Ball_cran *act3 = new Ball_cran (state_Component::close, 12);
@@ -53,7 +58,6 @@ void setup()
     // act.init();
     // act2.init();
     // act3.init();
-    flow.init();
     // mag.init();
     // mag1.init();
     // mag2.init();
@@ -75,6 +79,7 @@ void loop()
     //     d_print("Stoop");
     // }
         timer_delay_loop = millis();
+    // flow2->update();
         flow.update();
     // mag1.update();
     // mag2.update();

@@ -165,10 +165,10 @@ Data_alg setup_alg_magistral(uint8_t kol_users){
         mag_start_state->set_flag_reset_timer(i,true);
     }
 
-    return Data_alg{
-        .start_state = mag_start_state,
-        .main_exit_cycle = air_on_,
-    };
+    Data_alg result;
+    result.start_state = mag_start_state;
+    result.main_exit_cycle = air_on_;
+    return result;
 }
 
 

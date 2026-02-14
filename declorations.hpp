@@ -43,8 +43,8 @@
 #else//arduino
     #include <Arduino.h>
     #define start_def 
-    #define d_print(val) Serial.print(val);//std::cout<<val
-    #define d_println(val) Serial.println(val);//std::cout<<val
+    #define d_print(val) ;//Serial.print(val);//std::cout<<val
+    #define d_println(val) ;//Serial.println(val);//std::cout<<val
     // #define print(val) Serial.print(val);//std::cout<<val
     // #define println(val) Serial.println(val);//std::cout<<val
 

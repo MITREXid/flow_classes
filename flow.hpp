@@ -37,6 +37,9 @@ class Flow: public Universal_object<state_Flow>{
         data_alg = setup_alg_magistral(4);
         PWM = new Shared_power_5V(pins[0]);
         solo = new Magistral(0x0, *PWM, pins[1],pins[2], pins[3], data_alg);
+        group[0] = new Magistral(0x1, *PWM, pins[1],pins[2], pins[3], data_alg);
+        group[1]  = new Magistral(0x2, *PWM, pins[1],pins[2], pins[3], data_alg);
+        group[2]  = new Magistral(0x3, *PWM, pins[1],pins[2], pins[3], data_alg);
         
         solo->init();
     }
