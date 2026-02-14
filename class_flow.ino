@@ -13,7 +13,11 @@ Shared_power_5V PWM(A1);
 // Actuator *act;
 // Ball_cran act3(state_Component::close, 12);
 // Magistral mag(PWM,10,11,12, &mag_start_state);
-Flow flow(10,11,12,13);
+Data_alg dalg;
+Flow flow(10,11,12,13,
+        11,12,13,
+        11,12,13,
+        11,12,13);
 // Flow * flow2;
 // Magistral mag1(PWM,10,11,12);
 // Magistral mag2(PWM,10,11,12);
@@ -21,7 +25,7 @@ Flow flow(10,11,12,13);
 // Signal<> sig_start;
 // Signal<> sig_end;
 // Timer t1(1000, &sig_start, &sig_end, nullptr);
-Data_alg dalg;
+// Data_alg dalg;
 unsigned long timer_delay_loop ;
 unsigned long timer_event;
 unsigned long state;
@@ -30,7 +34,7 @@ void setup()
 {
     #if(!mode_work)//arduino
         Serial.begin(9600);
-        Serial.println("start");
+        Serial.println(F("start"));
         int val = freeRAM();
         Serial.println(freeRAM());
     #endif
@@ -39,7 +43,7 @@ void setup()
     // flow2->init();
     // Flow flow1(10,11,12,13);
 // Magistral mag1(0, PWM,10,11,12, dalg);//149
-dalg = setup_alg_magistral(4);//168
+// dalg = setup_alg_magistral(4);//168
     flow.init();
 // act = new Actuator ( state_Component::close, PWM, 10);
 // Clapan *act2 = new Clapan (state_Component::open, PWM, 11);
@@ -52,7 +56,7 @@ dalg = setup_alg_magistral(4);//168
 
     #if(!mode_work)//arduino
         Serial.println(freeRAM());
-        Serial.println("===");
+        Serial.println(F("==="));
         Serial.println(val-freeRAM());
     #endif
     // act.init();
@@ -66,7 +70,7 @@ dalg = setup_alg_magistral(4);//168
     timer_event = millis();
     state = 0;
     // t1.restart();
-        d_print("Staart");
+        d_print(F("Staart"));
 }
 
 void loop()
@@ -76,7 +80,7 @@ void loop()
     // println(freeRAM());
     // t1.update();
     // if(sig_end.isTrueAndNotCheked()){
-    //     d_print("Stoop");
+    //     d_print(F("Stoop");
     // }
         timer_delay_loop = millis();
     // flow2->update();
@@ -87,13 +91,13 @@ void loop()
         // act->update();
         // act2.update();
         // act3.update();
-        // d_print("act3(");
+        // d_print(F("act3(F(");
         // d_print(millis());
-        // d_print(") status: ");
+        // d_print(F(") status: ");
         // d_println(act3.getStatus());
-        // d_print("act_2(");
+        // d_print(F("act_2(F(");
         // d_print(millis());
-        // d_print(") status: ");
+        // d_print(F(") status: ");
         // d_println(act2.getStatus());
     }
     if(millis() - timer_event >= 7000 && state == 0) {

@@ -30,7 +30,7 @@ public:
     Component(state_Component curr_state) {
         Component();
         if(curr_state == in_going) {
-            d_println("Not correct start state. set close");
+            d_println(F("Not correct start state. set close"));
             curr_state = state_Component::close;
         }
         default_state = curr_state;
@@ -48,7 +48,7 @@ public:
     ) {
         Component();
         if(curr_state == in_going) {
-            d_println("Not correct start state. set close");
+            d_println(F("Not correct start state. set close"));
             curr_state = state_Component::close;
         }
         default_state = curr_state;
@@ -81,28 +81,28 @@ public:
     
     bool open() {
         if(getStatus() == state_Component::in_going) {
-            d_println("cant open: in going");
+            d_println(F("cant open: in going"));
             return false;
         }
         if(getStatus() == state_Component::close) {
             timer_opening.restart();
             timer_closing.stop();
         } else {
-            d_println("cant open: already open");
+            d_println(F("cant open: already open"));
         }
         return true;
     }
     
     bool close() {
         if(getStatus() == state_Component::in_going) {
-            d_println("cant close: in going");
+            d_println(F("cant close: in going"));
             return false;
         }
         if(getStatus() == state_Component::open) {
             timer_closing.restart();
             timer_opening.stop();
         } else {
-            d_println("cant close: already close");
+            d_println(F("cant close: already close"));
         }
         return true;
     }

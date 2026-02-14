@@ -5,6 +5,10 @@
 // #include "magistral.hpp"
 #include "types_for_magistral.hpp"
 
+
+#define kol_mag_ 3
+
+
 class one_state_Magistral{
     public:
        
@@ -59,7 +63,7 @@ class one_state_Magistral{
             if(inRangeUsers(user) && inRangePaths(get_choose_path(user))){
                 return paths[get_choose_path(user)];
             }
-            d_println("ERROR: get_next_state in one_state_Magistral");
+            d_println(F("ERROR: get_next_state in one_state_Magistral"));
             return nullptr;
          }
 
@@ -68,14 +72,14 @@ class one_state_Magistral{
                 paths[path] = st;
                 return;
             }
-            d_println("ERROR: set_path in one_state_Magistral");
+            d_println(F("ERROR: set_path in one_state_Magistral"));
          }
 
           uint8_t get_choose_path(uint8_t user){
             if(inRangeUsers(user)){
                 return choose_path[user];
             }
-            d_println("ERROR: get_choose_path in one_state_Magistral");
+            d_println(F("ERROR: get_choose_path in one_state_Magistral"));
             return 0;
          }
 
@@ -84,7 +88,7 @@ class one_state_Magistral{
                 choose_path[user] = path;
                 return;
             }
-            d_println("ERROR: set_choose_path in one_state_Magistral");
+            d_println(F("ERROR: set_choose_path in one_state_Magistral"));
          }
 
 
@@ -93,14 +97,14 @@ class one_state_Magistral{
                 flag_reset_timer[user] = val;
                 return;
             }
-            d_println("ERROR: set_flag_reset_timer in one_state_Magistral");
+            d_println(F("ERROR: set_flag_reset_timer in one_state_Magistral"));
         }
 
          bool get_flag_reset_timer(uint8_t user){
             if(inRangeUsers(user)){
                 return flag_reset_timer[user];
             }
-            d_println("ERROR: get_flag_reset_timer in one_state_Magistral");
+            d_println(F("ERROR: get_flag_reset_timer in one_state_Magistral"));
              return false;
         }
 
@@ -117,14 +121,14 @@ private:
             if(u<kol_users){
                 return true;
             }
-            d_println("ERROR: inRangeUsers = false in one_state_Magistral");
+            d_println(F("ERROR: inRangeUsers = false in one_state_Magistral"));
             return false;
         }
        bool inRangePaths(uint8_t p){
             if(p<kol_path){
                 return true;
             }
-            d_println("ERROR: inRangePaths = false in one_state_Magistral");
+            d_println(F("ERROR: inRangePaths = false in one_state_Magistral"));
             return false;
        }
 
@@ -135,7 +139,8 @@ struct Data_alg{
     one_state_Magistral * main_exit_cycle =nullptr;  
 };
 
-Data_alg setup_alg_magistral(uint8_t kol_users){
+bool setup_alg_magistral(uint8_t kol_users, 
+Data_alg &result){
     one_state_Magistral* mag_start_state = new one_state_Magistral(2, kol_users);
     mag_start_state->set_curr_state(state_Magistral::all_close);
     mag_start_state->set_time_in_this(500);
@@ -165,10 +170,10 @@ Data_alg setup_alg_magistral(uint8_t kol_users){
         mag_start_state->set_flag_reset_timer(i,true);
     }
 
-    Data_alg result;
+    // Data_alg result;
     result.start_state = mag_start_state;
     result.main_exit_cycle = air_on_;
-    return result;
+    return true;
 }
 
 

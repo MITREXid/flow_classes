@@ -13,23 +13,23 @@ public:
     void update();
       
     void funcSigStartOpen(){
-        d_println("Start Open Actuator");  
+        d_println(F("Start Open Actuator"));  
         pinMode(control_pin, LOW);
         PWM.voltageON();
     }
 
     void funcSigEndOpen(){
-        d_println("End Open Actuator");
+        d_println(F("End Open Actuator"));
        PWM.voltageOFF();
     }
 
     void funcSigStartClose(){
-        d_println("Start Close Actuator"); 
+        d_println(F("Start Close Actuator")); 
         pinMode(control_pin, HIGH);
        PWM.voltageON();
     }
     void funcSigEndClose(){
-        d_println("End Close Actuator"); 
+        d_println(F("End Close Actuator")); 
        PWM.voltageOFF();
     }
 };
@@ -62,23 +62,23 @@ public:
     void update();
 
         void funcSigStartOpen(){
-        d_println("Start Open Clapan");  
+        d_println(F("Start Open Clapan"));  
         pinMode(control_pin, LOW);
         PWM.voltageON();
     }
 
     void funcSigEndOpen(){
-        d_println("End Open Clapan");
+        d_println(F("End Open Clapan"));
        PWM.voltageOFF();
     }
 
     void funcSigStartClose(){
-        d_println("Start Close Clapan"); 
+        d_println(F("Start Close Clapan")); 
         pinMode(control_pin, HIGH);
        PWM.voltageON();
     }
     void funcSigEndClose(){
-        d_println("End Close Clapan"); 
+        d_println(F("End Close Clapan")); 
        PWM.voltageOFF();
     }
 };
@@ -107,19 +107,19 @@ public:
     Ball_cran(state_Component first_state, int control_pin_);
     void update();
      void funcSigStartOpen(){
-        d_println("Start Open Ball_cran");  
+        d_println(F("Start Open Ball_cran"));  
         pinMode(control_pin, LOW);
     }
     void funcSigEndOpen(){
-        d_println("End Open Ball_cran");
+        d_println(F("End Open Ball_cran"));
     }
 
     void funcSigStartClose(){
-        d_println("Start Close Ball_cran"); 
+        d_println(F("Start Close Ball_cran")); 
         pinMode(control_pin, HIGH);
     }
     void funcSigEndClose(){
-        d_println("End Close Ball_cran"); 
+        d_println(F("End Close Ball_cran")); 
     }
 };
 

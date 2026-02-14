@@ -30,10 +30,11 @@
     #define HIGH "HIGH"
     #define LOW "LOW"
     #define A1 15
-    #define d_print(val) std::cout<</*"("<<millis()<<")"<<*/val
-    #define d_println(val) std::cout<</*"("<<millis()<<")"<<*/val<<std::endl
+    #define d_print(val) std::cout<</*"(F("<<millis()<<")"<<*/val
+    #define d_println(val) std::cout<</*"(F("<<millis()<<")"<<*/val<<std::endl
     #define print(val) std::cout<<"("<<millis()<<")"<<val
     #define println(val) std::cout<<"("<<millis()<<")"<<val<<std::endl
+    #define F(val) val
     inline int freeRAM() {
         return -1;
         // extern int __heap_start, *__brkval;
@@ -43,8 +44,8 @@
 #else//arduino
     #include <Arduino.h>
     #define start_def 
-    #define d_print(val) ;//Serial.print(val);//std::cout<<val
-    #define d_println(val) ;//Serial.println(val);//std::cout<<val
+    #define d_print(val) Serial.print(val);//std::cout<<val
+    #define d_println(val) Serial.println(val);//std::cout<<val
     // #define print(val) Serial.print(val);//std::cout<<val
     // #define println(val) Serial.println(val);//std::cout<<val
 

@@ -17,9 +17,9 @@ private:
 
    
     uint8_t id  = 0;
-    Actuator *actuator;
-    Clapan *clapan;
-    Ball_cran *ball_cran;
+    Actuator actuator;
+    Clapan clapan;
+    Ball_cran ball_cran;
     uint32_t time_to_start_new_state = 0;//время старта
     // bool was_reset_time = false;//для того чтоб в состоянии в котором надо обнулить вермя не обнулять его бесконечно
 
@@ -28,12 +28,14 @@ private:
 
 public:
     Magistral(uint8_t id, Shared_power_5V &PWM_, uint8_t control_pin_actuator, uint8_t control_pin_clapan, uint8_t control_pin_ball_cran, Data_alg& d_)
-    :data_alg{d_}
+    :data_alg{d_},
+    actuator(state_Component::close, PWM_, control_pin_actuator),
+    clapan(state_Component::close, PWM_, control_pin_clapan),
+    ball_cran(state_Component::close, control_pin_ball_cran)
     {
-        current_state = data_alg.start_state;
-        actuator = new Actuator(state_Component::close, PWM_, control_pin_actuator);
-        clapan = new Clapan(state_Component::close, PWM_, control_pin_clapan);
-        ball_cran = new Ball_cran(state_Component::close, control_pin_ball_cran);
+        // actuator = new Actuator(state_Component::close, PWM_, control_pin_actuator);
+        // clapan = new Clapan(state_Component::close, PWM_, control_pin_clapan);
+        // ball_cran = new Ball_cran(state_Component::close, control_pin_ball_cran);
     }
     void init();
     void turn_to(state_Magistral next_state);
@@ -53,49 +55,50 @@ public:
 void Magistral::turn_to(state_Magistral next_state){
     switch(next_state){
         case state_Magistral::going_to_gate://актуатор открыт клапан закрыт шаровой кран закрыт
-                actuator->open();
-                clapan->close();
-                ball_cran->close();
+                actuator.open();
+                clapan.close();
+                ball_cran.close();
             break;
          case state_Magistral::all_close://актуатор закрыт клапан закрыт шаровой кран закрыт
-                actuator->close();
-                clapan->close();
-                ball_cran->close();
+                actuator.close();
+                clapan.close();
+                ball_cran.close();
             break;
         case state_Magistral::in_magistral://актуатор закрыт клапан открыт шаровой кран закрыт
-                actuator->close();
-                clapan->open();
-                ball_cran->close();
+                actuator.close();
+                clapan.open();
+                ball_cran.close();
             break;
         case state_Magistral::air_on://актуатор закрыт клапан закрыт шаровой кран открыт
-                actuator->close();
-                clapan->close();
-                ball_cran->open();
+                actuator.close();
+                clapan.close();
+                ball_cran.open();
             break;
         case state_Magistral::full_open:
-                actuator->open();
-                clapan->open();
-                ball_cran->open();
+                actuator.open();
+                clapan.open();
+                ball_cran.open();
             break;
     };
     time_to_start_new_state = millis();
 }
 
-
+//Надо чтоб на этом этапе data_alg уже было заполнено
 void Magistral::init()
 {
-    clapan->init();
-    actuator->init();
-    ball_cran->init();
+    current_state = data_alg.start_state;
+    clapan.init();
+    actuator.init();
+    ball_cran.init();
     
 }
 
 
 void Magistral::update()
 {
-    clapan->update();
-    actuator->update();
-    ball_cran->update();
+    clapan.update();
+    actuator.update();
+    ball_cran.update();
 
     logic();
     
@@ -118,18 +121,18 @@ void Magistral::start(){
          * остояние когда мы работаем в штатном режиме и будет презапуск жопа и т д
          * 
          */
-    d_println("========start");
+    d_println(F("========start"));
     data_alg.start_state->set_choose_path(id,1);
     data_alg.main_exit_cycle->set_choose_path(id,0);
     return;
     }
-        d_println("not in started state");
+        d_println(F("not in started state"));
         return;
     // time_to_start = millis();
 }
 
 void Magistral::stop(){
-    d_println("========stop");
+    d_println(F("========stop"));
     data_alg.start_state->set_choose_path(id,0);//зацйиклились на себя
     data_alg.main_exit_cycle->set_choose_path(id,1);
     // setPathFlag(false, mag_start_state);
@@ -141,9 +144,9 @@ void Magistral::logic(){
     
 
     if(
-        clapan->getStatus() == state_Component::in_going ||
-        actuator->getStatus() == state_Component::in_going ||
-        ball_cran->getStatus() == state_Component::in_going
+        clapan.getStatus() == state_Component::in_going ||
+        actuator.getStatus() == state_Component::in_going ||
+        ball_cran.getStatus() == state_Component::in_going
     ){
         return;
     }
@@ -152,11 +155,11 @@ void Magistral::logic(){
     uint32_t curr_time = millis() - time_to_start_new_state;
     if(current_state->get_time_in_this() < curr_time){
         
-        d_print("========state: ");
+        d_print(F("========state: "));
         d_println(current_state->get_curr_state());
         current_state = current_state->get_next_state(id);
         turn_to(current_state->get_curr_state());
-        d_print("->");
+        d_print(F("->"));
         d_println(current_state->get_curr_state());
     }
 
@@ -168,22 +171,22 @@ void Magistral::logic(){
     //     if(st==nullptr){
     //         st = current_state;
     //     }
-    //     if(st==nullptr){d_println("AAAA nullptr getState");}
+    //     if(st==nullptr){d_println(F("AAAA nullptr getState");}
     //     return st->curr_state;
     // }
     // one_state_Magistral* Magistral::getNextState(one_state_Magistral* st){
     //     if(st==nullptr){
     //         st = current_state;
     //     }
-    //     if(st==nullptr){d_println("AAAA nullptr getNextState");}
+    //     if(st==nullptr){d_println(F("AAAA nullptr getNextState");}
     //     if(st->choose_conditional){
     //         if(st->conditional_path == nullptr){
-    //             d_println("AAAA nullptr getNextState st->conditional_path");
+    //             d_println(F("AAAA nullptr getNextState st->conditional_path");
     //         }
     //         return st->conditional_path;
     //     }else{
     //         if(st->next_state == nullptr){
-    //             d_println("AAAA nullptr getNextState st->next_state");
+    //             d_println(F("AAAA nullptr getNextState st->next_state");
     //         }
     //         return st->next_state;
     //     }
@@ -192,21 +195,21 @@ void Magistral::logic(){
     //     if(st==nullptr){
     //         st = current_state;
     //     }
-    //     if(st==nullptr){d_println("AAAA nullptr getTimeInState");}
+    //     if(st==nullptr){d_println(F("AAAA nullptr getTimeInState");}
     //     return st->time_in_this;
     // }
     // void Magistral::setPathFlag(bool val, one_state_Magistral* st){
     //     if(st==nullptr){
     //         st = current_state;
     //     }
-    //     if(st==nullptr){d_println("AAAA nullptr setPathFlag");}
+    //     if(st==nullptr){d_println(F("AAAA nullptr setPathFlag");}
     //     st->choose_conditional = val;
     // }
     // bool Magistral::getPathFlag(one_state_Magistral* st){
     //     if(st==nullptr){
     //         st = current_state;
     //     }
-    //     if(st==nullptr){d_println("AAAA nullptr getPathFlag");}
+    //     if(st==nullptr){d_println(F("AAAA nullptr getPathFlag");}
     //     return st->choose_conditional;
     // }
 
@@ -214,7 +217,7 @@ void Magistral::logic(){
     //     if(st==nullptr){
     //         st = current_state;
     //     }
-    //     if(st==nullptr){d_println("AAAA nullptr getFlagResetTimer");}
+    //     if(st==nullptr){d_println(F("AAAA nullptr getFlagResetTimer");}
     //     return st->flag_reset_timer;
     // }
 #endif // MAGISTRAL_HPP

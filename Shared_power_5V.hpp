@@ -47,7 +47,7 @@ void Shared_power_5V::update()
 
 void Shared_power_5V::setStatus(int status){
     if(getStatus()<0){
-        d_println("Error Shared_power_5V status < 0");
+        d_println(F("Error Shared_power_5V status < 0"));
         status = 0;
     }
     state = status;
