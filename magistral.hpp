@@ -16,7 +16,7 @@ class Magistral{//}: public Universal_object<state_Magistral>{
 private:
 
    
-    uint8_t id  = 0;
+    uint8_t id;
     Actuator actuator;
     Clapan clapan;
     Ball_cran ball_cran;
@@ -24,14 +24,16 @@ private:
     // bool was_reset_time = false;//для того чтоб в состоянии в котором надо обнулить вермя не обнулять его бесконечно
 
     one_state_Magistral* current_state ;
-      Data_alg &data_alg;
-
+    Data_alg &data_alg;
+    state_Alg_mag curr_mode;
+    
 public:
-    Magistral(uint8_t id, Shared_power_5V &PWM_, uint8_t control_pin_actuator, uint8_t control_pin_clapan, uint8_t control_pin_ball_cran, Data_alg& d_)
+    Magistral(uint8_t id_, Shared_power_5V &PWM_, uint8_t control_pin_actuator, uint8_t control_pin_clapan, uint8_t control_pin_ball_cran, Data_alg& d_)
     :data_alg{d_},
     actuator(state_Component::close, PWM_, control_pin_actuator),
     clapan(state_Component::close, PWM_, control_pin_clapan),
-    ball_cran(state_Component::close, control_pin_ball_cran)
+    ball_cran(state_Component::close, control_pin_ball_cran),
+    id(id_)
     {
         // actuator = new Actuator(state_Component::close, PWM_, control_pin_actuator);
         // clapan = new Clapan(state_Component::close, PWM_, control_pin_clapan);
@@ -41,8 +43,11 @@ public:
     void turn_to(state_Magistral next_state);
     void update();
     void logic();//Для объединения логики поведения(используется в update())
-    void start();
+    void start(state_Alg_mag mod);
     void stop();
+    void set_current_mode_alg(state_Alg_mag mod);
+    state_Alg_mag get_current_mode_alg();
+    state_Magistral getState();
     // state_Magistral getState(one_state_Magistral* st = nullptr);
     // one_state_Magistral* getNextState(one_state_Magistral* st = nullptr);
     // uint32_t getTimeInState(one_state_Magistral* st = nullptr);
@@ -52,8 +57,66 @@ public:
 };
 
 
+state_Magistral Magistral::getState(){
+    return current_state->get_curr_state();
+}
+
+state_Alg_mag Magistral::get_current_mode_alg(){
+    return curr_mode;
+}
+
+void Magistral::set_current_mode_alg(state_Alg_mag mod){
+switch(mod){
+    case state_Alg_mag::stop:
+        data_alg.start_state->set_choose_path(id,0);
+        data_alg.in_mag->set_choose_path(id,0);
+        data_alg.exit_main_cycle->set_choose_path(id,1);
+        break;
+    case state_Alg_mag::prepare:
+        data_alg.start_state->set_choose_path(id,1);
+        data_alg.in_mag->set_choose_path(id,1);
+        data_alg.exit_main_cycle->set_choose_path(id,1);
+        break;
+    case state_Alg_mag::one_cycle:
+        data_alg.start_state->set_choose_path(id,1);
+        data_alg.in_mag->set_choose_path(id,0);
+        data_alg.exit_main_cycle->set_choose_path(id,1);
+        break;
+    case state_Alg_mag::cycle:
+        data_alg.start_state->set_choose_path(id,1);
+        data_alg.in_mag->set_choose_path(id,0);
+        data_alg.exit_main_cycle->set_choose_path(id,0);
+        break;
+    case state_Alg_mag::produvka:
+        data_alg.start_state->set_choose_path(id,2);
+        data_alg.in_mag->set_choose_path(id,0);
+        data_alg.exit_main_cycle->set_choose_path(id,1);
+        break;
+    case state_Alg_mag::clearing:
+        data_alg.start_state->set_choose_path(id,3);
+        data_alg.in_mag->set_choose_path(id,0);
+        data_alg.exit_main_cycle->set_choose_path(id,1);
+        break;
+    default:
+        d_println("Error set_current_mode_alg HZ mod");
+        break;
+}
+}
+
+
 void Magistral::turn_to(state_Magistral next_state){
     switch(next_state){
+        case state_Magistral::undefine://актуатор закрыт клапан закрыт шаровой кран закрыт
+                data_alg.start_state->set_choose_path(id, 0);
+                turn_to(start_state);
+                current_state = data_alg.start_state;
+            break;
+        case state_Magistral::start_state://актуатор закрыт клапан закрыт шаровой кран закрыт
+                data_alg.start_state->set_choose_path(id, 0);
+                actuator.close();
+                clapan.close();
+                ball_cran.close();
+            break;
         case state_Magistral::going_to_gate://актуатор открыт клапан закрыт шаровой кран закрыт
                 actuator.open();
                 clapan.close();
@@ -105,38 +168,14 @@ void Magistral::update()
 }
 
 
-void Magistral::start(){
-    if(current_state == data_alg.start_state){
-        /**
-         * не знаю что выбрать учитывая возможность разных режимов
-         * current_state != mag_start_state
-         * или
-         * getState() == state_Magistral::all_close - как то где мы должны застрять
-         * 
-         *  - указатель на начальное не очень т.к. мб будут другие режимы и там мы будем стоять в 
-         * других состояниях(хотя норм т.к. его можно сделать как
-         * конечное состояние у других режимов )
-         * 
-         *  - all_close не очень т.к. open() может попасть на это с
-         * остояние когда мы работаем в штатном режиме и будет презапуск жопа и т д
-         * 
-         */
+void Magistral::start(state_Alg_mag mod){
     d_println(F("========start"));
-    data_alg.start_state->set_choose_path(id,1);
-    data_alg.main_exit_cycle->set_choose_path(id,0);
-    return;
-    }
-        d_println(F("not in started state"));
-        return;
-    // time_to_start = millis();
+    set_current_mode_alg(mod);
 }
 
 void Magistral::stop(){
     d_println(F("========stop"));
-    data_alg.start_state->set_choose_path(id,0);//зацйиклились на себя
-    data_alg.main_exit_cycle->set_choose_path(id,1);
-    // setPathFlag(false, mag_start_state);
-    // setPathFlag(true, mag_state_5);
+    set_current_mode_alg(state_Alg_mag::stop);
 }
 
 
@@ -153,14 +192,18 @@ void Magistral::logic(){
     
 
     uint32_t curr_time = millis() - time_to_start_new_state;
-    if(current_state->get_time_in_this() < curr_time){
+    if(current_state->get_time_in_this() < curr_time && 
+    current_state->get_curr_state() != current_state->get_next_state(id)->get_curr_state()){
         
-        d_print(F("========state: "));
-        d_println(current_state->get_curr_state());
+        d_print(F("#"));
+        d_print((int)id);
+        d_print(F(" ========state: "));
+        d_print(current_state->get_curr_state());
+        d_print(F("->"));
+        d_print(current_state->get_next_state(id)->get_curr_state());
+        d_println(F("turn is:"));
         current_state = current_state->get_next_state(id);
         turn_to(current_state->get_curr_state());
-        d_print(F("->"));
-        d_println(current_state->get_curr_state());
     }
 
 }

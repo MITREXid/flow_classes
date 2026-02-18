@@ -103,7 +103,8 @@ void loop()
     if(millis() - timer_event >= 7000 && state == 0) {
         timer_event = millis();
 
-    flow.start_solo();
+    // flow.start_solo();
+    flow.start_produv();
         // mag.start();
         // act->open();
     // mag1.start();
@@ -116,7 +117,7 @@ void loop()
     }
     if(millis() - timer_event >= 60000 && state == 1) {
         timer_event = millis();
-        flow.stop_solo();
+        flow.stop();
         // mag.stop();
         // act->close();
         // // act.close();

@@ -6,8 +6,6 @@
 #include "types_for_magistral.hpp"
 
 
-#define kol_mag_ 3
-
 
 class one_state_Magistral{
     public:
@@ -113,7 +111,7 @@ private:
         uint8_t kol_users = 1;
         Time_in_this time_in_this = 0;
         one_state_Magistral **paths = nullptr;//все возможные пути
-        state_Magistral curr_state;
+        state_Magistral curr_state = state_Magistral::undefine;
         uint8_t *choose_path = nullptr;//куда дальше переходим
         uint8_t *flag_reset_timer = nullptr;
 
@@ -136,13 +134,14 @@ private:
 
 struct Data_alg{
     one_state_Magistral * start_state = nullptr;
-    one_state_Magistral * main_exit_cycle =nullptr;  
+    one_state_Magistral * exit_main_cycle =nullptr;  
+    one_state_Magistral * in_mag =nullptr;  
 };
 
 bool setup_alg_magistral(uint8_t kol_users, 
 Data_alg &result){
-    one_state_Magistral* mag_start_state = new one_state_Magistral(2, kol_users);
-    mag_start_state->set_curr_state(state_Magistral::all_close);
+    one_state_Magistral* mag_start_state = new one_state_Magistral(4, kol_users);
+    mag_start_state->set_curr_state(state_Magistral::start_state);
     mag_start_state->set_time_in_this(500);
     one_state_Magistral* going_to_gate_ = new one_state_Magistral(1, kol_users);
     going_to_gate_->set_curr_state(state_Magistral::going_to_gate);
@@ -150,31 +149,54 @@ Data_alg &result){
     one_state_Magistral* all_close_ = new one_state_Magistral(1, kol_users);
     all_close_->set_curr_state(state_Magistral::all_close);
     all_close_->set_time_in_this(1000);
-    one_state_Magistral* in_magistral_ = new one_state_Magistral(1, kol_users);
+    one_state_Magistral* in_magistral_ = new one_state_Magistral(2, kol_users);
     in_magistral_->set_curr_state(state_Magistral::in_magistral);
     in_magistral_->set_time_in_this(2000);
     one_state_Magistral* air_on_ = new one_state_Magistral(2, kol_users);
     air_on_->set_curr_state(state_Magistral::air_on);
     air_on_->set_time_in_this(22000);
-
+    one_state_Magistral* produv_ = new one_state_Magistral(1, kol_users);
+    produv_->set_curr_state(state_Magistral::air_on);
+    produv_->set_time_in_this(22000);
+    one_state_Magistral* full_open_ = new one_state_Magistral(1, kol_users);
+    full_open_->set_curr_state(state_Magistral::full_open);
+    full_open_->set_time_in_this(10000);   
 
 
     air_on_->set_path(0,going_to_gate_);//продолжить цикл
     air_on_->set_path(1,mag_start_state);//на выход
     in_magistral_->set_path(0,air_on_);
+    in_magistral_->set_path(1,in_magistral_);
     all_close_->set_path(0,in_magistral_);
     going_to_gate_->set_path(0,all_close_);
+    mag_start_state->set_path(0,mag_start_state);
     mag_start_state->set_path(1,going_to_gate_);
-    for(uint8_t i = 0;i<kol_users;++i){
-        going_to_gate_->set_flag_reset_timer(i,true);
-        mag_start_state->set_flag_reset_timer(i,true);
-    }
+    mag_start_state->set_path(2,produv_);
+    mag_start_state->set_path(3,full_open_);
+    produv_->set_path(0,mag_start_state);
+    full_open_->set_path(0,produv_);
+    // for(uint8_t i = 0;i<kol_users;++i){
+    //     going_to_gate_->set_flag_reset_timer(i,true);
+    //     mag_start_state->set_flag_reset_timer(i,true);
+    // }
 
     // Data_alg result;
     result.start_state = mag_start_state;
-    result.main_exit_cycle = air_on_;
+    result.exit_main_cycle = air_on_;
+    result.in_mag = in_magistral_;
     return true;
 }
+
+enum class state_Alg_mag{
+    stop,
+    prepare,
+    one_cycle,
+    cycle,
+    produvka,
+    clearing
+};
+
+
 
 
 #endif // ALG_STATE_MAG_HPP

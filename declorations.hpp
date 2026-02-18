@@ -20,11 +20,13 @@
                 std::chrono::system_clock::now() - time_global_start).count();}
 
 
-    #define pinMode(a,b)  d_print("pinMode(");\
-                           d_print((int)a);\
-                           d_print(", ");\
-                           d_print(b);\
-                           d_println(")");
+    // #define pinMode(a,b)  d_print("pinMode(");\
+    //                        d_print((int)a);\
+    //                        d_print(", ");\
+    //                        d_print(b);\
+    //                        d_println(")");
+    #define pinMode(a,b) ;//чтоб не писало ни сего
+
     #define OUTPUT "OUTPUT"
     #define INPUT "INPUT"
     #define HIGH "HIGH"
