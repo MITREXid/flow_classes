@@ -75,7 +75,7 @@ void setup()
 
 void loop()
 {
-    if(millis() - timer_delay_loop >= 20){
+    if(millis() - timer_delay_loop >= 100){
 
     // println(freeRAM());
     // t1.update();
@@ -104,7 +104,7 @@ void loop()
         timer_event = millis();
 
     // flow.start_solo();
-    flow.start_produv();
+    flow.start(state_Flow::do_trio);
         // mag.start();
         // act->open();
     // mag1.start();
@@ -115,7 +115,7 @@ void loop()
         // act3.open();
         ++state;
     }
-    if(millis() - timer_event >= 60000 && state == 1) {
+    if(millis() - timer_event >= 180000 && state == 1) {
         timer_event = millis();
         flow.stop();
         // mag.stop();

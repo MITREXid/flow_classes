@@ -31,6 +31,9 @@ public:
         }
         return false;
     } 
+    Sta getStateWithoutSetChecked(){
+        return state;
+    }
 };
 
 

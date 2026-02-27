@@ -1,7 +1,7 @@
 #ifndef TYPES_FOR_MAGISTRAL_HPP
 #define TYPES_FOR_MAGISTRAL_HPP
 
-typedef int Time_in_this;
+typedef uint16_t Time_in_this;
 
 enum state_Magistral {
     start_state = 0,

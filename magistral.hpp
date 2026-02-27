@@ -26,14 +26,16 @@ private:
     one_state_Magistral* current_state ;
     Data_alg &data_alg;
     state_Alg_mag curr_mode;
+    Signal<> &cycle_ready_sig;//сигнал о том, что магистраль готова что-то делать, т.к. зациклилась в каком-то состоянии 
     
 public:
-    Magistral(uint8_t id_, Shared_power_5V &PWM_, uint8_t control_pin_actuator, uint8_t control_pin_clapan, uint8_t control_pin_ball_cran, Data_alg& d_)
+    Magistral(uint8_t id_, Shared_power_5V &PWM_, uint8_t control_pin_actuator, uint8_t control_pin_clapan, uint8_t control_pin_ball_cran, Data_alg& d_, Signal<> &sig_r)
     :data_alg{d_},
+    cycle_ready_sig{sig_r},
+    id(id_),
     actuator(state_Component::close, PWM_, control_pin_actuator),
     clapan(state_Component::close, PWM_, control_pin_clapan),
-    ball_cran(state_Component::close, control_pin_ball_cran),
-    id(id_)
+    ball_cran(state_Component::close, control_pin_ball_cran)
     {
         // actuator = new Actuator(state_Component::close, PWM_, control_pin_actuator);
         // clapan = new Clapan(state_Component::close, PWM_, control_pin_clapan);
@@ -48,6 +50,7 @@ public:
     void set_current_mode_alg(state_Alg_mag mod);
     state_Alg_mag get_current_mode_alg();
     state_Magistral getState();
+    uint8_t get_id(){return id;};
     // state_Magistral getState(one_state_Magistral* st = nullptr);
     // one_state_Magistral* getNextState(one_state_Magistral* st = nullptr);
     // uint32_t getTimeInState(one_state_Magistral* st = nullptr);
@@ -153,7 +156,7 @@ void Magistral::init()
     clapan.init();
     actuator.init();
     ball_cran.init();
-    
+    cycle_ready_sig.setState(true);
 }
 
 
@@ -169,11 +172,13 @@ void Magistral::update()
 
 
 void Magistral::start(state_Alg_mag mod){
+    cycle_ready_sig.setState(false);//Сигнал
     d_println(F("========start"));
     set_current_mode_alg(mod);
 }
 
 void Magistral::stop(){
+    cycle_ready_sig.setState(false);//Сигнал
     d_println(F("========stop"));
     set_current_mode_alg(state_Alg_mag::stop);
 }
@@ -192,18 +197,23 @@ void Magistral::logic(){
     
 
     uint32_t curr_time = millis() - time_to_start_new_state;
-    if(current_state->get_time_in_this() < curr_time && 
-    current_state->get_curr_state() != current_state->get_next_state(id)->get_curr_state()){
-        
-        d_print(F("#"));
-        d_print((int)id);
-        d_print(F(" ========state: "));
-        d_print(current_state->get_curr_state());
-        d_print(F("->"));
-        d_print(current_state->get_next_state(id)->get_curr_state());
-        d_println(F("turn is:"));
-        current_state = current_state->get_next_state(id);
-        turn_to(current_state->get_curr_state());
+    if(current_state->get_time_in_this() < curr_time){ 
+        if(current_state->get_curr_state() != current_state->get_next_state(id)->get_curr_state()){
+            cycle_ready_sig.setState(false);//Сигнал
+            d_print(F("#"));
+            d_print((int)id);
+            d_print(F(" ========state: "));
+            d_print(current_state->get_curr_state());
+            d_print(F("->"));
+            d_print(current_state->get_next_state(id)->get_curr_state());
+            d_println(F("turn is:"));
+            current_state = current_state->get_next_state(id);
+            turn_to(current_state->get_curr_state());
+        }else{
+            if(cycle_ready_sig.isChecked() == false || cycle_ready_sig.getStateWithoutSetChecked() == false ){//типа чтоб не обновляли при цикличности, когда посмотрели, cheked обнулится при условии выше в любом норм случае
+                cycle_ready_sig.setState(true);//Сигнал
+            }
+        }
     }
 
 }

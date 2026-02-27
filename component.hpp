@@ -64,15 +64,19 @@ public:
         timer_opening.update();
 
         if(SigEndClose.isTrueAndNotCheked()){  
+           setStatus(state_Component::close);
             funcSigEndClose();
         }
         if(SigStartOpen.isTrueAndNotCheked()){  
+           setStatus(state_Component::in_going);
             funcSigStartOpen();
         }
         if(SigStartClose.isTrueAndNotCheked()){  
+           setStatus(state_Component::in_going);
             funcSigStartClose();
         }
         if(SigEndOpen.isTrueAndNotCheked()){  
+           setStatus(state_Component::open);
             funcSigEndOpen();
         }
 
