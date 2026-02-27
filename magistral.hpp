@@ -209,11 +209,15 @@ void Magistral::logic(){
             d_println(F("turn is:"));
             current_state = current_state->get_next_state(id);
             turn_to(current_state->get_curr_state());
-        }else{
-            if(cycle_ready_sig.isChecked() == false || cycle_ready_sig.getStateWithoutSetChecked() == false ){//типа чтоб не обновляли при цикличности, когда посмотрели, cheked обнулится при условии выше в любом норм случае
+            if(current_state->get_curr_state() == current_state->get_next_state(id)->get_curr_state()){
                 cycle_ready_sig.setState(true);//Сигнал
             }
         }
+        // else{
+        //     if(cycle_ready_sig.isChecked() == false || cycle_ready_sig.getStateWithoutSetChecked() == false ){//типа чтоб не обновляли при цикличности, когда посмотрели, cheked обнулится при условии выше в любом норм случае
+        //         cycle_ready_sig.setState(true);//Сигнал
+        //     }
+        // }
     }
 
 }

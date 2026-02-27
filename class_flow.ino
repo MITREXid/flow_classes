@@ -104,7 +104,7 @@ void loop()
         timer_event = millis();
 
     // flow.start_solo();
-    flow.start(state_Flow::do_trio);
+    flow.start(state_Flow::do_produvka);
         // mag.start();
         // act->open();
     // mag1.start();
