@@ -4,10 +4,12 @@
 #include "magistral.hpp"
 
 
-
 #define kol_mag_group 3
 #define kol_all_mag 4
 #define solo_mag 3//nomer
+
+
+#include "dyvka.hpp"
 
 enum class state_Flow{
         do_stop,
@@ -23,23 +25,74 @@ class Flow: public Universal_object<state_Flow>{
         Shared_power_5V PWM;
         uint8_t num_curr_mag = 0;
         Signal<> sig_ready_mag[kol_all_mag];
-    public:
+        Signal<> sig_ball_not_close[kol_all_mag];
         Magistral group[kol_all_mag];//+1 это соло
+        Dyvka dyvka;
+    public:
         // Magistral solo;
     Flow(uint8_t p_pwm,
         uint8_t p_act_1, uint8_t p_clap_1, uint8_t p_ball_1,
         uint8_t p_act_2, uint8_t p_clap_2, uint8_t p_ball_2,
         uint8_t p_act_3, uint8_t p_clap_3, uint8_t p_ball_3,
-        uint8_t p_act_4, uint8_t p_clap_4, uint8_t p_ball_4 )
+        uint8_t p_act_4, uint8_t p_clap_4, uint8_t p_ball_4,
+        uint8_t pin_DE_RE_dyvka, uint8_t pin_RX_dyvka, uint8_t pin_TX_dyvka)
     : PWM(p_pwm), 
     group{
-        Magistral(0x0, PWM, p_act_2, p_clap_2, p_ball_2, data_alg, sig_ready_mag[0]),
-        Magistral(0x1, PWM, p_act_3, p_clap_3, p_ball_3, data_alg, sig_ready_mag[1]),
-        Magistral(0x2, PWM, p_act_4, p_clap_4, p_ball_4, data_alg, sig_ready_mag[2]),
-        Magistral(0x3, PWM, p_act_1, p_clap_1, p_ball_1, data_alg, sig_ready_mag[3]),//solo
-    }
+        Magistral(0x0, PWM, p_act_2, p_clap_2, p_ball_2, data_alg, sig_ready_mag[0], sig_ball_not_close[0]),
+        Magistral(0x1, PWM, p_act_3, p_clap_3, p_ball_3, data_alg, sig_ready_mag[1], sig_ball_not_close[1]),
+        Magistral(0x2, PWM, p_act_4, p_clap_4, p_ball_4, data_alg, sig_ready_mag[2], sig_ball_not_close[2]),
+        Magistral(0x3, PWM, p_act_1, p_clap_1, p_ball_1, data_alg, sig_ready_mag[3], sig_ball_not_close[3]),//solo
+    },
+    dyvka(pin_DE_RE_dyvka, pin_RX_dyvka, pin_TX_dyvka, sig_ball_not_close)
     {}
+    void init(){
+        setup_alg_magistral(kol_all_mag, data_alg);
+        dyvka.init();
+        dyvka.start_if_open();
+        for(uint8_t i = 0; i<kol_all_mag;++i){
+            get_mag(i)->init();
+        }
+    }
 
+    void update(){
+         for(uint8_t i = 0; i<kol_all_mag;++i){
+            get_mag(i)->update();
+         }
+        dyvka.update();
+        logic();
+    }
+
+     void start(state_Flow st, uint8_t mag = solo_mag){
+        if(!num_mag_in_range(mag)){
+            return;
+        }
+        if(!isStartState()){
+            d_println(F("Error start, not in Start State"));
+            return;
+        }
+        if(st == state_Flow::do_stop){
+            d_println(F("AAAAA for stop only function stop()!!!!!!"));
+            return;
+        }
+        
+        setStatus(st);
+        logic_start(st, mag);
+    }
+
+     void stop(int8_t mag = -1){//-1 это проверка всех, если != -1 выбор номера
+        if(mag != -1){
+            if( num_mag_in_range(mag)){
+               get_mag(mag)->stop();
+            }
+            return;
+        }
+        setStatus(state_Flow::do_stop);
+         for(uint8_t i = 0; i<kol_all_mag;++i){
+            get_mag(i)->stop();
+         }
+         
+    }
+private:
     uint8_t get_num_curr_mag_next(bool is_group = false){
         uint8_t max = kol_all_mag - 1;
         // uint8_t min = 0;
@@ -76,7 +129,7 @@ class Flow: public Universal_object<state_Flow>{
         if((mag>=0 && mag<kol_all_mag)){
             return true;
         }
-        d_println("ERROR: num_mag_in_range num is no range");
+        d_println(F("ERROR: num_mag_in_range num is no range"));
             return true;
 
     }
@@ -89,12 +142,7 @@ class Flow: public Universal_object<state_Flow>{
         return nullptr;
     }
 
-    void init(){
-        setup_alg_magistral(kol_all_mag, data_alg);
-        for(uint8_t i = 0; i<kol_all_mag;++i){
-            get_mag(i)->init();
-        }
-    }
+   
 
     void logic(){
         
@@ -129,12 +177,6 @@ class Flow: public Universal_object<state_Flow>{
     }
 
 
-    void update(){
-         for(uint8_t i = 0; i<kol_all_mag;++i){
-            get_mag(i)->update();
-         }
-        logic();
-    }
 
     bool isStartState(int8_t mag = -1){//-1 это проверка всех, если != -1 выбор номера
         if(mag!=-1){
@@ -152,22 +194,7 @@ class Flow: public Universal_object<state_Flow>{
          }
          return true;
     }
-    void start(state_Flow st, uint8_t mag = solo_mag){
-        if(!num_mag_in_range(mag)){
-            return;
-        }
-        if(!isStartState()){
-            d_println("Error start, not in Start State");
-            return;
-        }
-        if(st == state_Flow::do_stop){
-            d_println(F("AAAAA for stop only function stop()!!!!!!"));
-            return;
-        }
-        
-        setStatus(st);
-        logic_start(st, mag);
-    }
+   
 
     void logic_start(state_Flow st, uint8_t mag = solo_mag)
     {
@@ -201,19 +228,7 @@ class Flow: public Universal_object<state_Flow>{
 
 
 
-    void stop(int8_t mag = -1){//-1 это проверка всех, если != -1 выбор номера
-        if(mag != -1){
-            if( num_mag_in_range(mag)){
-               get_mag(mag)->stop();
-            }
-            return;
-        }
-        setStatus(state_Flow::do_stop);
-         for(uint8_t i = 0; i<kol_all_mag;++i){
-            get_mag(i)->stop();
-         }
-         
-    }
+   
 
 };
 

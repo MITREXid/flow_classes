@@ -27,11 +27,13 @@ private:
     Data_alg &data_alg;
     state_Alg_mag curr_mode;
     Signal<> &cycle_ready_sig;//сигнал о том, что магистраль готова что-то делать, т.к. зациклилась в каком-то состоянии 
+    Signal<> &sig_ball_not_close;//сигналы Для воздуходувки(дуй), чтоб она не дула в закрытые шаровые
     
 public:
-    Magistral(uint8_t id_, Shared_power_5V &PWM_, uint8_t control_pin_actuator, uint8_t control_pin_clapan, uint8_t control_pin_ball_cran, Data_alg& d_, Signal<> &sig_r)
+    Magistral(uint8_t id_, Shared_power_5V &PWM_, uint8_t control_pin_actuator, uint8_t control_pin_clapan, uint8_t control_pin_ball_cran, Data_alg& d_, Signal<> &sig_r, Signal<> &sig_d)
     :data_alg{d_},
     cycle_ready_sig{sig_r},
+    sig_ball_not_close{sig_d},
     id(id_),
     actuator(state_Component::close, PWM_, control_pin_actuator),
     clapan(state_Component::close, PWM_, control_pin_clapan),
@@ -42,15 +44,18 @@ public:
         // ball_cran = new Ball_cran(state_Component::close, control_pin_ball_cran);
     }
     void init();
-    void turn_to(state_Magistral next_state);
     void update();
-    void logic();//Для объединения логики поведения(используется в update())
     void start(state_Alg_mag mod);
     void stop();
-    void set_current_mode_alg(state_Alg_mag mod);
     state_Alg_mag get_current_mode_alg();
     state_Magistral getState();
     uint8_t get_id(){return id;};
+    
+private:
+    void logic();//Для объединения логики поведения(используется в update())
+    void turn_to(state_Magistral next_state);
+    void set_current_mode_alg(state_Alg_mag mod);
+    void check_ball_for_dyvka();
     // state_Magistral getState(one_state_Magistral* st = nullptr);
     // one_state_Magistral* getNextState(one_state_Magistral* st = nullptr);
     // uint32_t getTimeInState(one_state_Magistral* st = nullptr);
@@ -101,9 +106,18 @@ switch(mod){
         data_alg.exit_main_cycle->set_choose_path(id,1);
         break;
     default:
-        d_println("Error set_current_mode_alg HZ mod");
+        d_println(F("Error set_current_mode_alg HZ mod"));
         break;
 }
+}
+
+void Magistral::check_ball_for_dyvka()
+{
+    if(ball_cran.getStatus() == state_Component::close){
+        sig_ball_not_close.setState(false);
+    }else{
+        sig_ball_not_close.setState(true);
+    }
 }
 
 
@@ -167,7 +181,7 @@ void Magistral::update()
     ball_cran.update();
 
     logic();
-    
+    check_ball_for_dyvka();
 }
 
 

@@ -17,6 +17,7 @@ Data_alg dalg;
 Flow flow(10,11,12,13,
         11,12,13,
         11,12,13,
+        11,12,13,
         11,12,13);
 // Flow * flow2;
 // Magistral mag1(PWM,10,11,12);
@@ -104,7 +105,7 @@ void loop()
         timer_event = millis();
 
     // flow.start_solo();
-    flow.start(state_Flow::do_produvka);
+    flow.start(state_Flow::do_trio);
         // mag.start();
         // act->open();
     // mag1.start();
@@ -115,7 +116,7 @@ void loop()
         // act3.open();
         ++state;
     }
-    if(millis() - timer_event >= 180000 && state == 1) {
+    if(millis() - timer_event >= 60000 && state == 1) {
         timer_event = millis();
         flow.stop();
         // mag.stop();
