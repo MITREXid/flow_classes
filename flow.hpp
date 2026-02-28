@@ -177,6 +177,8 @@ private:
                         num_curr_mag = get_num_curr_mag_next();
                         if(num_curr_mag != 0){//чтоб только по 1 разу кадждую
                             get_mag()->start(state_Alg_mag::produvka);
+                        }else{
+                            stop();//чтоб только по 1 разу кадждую
                         }
                 }
                 break;

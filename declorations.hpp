@@ -43,6 +43,14 @@
         // int v;
         // return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
     }
+    class Serial_{
+      public:
+      uint8_t peek(){}
+      void readBytes(char *buf, int size){}
+      uint8_t available(){}
+    } Serial;
+
+
 #else//arduino
     #include <Arduino.h>
     #define start_def 
