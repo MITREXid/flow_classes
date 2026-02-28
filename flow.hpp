@@ -28,6 +28,7 @@ class Flow: public Universal_object<state_Flow>{
         Signal<> sig_ball_not_close[kol_all_mag];
         Magistral group[kol_all_mag];//+1 это соло
         Dyvka dyvka;
+        bool activated_stop_on_this_mag = false;//нужно чоб при остановке не отсылвть много раз stop()
     public:
         // Magistral solo;
     Flow(uint8_t p_pwm,
@@ -80,6 +81,7 @@ class Flow: public Universal_object<state_Flow>{
     }
 
      void stop(int8_t mag = -1){//-1 это проверка всех, если != -1 выбор номера
+        d_println(F("stop flow"));
         if(mag != -1){
             if( num_mag_in_range(mag)){
                get_mag(mag)->stop();
@@ -87,10 +89,6 @@ class Flow: public Universal_object<state_Flow>{
             return;
         }
         setStatus(state_Flow::do_stop);
-         for(uint8_t i = 0; i<kol_all_mag;++i){
-            get_mag(i)->stop();
-         }
-         
     }
 private:
     uint8_t get_num_curr_mag_next(bool is_group = false){
@@ -148,27 +146,38 @@ private:
         
          switch(getStatus()){
             case state_Flow::do_stop:
+                
+                    if(!isStartState(-1, false)){//если все магистрали в стартовом состоянии(компоненты должны быть перекоючены)
+                        if(!isStartState(num_curr_mag, false)){
+                            if(activated_stop_on_this_mag == false){
+                                activated_stop_on_this_mag = true;
+                                d_print(F("Not START mag = "));
+                                d_println(num_curr_mag);
+                                get_mag(num_curr_mag)->stop();
+                            }
+                        }else{
+                            num_curr_mag = get_num_curr_mag_next();
+                            activated_stop_on_this_mag = false;
+                        }
+                    }else{
+                        activated_stop_on_this_mag = false;
+                    }
                 break;
             case state_Flow::do_solo:
                 break;
             case state_Flow::do_trio:
-                if(get_mag()->getState()==state_Magistral::start_state){
-                    if(sig_ready_mag[num_curr_mag].isTrueAndNotCheked() == true ){//на всякий чтоб не сбросить checked просто так
-                        num_curr_mag = get_num_curr_mag_next(true);
-                        get_mag()->start(state_Alg_mag::one_cycle);
-                        get_mag(get_num_curr_mag_next(true))->start(state_Alg_mag::prepare);
-                    }
+                if(isStartState(num_curr_mag, true)){
+                    num_curr_mag = get_num_curr_mag_next(true);
+                    get_mag()->start(state_Alg_mag::one_cycle);
+                    get_mag(get_num_curr_mag_next(true))->start(state_Alg_mag::prepare);
                 }
                 break;
             case state_Flow::do_produvka:
-                if(get_mag()->getState()==state_Magistral::start_state){
-                    if(sig_ready_mag[num_curr_mag].isTrueAndNotCheked() == true ){//на всякий чтоб не сбросить checked просто так
+                if(isStartState(num_curr_mag, true)){
                         num_curr_mag = get_num_curr_mag_next();
                         if(num_curr_mag != 0){//чтоб только по 1 разу кадждую
                             get_mag()->start(state_Alg_mag::produvka);
                         }
-                        // get_mag(get_num_curr_mag_next())->start(state_Alg_mag::prepare);
-                    }
                 }
                 break;
             case state_Flow::do_clearing:
@@ -178,15 +187,17 @@ private:
 
 
 
-    bool isStartState(int8_t mag = -1){//-1 это проверка всех, если != -1 выбор номера
+    bool isStartState(int8_t mag = -1, bool check_coponents_no_goin = false){//-1 это проверка всех, если != -1 выбор номера
         if(mag!=-1){
-            if(num_mag_in_range(num_curr_mag)){
-                return (sig_ready_mag[mag].getStateWithoutSetChecked() == true && group[mag].getState() != state_Magistral::start_state);
+            if(num_mag_in_range(mag)){
+                if(group[mag].isStartedState(check_coponents_no_goin)){
+                    return true;
+                }
             }
             return false;
         }
         for(uint8_t i = 0; i<kol_all_mag;++i){
-            if(sig_ready_mag[i].getStateWithoutSetChecked() == true && group[i].getState() != state_Magistral::start_state){
+            if(!(group[i].isStartedState(check_coponents_no_goin))){
             // if(group[i].get_current_mode_alg() != state_Alg_mag::stop && group[i].getState() != state_Magistral::start_state){
                 return false;
 

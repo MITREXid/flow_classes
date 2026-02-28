@@ -25,7 +25,7 @@ private:
 
     one_state_Magistral* current_state ;
     Data_alg &data_alg;
-    state_Alg_mag curr_mode;
+    state_Alg_mag curr_Alg_mode;
     Signal<> &cycle_ready_sig;//сигнал о том, что магистраль готова что-то делать, т.к. зациклилась в каком-то состоянии 
     Signal<> &sig_ball_not_close;//сигналы Для воздуходувки(дуй), чтоб она не дула в закрытые шаровые
     
@@ -51,6 +51,7 @@ public:
     state_Magistral getState();
     uint8_t get_id(){return id;};
     
+    bool isStartedState(bool check_coponents_no_goin = false);
 private:
     void logic();//Для объединения логики поведения(используется в update())
     void turn_to(state_Magistral next_state);
@@ -69,11 +70,37 @@ state_Magistral Magistral::getState(){
     return current_state->get_curr_state();
 }
 
+bool Magistral::isStartedState(bool check_coponents_no_goin)
+{
+    
+    if(current_state->get_curr_state() != state_Magistral::start_state){
+        return false;
+    }
+    if(current_state->get_next_state(id)->get_curr_state() != current_state->get_curr_state()){
+        return false;
+    }
+    if(check_coponents_no_goin == true){
+        return true;
+    }
+    if(
+        clapan.getStatus() == state_Component::in_going ||
+        actuator.getStatus() == state_Component::in_going ||
+        ball_cran.getStatus() == state_Component::in_going
+    ){
+        return false;
+    }
+
+    return true;
+}
+
+
+
 state_Alg_mag Magistral::get_current_mode_alg(){
-    return curr_mode;
+    return curr_Alg_mode;
 }
 
 void Magistral::set_current_mode_alg(state_Alg_mag mod){
+curr_Alg_mode = mod;
 switch(mod){
     case state_Alg_mag::stop:
         data_alg.start_state->set_choose_path(id,0);

@@ -116,7 +116,7 @@ void loop()
         // act3.open();
         ++state;
     }
-    if(millis() - timer_event >= 60000 && state == 1) {
+    if(millis() - timer_event >= 10000 && state == 1) {
         timer_event = millis();
         flow.stop();
         // mag.stop();

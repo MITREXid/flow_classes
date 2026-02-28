@@ -142,7 +142,7 @@ bool setup_alg_magistral(uint8_t kol_users,
 Data_alg &result){
     one_state_Magistral* mag_start_state = new one_state_Magistral(4, kol_users);
     mag_start_state->set_curr_state(state_Magistral::start_state);
-    mag_start_state->set_time_in_this(500);
+    mag_start_state->set_time_in_this(10);
     one_state_Magistral* going_to_gate_ = new one_state_Magistral(1, kol_users);
     going_to_gate_->set_curr_state(state_Magistral::going_to_gate);
     going_to_gate_->set_time_in_this(700);
