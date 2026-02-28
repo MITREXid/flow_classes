@@ -26,6 +26,7 @@
     //                        d_print(b);\
     //                        d_println(")");
     #define pinMode(a,b) ;//чтоб не писало ни сего
+    #define digitalWrite(a,b);
 
     #define OUTPUT "OUTPUT"
     #define INPUT "INPUT"

@@ -22,7 +22,6 @@ enum class state_Flow{
 class Flow: public Universal_object<state_Flow>{
     private:
         Data_alg data_alg;
-        Shared_power_5V PWM;
         uint8_t num_curr_mag = 0;
         Signal<> sig_ready_mag[kol_all_mag];
         Signal<> sig_ball_not_close[kol_all_mag];
@@ -31,18 +30,18 @@ class Flow: public Universal_object<state_Flow>{
         bool activated_stop_on_this_mag = false;//нужно чоб при остановке не отсылвть много раз stop()
     public:
         // Magistral solo;
-    Flow(uint8_t p_pwm,
-        uint8_t p_act_1, uint8_t p_clap_1, uint8_t p_ball_1,
-        uint8_t p_act_2, uint8_t p_clap_2, uint8_t p_ball_2,
-        uint8_t p_act_3, uint8_t p_clap_3, uint8_t p_ball_3,
-        uint8_t p_act_4, uint8_t p_clap_4, uint8_t p_ball_4,
+    Flow(
+        uint8_t p_act_1, uint8_t p_clap_1, uint8_t p_clap_b_1, uint8_t p_ball_1,
+        uint8_t p_act_2, uint8_t p_clap_2, uint8_t p_clap_b_2, uint8_t p_ball_2,
+        uint8_t p_act_3, uint8_t p_clap_3, uint8_t p_clap_b_3, uint8_t p_ball_3,
+        uint8_t p_act_4, uint8_t p_clap_4, uint8_t p_clap_b_4, uint8_t p_ball_4,
         uint8_t pin_DE_RE_dyvka, uint8_t pin_RX_dyvka, uint8_t pin_TX_dyvka)
-    : PWM(p_pwm), 
+    : 
     group{
-        Magistral(0x0, PWM, p_act_2, p_clap_2, p_ball_2, data_alg, sig_ready_mag[0], sig_ball_not_close[0]),
-        Magistral(0x1, PWM, p_act_3, p_clap_3, p_ball_3, data_alg, sig_ready_mag[1], sig_ball_not_close[1]),
-        Magistral(0x2, PWM, p_act_4, p_clap_4, p_ball_4, data_alg, sig_ready_mag[2], sig_ball_not_close[2]),
-        Magistral(0x3, PWM, p_act_1, p_clap_1, p_ball_1, data_alg, sig_ready_mag[3], sig_ball_not_close[3]),//solo
+        Magistral(0x0, p_act_1, p_clap_1, p_clap_b_1, p_ball_1, data_alg, sig_ready_mag[0], sig_ball_not_close[0]),
+        Magistral(0x1, p_act_2, p_clap_2, p_clap_b_2, p_ball_2, data_alg, sig_ready_mag[1], sig_ball_not_close[1]),
+        Magistral(0x2, p_act_3, p_clap_3, p_clap_b_3, p_ball_3, data_alg, sig_ready_mag[2], sig_ball_not_close[2]),
+        Magistral(0x3, p_act_4, p_clap_4, p_clap_b_4, p_ball_4, data_alg, sig_ready_mag[3], sig_ball_not_close[3]),//solo
     },
     dyvka(pin_DE_RE_dyvka, pin_RX_dyvka, pin_TX_dyvka, sig_ball_not_close)
     {}

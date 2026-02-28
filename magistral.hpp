@@ -30,13 +30,13 @@ private:
     Signal<> &sig_ball_not_close;//сигналы Для воздуходувки(дуй), чтоб она не дула в закрытые шаровые
     
 public:
-    Magistral(uint8_t id_, Shared_power_5V &PWM_, uint8_t control_pin_actuator, uint8_t control_pin_clapan, uint8_t control_pin_ball_cran, Data_alg& d_, Signal<> &sig_r, Signal<> &sig_d)
+    Magistral(uint8_t id_, uint8_t control_pin_actuator, uint8_t control_pin_clapan_forward, uint8_t control_pin_clapan_backward, uint8_t control_pin_ball_cran, Data_alg& d_, Signal<> &sig_r, Signal<> &sig_d)
     :data_alg{d_},
     cycle_ready_sig{sig_r},
     sig_ball_not_close{sig_d},
     id(id_),
-    actuator(state_Component::close, PWM_, control_pin_actuator),
-    clapan(state_Component::close, PWM_, control_pin_clapan),
+    actuator(state_Component::close, control_pin_actuator),
+    clapan(state_Component::close, control_pin_clapan_forward, control_pin_clapan_backward),
     ball_cran(state_Component::close, control_pin_ball_cran)
     {
         // actuator = new Actuator(state_Component::close, PWM_, control_pin_actuator);

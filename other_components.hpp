@@ -6,95 +6,98 @@
 
 class Actuator: public Component{
 protected:
-    Shared_power_5V& PWM;
-    int control_pin; 
+    uint8_t control_pin; 
 public:
-    Actuator(state_Component first_state, Shared_power_5V &PWM_, int control_pin_);
+    Actuator(state_Component first_state, uint8_t control_pin_);
     void update();
+    void init(){
+        Component::init();
+        pinMode(control_pin, OUTPUT);
+    }
       
     void funcSigStartOpen(){
         d_println(F("Start Open Actuator"));  
-        pinMode(control_pin, LOW);
-        PWM.voltageON();
+        digitalWrite(control_pin, LOW);
     }
 
     void funcSigEndOpen(){
         d_println(F("End Open Actuator"));
-       PWM.voltageOFF();
     }
 
     void funcSigStartClose(){
         d_println(F("Start Close Actuator")); 
-        pinMode(control_pin, HIGH);
-       PWM.voltageON();
+        digitalWrite(control_pin, HIGH);
     }
     void funcSigEndClose(){
-        d_println(F("End Close Actuator")); 
-       PWM.voltageOFF();
+        d_println(F("End Close Actuator"));
     }
 };
  
-Actuator::Actuator(state_Component first_state, Shared_power_5V &PWM_, int control_pin_)
+Actuator::Actuator(state_Component first_state, uint8_t control_pin_)
     : Component(
         first_state, //состояние по умолчанию
         700, //время открытия
         700 //время закрытия
     ),
-    PWM{PWM_},
     control_pin{control_pin_}
 {}
 
 void Actuator::update(){
     Component::update();
-    PWM.update();
 }
 
 
 
-    //Конструктор надо вызывать или в setup или в loop чтобы не было проблем с инициализацией
 class Clapan: public Component{
 private:
-    Shared_power_5V& PWM;
-    int control_pin; 
+    uint8_t control_pin_forward = -1; 
+    uint8_t control_pin_backward = -1; 
 public:
     
-    Clapan(state_Component first_state, Shared_power_5V &PWM_, int control_pin_);
+    Clapan(state_Component first_state,  uint8_t control_pin_forward_,  uint8_t control_pin_backward_);
     void update();
+    void init(){
+        Component::init();
+        pinMode(control_pin_forward, OUTPUT);
+        pinMode(control_pin_backward, OUTPUT);
+    }
 
-        void funcSigStartOpen(){
+    void funcSigStartOpen(){
         d_println(F("Start Open Clapan"));  
-        pinMode(control_pin, LOW);
-        PWM.voltageON();
+        digitalWrite(control_pin_forward, HIGH);
+        digitalWrite(control_pin_backward, LOW);
     }
 
     void funcSigEndOpen(){
         d_println(F("End Open Clapan"));
-       PWM.voltageOFF();
+        digitalWrite(control_pin_forward, LOW);
+        digitalWrite(control_pin_backward, LOW);
     }
 
     void funcSigStartClose(){
         d_println(F("Start Close Clapan")); 
-        pinMode(control_pin, HIGH);
-       PWM.voltageON();
+        digitalWrite(control_pin_forward, LOW);
+        digitalWrite(control_pin_backward, HIGH);
     }
     void funcSigEndClose(){
         d_println(F("End Close Clapan")); 
-       PWM.voltageOFF();
+        digitalWrite(control_pin_forward, LOW);
+        digitalWrite(control_pin_backward, LOW);
     }
 };
  
-Clapan::Clapan(state_Component first_state, Shared_power_5V &PWM_, int control_pin_)
+Clapan::Clapan(state_Component first_state, uint8_t control_pin_forward_ ,  uint8_t control_pin_backward_)
     : Component(
         first_state, //состояние по умолчанию
         500, //время открытия
         500 //время закрытия
     ),
-    PWM{PWM_},
-    control_pin{control_pin_}
+    control_pin_forward{control_pin_forward_},
+    control_pin_backward{control_pin_backward_}
 {}
+
 void Clapan::update(){
     Component::update();
-    PWM.update();
 }
 
 
@@ -106,9 +109,15 @@ protected:
 public:
     Ball_cran(state_Component first_state, int control_pin_);
     void update();
+
+    void init(){
+        Component::init();
+        pinMode(control_pin, OUTPUT);
+    }
+    
      void funcSigStartOpen(){
         d_println(F("Start Open Ball_cran"));  
-        pinMode(control_pin, LOW);
+        digitalWrite(control_pin, LOW);
     }
     void funcSigEndOpen(){
         d_println(F("End Open Ball_cran"));
@@ -116,7 +125,7 @@ public:
 
     void funcSigStartClose(){
         d_println(F("Start Close Ball_cran")); 
-        pinMode(control_pin, HIGH);
+        digitalWrite(control_pin, HIGH);
     }
     void funcSigEndClose(){
         d_println(F("End Close Ball_cran")); 

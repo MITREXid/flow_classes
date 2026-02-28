@@ -15,11 +15,14 @@ Shared_power_5V PWM(A1);
 // Ball_cran act3(state_Component::close, 12);
 // Magistral mag(PWM,10,11,12, &mag_start_state);
 Data_alg dalg;
-Flow flow(10,11,12,13,
-        11,12,13,
-        11,12,13,
-        11,12,13,
-        11,12,13);
+Flow flow(
+    11,12,13,14,
+    11,12,13,14,
+    11,12,13,14,
+    11,12,13,14,
+    11,12,13
+);
+
 Display display(flow);
 // Flow * flow2;
 // Magistral mag1(PWM,10,11,12);
