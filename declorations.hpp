@@ -18,6 +18,7 @@
     unsigned long millis(){
         return std::chrono::duration_cast<std::chrono::milliseconds>(
                 std::chrono::system_clock::now() - time_global_start).count();}
+    
 
 
     // #define pinMode(a,b)  d_print("pinMode(");\
@@ -50,8 +51,22 @@
       void readBytes(char *buf, int size){}
       uint8_t available(){}
     } Serial;
+    
+    inline void delayMicroseconds(uint32_t val){}
 
+    class SoftwareSerial{
+      public:
+      SoftwareSerial(uint8_t rx, uint8_t tx){}
+      void begin(uint32_t bod){}
+    };
 
+    class ModbusMaster{
+      public:
+       void begin(uint32_t addr, SoftwareSerial &bod){}
+       void preTransmission( void (a)() ){}
+       void postTransmission( void (a)() ){}
+       void writeSingleRegister(uint32_t reg, uint32_t val){}
+    };
 #else//arduino
     #include <Arduino.h>
     #define start_def 

@@ -35,7 +35,7 @@ class Flow: public Universal_object<state_Flow>{
         uint8_t p_act_2, uint8_t p_clap_2, uint8_t p_clap_b_2, uint8_t p_ball_2,
         uint8_t p_act_3, uint8_t p_clap_3, uint8_t p_clap_b_3, uint8_t p_ball_3,
         uint8_t p_act_4, uint8_t p_clap_4, uint8_t p_clap_b_4, uint8_t p_ball_4,
-        uint8_t pin_DE_RE_dyvka, uint8_t pin_RX_dyvka, uint8_t pin_TX_dyvka)
+        uint8_t pin_RX_dyvka, uint8_t pin_TX_dyvka)
     : 
     group{
         Magistral(0x0, p_act_1, p_clap_1, p_clap_b_1, p_ball_1, data_alg, sig_ready_mag[0], sig_ball_not_close[0]),
@@ -43,7 +43,7 @@ class Flow: public Universal_object<state_Flow>{
         Magistral(0x2, p_act_3, p_clap_3, p_clap_b_3, p_ball_3, data_alg, sig_ready_mag[2], sig_ball_not_close[2]),
         Magistral(0x3, p_act_4, p_clap_4, p_clap_b_4, p_ball_4, data_alg, sig_ready_mag[3], sig_ball_not_close[3]),//solo
     },
-    dyvka(pin_DE_RE_dyvka, pin_RX_dyvka, pin_TX_dyvka, sig_ball_not_close)
+    dyvka(pin_RX_dyvka, pin_TX_dyvka, sig_ball_not_close)
     {}
     void init(){
         setup_alg_magistral(kol_all_mag, data_alg);
