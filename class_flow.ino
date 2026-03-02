@@ -10,17 +10,43 @@
 // Timer timer1;
 // Timer timer2;
 // Component comp(state_Component::open);
-Shared_power_5V PWM(A1);
+// Shared_power_5V PWM(A1);
 // Actuator *act;
 // Ball_cran act3(state_Component::close, 12);
 // Magistral mag(PWM,10,11,12, &mag_start_state);
+
+#define rele_5 7//шаровые
+#define rele_6 9//шаровые
+#define rele_7 6//шаровые
+#define rele_8 10//шаровые
+
+#define rele_9 5//актуатор
+#define rele_11 4//актуатор
+#define rele_13 3//актуатор
+#define rele_15 2//актуатор
+
+
 Data_alg dalg;
 Flow flow(
-    11,12,13,14,
-    11,12,13,14,
-    11,12,13,14,
-    11,12,13,14,
-    12,13
+    //первая магистраль
+    rele_9,//актуатор
+    A6,A7,//клапан forward, backward
+    rele_5,//шаровый 
+    //вторая магистраль
+    rele_11,//актуатор
+    A5,A4,//клапан forward, backward
+    rele_6,//шаровый 
+    //третья магистраль
+    rele_13,//актуатор
+    A3,A2,//клапан forward, backward
+    rele_7,//шаровый 
+    //четвертая магистраль(соло)
+    rele_15,//актуатор
+    A1,A0,//клапан forward, backward
+    rele_8,//шаровый 
+    13,//пин RX(RO) для частоника
+    11//пин TX(DI) для частоника
+    //пин RE/DE настраивается в файле dyvka.hpp (был D12)
 );
 
 Display display(flow);

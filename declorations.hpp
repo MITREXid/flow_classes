@@ -33,7 +33,14 @@
     #define INPUT "INPUT"
     #define HIGH "HIGH"
     #define LOW "LOW"
-    #define A1 15
+    #define A0 16
+    #define A1 17
+    #define A2 18
+    #define A3 19
+    #define A4 20
+    #define A5 21
+    #define A6 22
+    #define A7 23
     #define d_print(val) std::cout<</*"(F("<<millis()<<")"<<*/val
     #define d_println(val) std::cout<</*"(F("<<millis()<<")"<<*/val<<std::endl
     #define print(val) std::cout<<"("<<millis()<<")"<<val
