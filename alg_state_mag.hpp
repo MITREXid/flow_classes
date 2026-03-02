@@ -145,22 +145,22 @@ Data_alg &result){
     mag_start_state->set_time_in_this(10);
     one_state_Magistral* going_to_gate_ = new one_state_Magistral(1, kol_users);
     going_to_gate_->set_curr_state(state_Magistral::going_to_gate);
-    going_to_gate_->set_time_in_this(700);
+    going_to_gate_->set_time_in_this(2300);
     one_state_Magistral* all_close_ = new one_state_Magistral(1, kol_users);
     all_close_->set_curr_state(state_Magistral::all_close);
     all_close_->set_time_in_this(1000);
     one_state_Magistral* in_magistral_ = new one_state_Magistral(2, kol_users);
     in_magistral_->set_curr_state(state_Magistral::in_magistral);
-    in_magistral_->set_time_in_this(2000);
+    in_magistral_->set_time_in_this(3000);
     one_state_Magistral* air_on_ = new one_state_Magistral(2, kol_users);
     air_on_->set_curr_state(state_Magistral::air_on);
-    air_on_->set_time_in_this(22000);
+    air_on_->set_time_in_this(27000);
     one_state_Magistral* produv_ = new one_state_Magistral(1, kol_users);
     produv_->set_curr_state(state_Magistral::air_on);
-    produv_->set_time_in_this(22000);
+    produv_->set_time_in_this(27000);
     one_state_Magistral* full_open_ = new one_state_Magistral(1, kol_users);
     full_open_->set_curr_state(state_Magistral::full_open);
-    full_open_->set_time_in_this(10000);   
+    full_open_->set_time_in_this(15000);   
 
 
     air_on_->set_path(0,going_to_gate_);//продолжить цикл

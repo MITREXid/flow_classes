@@ -35,7 +35,7 @@ class Dyvka : public Universal_object<state_Dyvka>{
         uint8_t RX = -1;
         uint8_t TX = -1;
         Signal<> (&sig_ball_not_close)[kol_all_mag];
-        uint16_t goal_freq_chastot = 5000;//целевая частота для чатотника(умноженная 100) 
+        uint16_t goal_freq_chastot = 3500;//целевая частота для чатотника(умноженная 100) 
         // uint16_t curr_freq_chastot = 0;//текущая частота для чатотника(умноженная 100) 
         enum class State_air{on, off} state_air;
     public:

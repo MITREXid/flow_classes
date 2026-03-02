@@ -48,7 +48,6 @@ class Flow: public Universal_object<state_Flow>{
     void init(){
         setup_alg_magistral(kol_all_mag, data_alg);
         dyvka.init();
-        dyvka.start_if_open();
         for(uint8_t i = 0; i<kol_all_mag;++i){
             get_mag(i)->init();
         }
@@ -75,6 +74,7 @@ class Flow: public Universal_object<state_Flow>{
             return;
         }
         
+        dyvka.start_if_open();
         setStatus(st);
         logic_start(st, mag);
     }
