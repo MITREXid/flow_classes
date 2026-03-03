@@ -1,7 +1,6 @@
 #ifndef OTHER_COMPONENTS_HPP
 #define OTHER_COMPONENTS_HPP
 #include "component.hpp"
-#include "Shared_power_5V.hpp"
 
 
 class Actuator: public Component{

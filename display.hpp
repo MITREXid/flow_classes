@@ -60,6 +60,16 @@ void Display::update(){
 
 void Display::init()
 {
+    uint32_t time_init = millis();
+
+    while(millis() - time_init < 1000){}
+    String cmd = "page page0";
+    uint8_t ndt[3] = { 255,255,255};//0xFF, 0xFF, 0xFF};
+
+    // cmd = "page page0";
+
+    Serial.print(cmd);
+    Serial.write(ndt, 3);
 
 }
 

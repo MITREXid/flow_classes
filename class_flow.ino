@@ -66,9 +66,9 @@ void setup()
 {
     #if(!mode_work)//arduino
         Serial.begin(9600);
-        Serial.println(F("start"));
+        d_println(F("start"));
         int val = freeRAM();
-        Serial.println(freeRAM());
+        d_println(freeRAM());
     #endif
     
 // flow2 = new Flow(10,11,12,13);
@@ -76,8 +76,8 @@ void setup()
     // Flow flow1(10,11,12,13);
 // Magistral mag1(0, PWM,10,11,12, dalg);//149
 // dalg = setup_alg_magistral(4);//168
+display.init();
     flow.init();
-    display.init();
 // act = new Actuator ( state_Component::close, PWM, 10);
 // Clapan *act2 = new Clapan (state_Component::open, PWM, 11);
 // Ball_cran *act3 = new Ball_cran (state_Component::close, 12);
@@ -88,9 +88,9 @@ void setup()
 //     };
 
     #if(!mode_work)//arduino
-        Serial.println(freeRAM());
-        Serial.println(F("==="));
-        Serial.println(val-freeRAM());
+        d_println(freeRAM());
+        d_println(F("==="));
+        d_println(val-freeRAM());
     #endif
     // act.init();
     // act2.init();

@@ -43,9 +43,12 @@
     #define A7 23
     #define d_print(val) std::cout<</*"(F("<<millis()<<")"<<*/val
     #define d_println(val) std::cout<</*"(F("<<millis()<<")"<<*/val<<std::endl
-    #define print(val) std::cout<<"("<<millis()<<")"<<val
-    #define println(val) std::cout<<"("<<millis()<<")"<<val<<std::endl
+    // #define print(val) std::cout<<"("<<millis()<<")"<<val
+    // #define println(val) std::cout<<"("<<millis()<<")"<<val<<std::endl
     #define F(val) val
+
+    #define String std::string
+
     inline int freeRAM() {
         return -1;
         // extern int __heap_start, *__brkval;
@@ -57,11 +60,25 @@
       uint8_t peek(){}
       void readBytes(char *buf, int size){}
       uint8_t available(){}
+      void print(std::string val){d_print("(Serial.print) = ");d_print(val);}
+      void write(char val[], uint8_t size){
+        d_print("(Serial.write) = ");
+        for(int i =0; i<size;++i){
+          d_print((int)val[i]);
+        }
+      }
+      void write(uint8_t val[], uint8_t size){
+        d_print("(Serial.write) = ");
+        for(int i =0; i<size;++i){
+          d_print((int)val[i]);
+        }
+      }
+      void println(std::string val){d_print("(Serial.println) = ");d_println(val);}
     } Serial;
     
     inline void delayMicroseconds(uint32_t val){}
 
-    class SoftwareSerial{
+    class SoftwareSerial :public Serial_{
       public:
       SoftwareSerial(uint8_t rx, uint8_t tx){}
       void begin(uint32_t bod){}
@@ -77,8 +94,8 @@
 #else//arduino
     #include <Arduino.h>
     #define start_def 
-    #define d_print(val) Serial.print(val);//std::cout<<val
-    #define d_println(val) Serial.println(val);//std::cout<<val
+    #define d_print(val) ;//Serial.print(val);//std::cout<<val
+    #define d_println(val) ;//Serial.println(val);//std::cout<<val
     // #define print(val) Serial.print(val);//std::cout<<val
     // #define println(val) Serial.println(val);//std::cout<<val
 

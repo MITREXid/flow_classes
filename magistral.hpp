@@ -2,7 +2,6 @@
 #define MAGISTRAL_HPP
 #include "universal_object.hpp"
 #include "other_components.hpp"
-#include "Shared_power_5V.hpp"
 #include "math.h"
 #include "alg_state_mag.hpp"
 #include "types_for_magistral.hpp"
