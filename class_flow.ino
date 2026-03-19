@@ -25,6 +25,7 @@
 #define rele_13 3//актуатор
 #define rele_15 2//актуатор
 
+#define pin_power_v12 8
 
 Data_alg dalg;
 Flow flow(
@@ -45,8 +46,9 @@ Flow flow(
     A1,A0,//клапан forward, backward
     rele_8,//шаровый 
     13,//пин RX(RO) для частоника
-    11//пин TX(DI) для частоника
+    11,//пин TX(DI) для частоника
     //пин RE/DE настраивается в файле dyvka.hpp (был D12)
+    pin_power_v12//пин открывающий реле на котором 12В
 );
 
 Display display(flow);

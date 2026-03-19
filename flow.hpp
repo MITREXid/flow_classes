@@ -6,7 +6,7 @@
 
 #define kol_mag_group 3
 #define kol_all_mag 4
-#define solo_mag 3//nomer
+#define solo_mag 3//nomer от 0
 
 
 #include "dyvka.hpp"
@@ -23,6 +23,7 @@ class Flow: public Universal_object<state_Flow>{
     private:
         Data_alg data_alg;
         uint8_t num_curr_mag = 0;
+        uint8_t pin_power_v12;
         Signal<> sig_ready_mag[kol_all_mag];
         Signal<> sig_ball_not_close[kol_all_mag];
         Magistral group[kol_all_mag];//+1 это соло
@@ -35,7 +36,7 @@ class Flow: public Universal_object<state_Flow>{
         uint8_t p_act_2, uint8_t p_clap_2, uint8_t p_clap_b_2, uint8_t p_ball_2,
         uint8_t p_act_3, uint8_t p_clap_3, uint8_t p_clap_b_3, uint8_t p_ball_3,
         uint8_t p_act_4, uint8_t p_clap_4, uint8_t p_clap_b_4, uint8_t p_ball_4,
-        uint8_t pin_RX_dyvka, uint8_t pin_TX_dyvka)
+        uint8_t pin_RX_dyvka, uint8_t pin_TX_dyvka, uint8_t pin_power_v12_)
     : 
     group{
         Magistral(0x0, p_act_1, p_clap_1, p_clap_b_1, p_ball_1, data_alg, sig_ready_mag[0], sig_ball_not_close[0]),
@@ -43,14 +44,26 @@ class Flow: public Universal_object<state_Flow>{
         Magistral(0x2, p_act_3, p_clap_3, p_clap_b_3, p_ball_3, data_alg, sig_ready_mag[2], sig_ball_not_close[2]),
         Magistral(0x3, p_act_4, p_clap_4, p_clap_b_4, p_ball_4, data_alg, sig_ready_mag[3], sig_ball_not_close[3]),//solo
     },
-    dyvka(pin_RX_dyvka, pin_TX_dyvka, sig_ball_not_close)
+    dyvka(pin_RX_dyvka, pin_TX_dyvka, sig_ball_not_close),
+    pin_power_v12(pin_power_v12_)
     {}
     void init(){
+        pinMode(pin_power_v12,OUTPUT);
+        digitalWrite(pin_power_v12,HIGH);
+        d_print(F("power_12V: HIGH"));
+        d_println(pin_power_v12);
+        // uint32_t time_mark = millis();
+        // while(millis()-time_mark<1000){}
         setup_alg_magistral(kol_all_mag, data_alg);
         dyvka.init();
         for(uint8_t i = 0; i<kol_all_mag;++i){
             get_mag(i)->init();
         }
+        // uint32_t time_mark = millis();
+        // while(millis()-time_mark<1000){}
+        digitalWrite(pin_power_v12,LOW);
+        d_print(F("power_12V: LOW"));
+        d_println(pin_power_v12);
     }
 
     void update(){
