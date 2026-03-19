@@ -15,38 +15,38 @@
 // Ball_cran act3(state_Component::close, 12);
 // Magistral mag(PWM,10,11,12, &mag_start_state);
 
-#define rele_5 7//шаровые
-#define rele_6 9//шаровые
-#define rele_7 6//шаровые
-#define rele_8 10//шаровые
+#define rele_5 27//шаровые
+#define rele_6 43//шаровые
+#define rele_7 29//шаровыеS
+#define rele_8 41//шаровые
 
-#define rele_9 5//актуатор
-#define rele_11 4//актуатор
-#define rele_13 3//актуатор
-#define rele_15 2//актуатор
+#define rele_9 31//актуатор
+#define rele_11 33//актуатор
+#define rele_13 35//актуатор
+#define rele_15 37//актуатор
 
-#define pin_power_v12 8
+#define pin_power_v12 23
 
 Data_alg dalg;
 Flow flow(
     //первая магистраль
     rele_9,//актуатор
-    A6,A7,//клапан forward, backward
+    3,2,//клапан forward, backward
     rele_5,//шаровый 
     //вторая магистраль
     rele_11,//актуатор
-    A5,A4,//клапан forward, backward
+    5,4,//клапан forward, backward
     rele_6,//шаровый 
     //третья магистраль
     rele_13,//актуатор
-    A3,A2,//клапан forward, backward
+    9,8,//клапан forward, backward
     rele_7,//шаровый 
     //четвертая магистраль(соло)
     rele_15,//актуатор
-    A1,A0,//клапан forward, backward
+    11,10,//клапан forward, backward
     rele_8,//шаровый 
-    13,//пин RX(RO) для частоника
-    11,//пин TX(DI) для частоника
+    15,//пин RX(RO) для частоника
+    14,//пин TX(DI) для частоника
     //пин RE/DE настраивается в файле dyvka.hpp (был D12)
     pin_power_v12//пин открывающий реле на котором 12В
 );
@@ -136,11 +136,11 @@ void loop()
         // d_print(F(") status: ");
         // d_println(act2.getStatus());
     }
-    // if(millis() - timer_event >= 7000 && state == 0) {
+    if(millis() - timer_event >= 12000 && state == 0) {
     //     timer_event = millis();
 
-    // // flow.start_solo();
-    // flow.start(state_Flow::do_trio);
+    // flow.start_solo();
+    flow.start(state_Flow::do_trio);
     //     // mag.start();
     //     // act->open();
     // // mag1.start();
@@ -150,7 +150,7 @@ void loop()
     //     // act2.open();
     //     // act3.open();
     //     ++state;
-    // }
+    }
     // if(millis() - timer_event >= 10000 && state == 1) {
     //     timer_event = millis();
     //     flow.stop();

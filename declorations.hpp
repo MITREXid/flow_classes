@@ -41,8 +41,8 @@
     #define A5 21
     #define A6 22
     #define A7 23
-    #define d_print(val) std::cout<</*"(F("<<millis()<<")"<<*/val
-    #define d_println(val) std::cout<</*"(F("<<millis()<<")"<<*/val<<std::endl
+    // #define d_print(val) std::cout<</*"(F("<<millis()<<")"<<*/val
+    // #define d_println(val) std::cout<</*"(F("<<millis()<<")"<<*/val<<std::endl
     // #define print(val) std::cout<<"("<<millis()<<")"<<val
     // #define println(val) std::cout<<"("<<millis()<<")"<<val<<std::endl
     #define F(val) val

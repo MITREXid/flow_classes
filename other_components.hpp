@@ -12,6 +12,7 @@ public:
     void init(){
         Component::init();
         pinMode(control_pin, OUTPUT);
+        digitalWrite(control_pin, HIGH);
     }
       
     void funcSigStartOpen(){
@@ -25,7 +26,7 @@ public:
 
     void funcSigStartClose(){
         d_println(F("Start Close Actuator")); 
-        digitalWrite(control_pin, HIGH);
+        
     }
     void funcSigEndClose(){
         d_println(F("End Close Actuator"));
@@ -59,6 +60,8 @@ public:
         Component::init();
         pinMode(control_pin_forward, OUTPUT);
         pinMode(control_pin_backward, OUTPUT);
+        digitalWrite(control_pin_forward, LOW);
+        digitalWrite(control_pin_backward, LOW);
     }
 
     void funcSigStartOpen(){
@@ -69,8 +72,7 @@ public:
 
     void funcSigEndOpen(){
         d_println(F("End Open Clapan"));
-        digitalWrite(control_pin_forward, LOW);
-        digitalWrite(control_pin_backward, LOW);
+        
     }
 
     void funcSigStartClose(){
@@ -112,6 +114,7 @@ public:
     void init(){
         Component::init();
         pinMode(control_pin, OUTPUT);
+        digitalWrite(control_pin, HIGH);
     }
     
      void funcSigStartOpen(){
@@ -124,7 +127,7 @@ public:
 
     void funcSigStartClose(){
         d_println(F("Start Close Ball_cran")); 
-        digitalWrite(control_pin, HIGH);
+        
     }
     void funcSigEndClose(){
         d_println(F("End Close Ball_cran")); 

@@ -15,7 +15,7 @@ enum class state_Dyvka{
     no_air
 };
 
-#define pin_DE_RE_ 12
+#define pin_DE_RE_ 51
 
 void preTransmission() {
     digitalWrite(pin_DE_RE_, 1);

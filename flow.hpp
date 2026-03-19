@@ -52,15 +52,15 @@ class Flow: public Universal_object<state_Flow>{
         digitalWrite(pin_power_v12,HIGH);
         d_print(F("power_12V: HIGH"));
         d_println(pin_power_v12);
-        // uint32_t time_mark = millis();
-        // while(millis()-time_mark<1000){}
+        uint32_t time_mark = millis();
+        while(millis()-time_mark<1000){}
         setup_alg_magistral(kol_all_mag, data_alg);
         dyvka.init();
         for(uint8_t i = 0; i<kol_all_mag;++i){
             get_mag(i)->init();
         }
-        // uint32_t time_mark = millis();
-        // while(millis()-time_mark<1000){}
+        time_mark = millis();
+        while(millis()-time_mark<1000){}
         digitalWrite(pin_power_v12,LOW);
         d_print(F("power_12V: LOW"));
         d_println(pin_power_v12);
