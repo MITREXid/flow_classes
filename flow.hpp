@@ -28,6 +28,7 @@ class Flow: public Universal_object<state_Flow>{
         Signal<> sig_ball_not_close[kol_all_mag];
         Magistral group[kol_all_mag];//+1 это соло
         Dyvka dyvka;
+        Shared_power pwm;
         bool activated_stop_on_this_mag = false;//нужно чоб при остановке не отсылвть много раз stop()
     public:
         // Magistral solo;
@@ -36,16 +37,17 @@ class Flow: public Universal_object<state_Flow>{
         uint8_t p_act_2, uint8_t p_clap_2, uint8_t p_clap_b_2, uint8_t p_ball_2,
         uint8_t p_act_3, uint8_t p_clap_3, uint8_t p_clap_b_3, uint8_t p_ball_3,
         uint8_t p_act_4, uint8_t p_clap_4, uint8_t p_clap_b_4, uint8_t p_ball_4,
-        uint8_t pin_RX_dyvka, uint8_t pin_TX_dyvka, uint8_t pin_power_v12_)
+        uint8_t pin_RX_dyvka, uint8_t pin_TX_dyvka, uint8_t pin_power_v12_, uint8_t pin_power_v12_clapan_)
     : 
     group{
-        Magistral(0x0, p_act_1, p_clap_1, p_clap_b_1, p_ball_1, data_alg, sig_ready_mag[0], sig_ball_not_close[0]),
-        Magistral(0x1, p_act_2, p_clap_2, p_clap_b_2, p_ball_2, data_alg, sig_ready_mag[1], sig_ball_not_close[1]),
-        Magistral(0x2, p_act_3, p_clap_3, p_clap_b_3, p_ball_3, data_alg, sig_ready_mag[2], sig_ball_not_close[2]),
-        Magistral(0x3, p_act_4, p_clap_4, p_clap_b_4, p_ball_4, data_alg, sig_ready_mag[3], sig_ball_not_close[3]),//solo
+        Magistral(0x0, p_act_1, p_clap_1, p_ball_1, pwm, data_alg, sig_ready_mag[0], sig_ball_not_close[0]),
+        Magistral(0x1, p_act_2, p_clap_2, p_ball_2, pwm, data_alg, sig_ready_mag[1], sig_ball_not_close[1]),
+        Magistral(0x2, p_act_3, p_clap_3, p_ball_3, pwm, data_alg, sig_ready_mag[2], sig_ball_not_close[2]),
+        Magistral(0x3, p_act_4, p_clap_4, p_ball_4, pwm, data_alg, sig_ready_mag[3], sig_ball_not_close[3]),//solo
     },
     dyvka(pin_RX_dyvka, pin_TX_dyvka, sig_ball_not_close),
-    pin_power_v12(pin_power_v12_)
+    pin_power_v12(pin_power_v12_),
+    pwm{Shared_power(pin_power_v12_clapan_)}
     {}
     void init(){
         pinMode(pin_power_v12,OUTPUT);

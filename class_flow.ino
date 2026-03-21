@@ -26,6 +26,7 @@
 #define rele_15 37//актуатор
 
 #define pin_power_v12 23
+#define pin_power_v12_clapan 24
 
 Data_alg dalg;
 Flow flow(
@@ -48,7 +49,8 @@ Flow flow(
     15,//пин RX(RO) для частоника
     14,//пин TX(DI) для частоника
     //пин RE/DE настраивается в файле dyvka.hpp (был D12)
-    pin_power_v12//пин открывающий реле на котором 12В
+    pin_power_v12,//пин открывающий реле на котором 12В
+    pin_power_v12_clapan
 );
 
 Display display(flow);
@@ -140,7 +142,7 @@ void loop()
     //     timer_event = millis();
 
     // flow.start_solo();
-    flow.start(state_Flow::do_trio);
+    // flow.start(state_Flow::do_trio);
     //     // mag.start();
     //     // act->open();
     // // mag1.start();

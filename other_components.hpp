@@ -1,7 +1,7 @@
 #ifndef OTHER_COMPONENTS_HPP
 #define OTHER_COMPONENTS_HPP
 #include "component.hpp"
-
+#include "Shared_power.hpp"
 
 class Actuator: public Component{
 protected:
@@ -47,58 +47,49 @@ void Actuator::update(){
 }
 
 
-
 class Clapan: public Component{
 private:
-    uint8_t control_pin_forward = -1; 
-    uint8_t control_pin_backward = -1; 
+    Shared_power& PWM;
+    int control_pin; 
 public:
     
-    Clapan(state_Component first_state,  uint8_t control_pin_forward_,  uint8_t control_pin_backward_);
+    Clapan(state_Component first_state, Shared_power &PWM_, int control_pin_);
     void update();
-    void init(){
-        Component::init();
-        pinMode(control_pin_forward, OUTPUT);
-        pinMode(control_pin_backward, OUTPUT);
-        digitalWrite(control_pin_forward, LOW);
-        digitalWrite(control_pin_backward, LOW);
-    }
 
-    void funcSigStartOpen(){
+        void funcSigStartOpen(){
         d_println(F("Start Open Clapan"));  
-        digitalWrite(control_pin_forward, HIGH);
-        digitalWrite(control_pin_backward, LOW);
+        pinMode(control_pin, LOW);
+        PWM.voltageON();
     }
 
     void funcSigEndOpen(){
         d_println(F("End Open Clapan"));
-        
+       PWM.voltageOFF();
     }
 
     void funcSigStartClose(){
         d_println(F("Start Close Clapan")); 
-        digitalWrite(control_pin_forward, LOW);
-        digitalWrite(control_pin_backward, HIGH);
+        pinMode(control_pin, HIGH);
+       PWM.voltageON();
     }
     void funcSigEndClose(){
         d_println(F("End Close Clapan")); 
-        digitalWrite(control_pin_forward, LOW);
-        digitalWrite(control_pin_backward, LOW);
+       PWM.voltageOFF();
     }
 };
  
-Clapan::Clapan(state_Component first_state, uint8_t control_pin_forward_ ,  uint8_t control_pin_backward_)
+Clapan::Clapan(state_Component first_state, Shared_power &PWM_, int control_pin_)
     : Component(
         first_state, //состояние по умолчанию
         500, //время открытия
         500 //время закрытия
     ),
-    control_pin_forward{control_pin_forward_},
-    control_pin_backward{control_pin_backward_}
+    PWM{PWM_},
+    control_pin{control_pin_}
 {}
-
 void Clapan::update(){
     Component::update();
+    PWM.update();
 }
 
 
