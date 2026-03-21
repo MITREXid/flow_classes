@@ -15,7 +15,7 @@ enum class state_Dyvka{
     no_air
 };
 
-#define pin_DE_RE_ 51
+#define pin_DE_RE_ 11
 
 void preTransmission() {
     digitalWrite(pin_DE_RE_, 1);
@@ -50,7 +50,7 @@ class Dyvka : public Universal_object<state_Dyvka>{
         }
         void init(){
             //инициализвция SoftwareSerial
-            rs485.begin(19200);
+            rs485.begin(9600);
             node.begin(1, rs485);
             node.preTransmission(preTransmission);
             node.postTransmission(postTransmission);

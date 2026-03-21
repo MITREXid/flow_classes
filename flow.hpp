@@ -26,11 +26,11 @@ class Flow: public Universal_object<state_Flow>{
         uint8_t pin_power_v12;
         Signal<> sig_ready_mag[kol_all_mag];
         Signal<> sig_ball_not_close[kol_all_mag];
-        Magistral group[kol_all_mag];//+1 это соло
         Dyvka dyvka;
-        Shared_power pwm;
         bool activated_stop_on_this_mag = false;//нужно чоб при остановке не отсылвть много раз stop()
     public:
+        Shared_power pwm;
+        Magistral group[kol_all_mag];//+1 это соло
         // Magistral solo;
     Flow(
         uint8_t p_act_1, uint8_t p_clap_1, uint8_t p_ball_1,

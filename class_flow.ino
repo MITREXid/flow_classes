@@ -26,38 +26,38 @@
 #define rele_15 37//актуатор
 
 
-#define mod2_clap_rele_9_10  47//клапан
-#define mod2_clap_rele_11_12 49//клапан
-#define mod2_clap_rele_13_14 39//клапан
-#define mod2_clap_rele_15_16 53//клапан
+#define mod2_clap_rele_1_2  47//клапан
+#define mod2_clap_rele_3_4 49//клапан
+#define mod2_clap_rele_5_6 39//клапан
+#define mod2_clap_rele_7_8 53//клапан
 
-#define mod2_rele_2_power_clap 45
+#define mod2_rele_15_power_clap 45
 #define rele_2_power_act 23
 
 #define pin_power_v12 rele_2_power_act
-#define pin_power_v12_clapan mod2_rele_2_power_clap
+#define pin_power_v12_clapan mod2_rele_15_power_clap
 
 Data_alg dalg;
 Flow flow(
     //первая магистраль
     rele_9,//актуатор
-    mod2_clap_rele_9_10,//клапан
+    mod2_clap_rele_7_8,//клапан
     rele_5,//шаровый 
     //вторая магистраль
     rele_11,//актуатор
-    mod2_clap_rele_9_10,//клапан
+    mod2_clap_rele_5_6,//клапан
     rele_6,//шаровый 
     //третья магистраль
     rele_13,//актуатор
-    mod2_clap_rele_9_10,//клапан
+    mod2_clap_rele_3_4,//клапан
     rele_7,//шаровый 
     //четвертая магистраль(соло)
     rele_15,//актуатор
-    mod2_clap_rele_9_10,//клапан
+    mod2_clap_rele_1_2,//клапан
     rele_8,//шаровый 
-    15,//пин RX(RO) для частоника
-    14,//пин TX(DI) для частоника
-    //пин RE/DE настраивается в файле dyvka.hpp (был D12)
+    12,//пин RX(RO) для частоника
+    10,//пин TX(DI) для частоника
+    //пин RE/DE настраивается в файле dyvka.hpp (был D11)
     pin_power_v12,//пин открывающий реле на котором 12В
     pin_power_v12_clapan
 );
@@ -74,6 +74,8 @@ Display display(flow);
 unsigned long timer_delay_loop ;
 unsigned long timer_event;
 unsigned long state;
+
+#define mag 0
 
 void setup()
 {
@@ -92,6 +94,8 @@ void setup()
 // dalg = setup_alg_magistral(4);//168
 display.init();
     flow.init();
+    // flow.group[mag].init();
+    // flow.pwm.init();
 // act = new Actuator ( state_Component::close, PWM, 10);
 // Clapan *act2 = new Clapan (state_Component::open, PWM, 11);
 // Ball_cran *act3 = new Ball_cran (state_Component::close, 12);
@@ -123,55 +127,28 @@ display.init();
 void loop()
 {
     if(millis() - timer_delay_loop >= 100){
-
-    // println(freeRAM());
-    // t1.update();
-    // if(sig_end.isTrueAndNotCheked()){
-    //     d_print(F("Stoop");
-    // }
         timer_delay_loop = millis();
-    // flow2->update();
+
+
+    // flow.group[mag].update();
+    // flow.pwm.update();
     display.update();
         flow.update();
-    // mag1.update();
-    // mag2.update();
-    // mag3.update();
-        // act->update();
-        // act2.update();
-        // act3.update();
-        // d_print(F("act3(F(");
-        // d_print(millis());
-        // d_print(F(") status: ");
-        // d_println(act3.getStatus());
-        // d_print(F("act_2(F(");
-        // d_print(millis());
-        // d_print(F(") status: ");
-        // d_println(act2.getStatus());
     }
-    if(millis() - timer_event >= 12000 && state == 0) {
-    //     timer_event = millis();
 
+    // if(millis() - timer_event >= 3000 && state == 0) {
+        // timer_event = millis();
+// flow.group[mag].actuator.open();
     // flow.start_solo();
     // flow.start(state_Flow::do_trio);
-    //     // mag.start();
-    //     // act->open();
-    // // mag1.start();
-    // // mag2.start();
-    // // mag3.start();
-    //     // act.open();
-    //     // act2.open();
-    //     // act3.open();
-    //     ++state;
-    }
-    // if(millis() - timer_event >= 10000 && state == 1) {
-    //     timer_event = millis();
-    //     flow.stop();
-    //     // mag.stop();
-    //     // act->close();
-    //     // // act.close();
-    //     // act2.close();
-    //     // act3.close();
-    //     ++state;
+
+        // ++state;
+    // }
+    // if(millis() - timer_event >= 3000 && state == 1) {
+        // timer_event = millis();
+// flow.group[mag].actuator.close();
+        // flow.stop();
+        // state = 0;
     // }
     //  if(millis() - timer_event >= 50000 && state == 2) {
     //     timer_event = millis();

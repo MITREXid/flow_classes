@@ -16,12 +16,9 @@ private:
 
    
     uint8_t id;
-    Actuator actuator;
-    Clapan clapan;
-    Ball_cran ball_cran;
     uint32_t time_to_start_new_state = 0;//время старта
     // bool was_reset_time = false;//для того чтоб в состоянии в котором надо обнулить вермя не обнулять его бесконечно
-
+    
     one_state_Magistral* current_state ;
     Data_alg &data_alg;
     state_Alg_mag curr_Alg_mode;
@@ -29,6 +26,9 @@ private:
     Signal<> &sig_ball_not_close;//сигналы Для воздуходувки(дуй), чтоб она не дула в закрытые шаровые
     
 public:
+    Actuator actuator;
+    Clapan clapan;
+    Ball_cran ball_cran;
     Magistral(uint8_t id_, uint8_t control_pin_actuator, uint8_t control_pin_clapan, uint8_t control_pin_ball_cran, Shared_power &pwm_, Data_alg& d_, Signal<> &sig_r, Signal<> &sig_d)
     :data_alg{d_},
     cycle_ready_sig{sig_r},
@@ -229,8 +229,8 @@ void Magistral::logic(){
 
     if(
         clapan.getStatus() == state_Component::in_going ||
-        actuator.getStatus() == state_Component::in_going ||
-        ball_cran.getStatus() == state_Component::in_going
+        actuator.getStatus() == state_Component::in_going //||
+        // ball_cran.getStatus() == state_Component::in_going
     ){
         return;
     }

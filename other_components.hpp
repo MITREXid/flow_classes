@@ -85,7 +85,7 @@ public:
 
     void funcSigStartOpen(){
         d_println(F("Start Open Clapan"));  
-        pinMode(control_pin, LOW);
+        pinMode(control_pin, HIGH);
         PWM.voltageON();
     }
 
@@ -96,7 +96,7 @@ public:
 
     void funcSigStartClose(){
         d_println(F("Start Close Clapan")); 
-        pinMode(control_pin, HIGH);
+        pinMode(control_pin, LOW);
        PWM.voltageON();
     }
     void funcSigEndClose(){
