@@ -52,7 +52,7 @@ pin_tx(pin_tx_)
 }
 
 void Display::update(){
-    if (Serial.available() > 0) {
+    if (Serial3.available() > 0) {
         flag = Check_message();
     }
     logic();
@@ -68,8 +68,8 @@ void Display::init()
 
     // cmd = "page page0";
 
-    Serial.print(cmd);
-    Serial.write(ndt, 3);
+    Serial3.print(cmd);
+    Serial3.write(ndt, 3);
 
 }
 
@@ -112,29 +112,29 @@ void Display::logic()
 Display::events_Display Display::Check_message() {
 
     int length_of_message;
-    char command = Serial.peek();
-    // Serial.println(command, HEX);
+    char command = Serial3.peek();
+    // Serial3.println(command, HEX);
 
     switch (command) {
 
         case 0x41:
             length_of_message = 2;
-            Serial.readBytes(buf, length_of_message);
-            // Serial.println("ало START_EVENT"); 
+            Serial3.readBytes(buf, length_of_message);
+            // Serial3.println("ало START_EVENT"); 
             return events_Display::START_EVENT;
             break;
 
         case 0x40:
             length_of_message = 2;
-            Serial.readBytes(buf, length_of_message);
-            // Serial.println("алооооо STOP_EVENT");
+            Serial3.readBytes(buf, length_of_message);
+            // Serial3.println("алооооо STOP_EVENT");
             return events_Display::STOP_EVENT;
             break;
 
         case 0x42:
             length_of_message = 2;
-            Serial.readBytes(buf, length_of_message);
-            // Serial.println("алооооо");
+            Serial3.readBytes(buf, length_of_message);
+            // Serial3.println("алооооо");
 
             if (buf[1] == 0x31)
                 return events_Display::AIR_START;
@@ -144,7 +144,7 @@ Display::events_Display Display::Check_message() {
 
         case 0x68:
             length_of_message = 2;
-            Serial.readBytes(buf, length_of_message);
+            Serial3.readBytes(buf, length_of_message);
             // buf[0] = 1;
             // buf[1] = 1;
             return events_Display::START_EVENT;
@@ -152,7 +152,7 @@ Display::events_Display Display::Check_message() {
 
         case 0x72:
             length_of_message = 2;
-            Serial.readBytes(buf, length_of_message);
+            Serial3.readBytes(buf, length_of_message);
             // buf[0] = 1;
             // buf[1] = 0;
             return events_Display::STOP_EVENT;

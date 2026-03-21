@@ -25,26 +25,35 @@
 #define rele_13 35//актуатор
 #define rele_15 37//актуатор
 
-#define pin_power_v12 23
-#define pin_power_v12_clapan 24
+
+#define mod2_clap_rele_9_10  47//клапан
+#define mod2_clap_rele_11_12 49//клапан
+#define mod2_clap_rele_13_14 39//клапан
+#define mod2_clap_rele_15_16 53//клапан
+
+#define mod2_rele_2_power_clap 45
+#define rele_2_power_act 23
+
+#define pin_power_v12 rele_2_power_act
+#define pin_power_v12_clapan mod2_rele_2_power_clap
 
 Data_alg dalg;
 Flow flow(
     //первая магистраль
     rele_9,//актуатор
-    3,2,//клапан forward, backward
+    mod2_clap_rele_9_10,//клапан
     rele_5,//шаровый 
     //вторая магистраль
     rele_11,//актуатор
-    5,4,//клапан forward, backward
+    mod2_clap_rele_9_10,//клапан
     rele_6,//шаровый 
     //третья магистраль
     rele_13,//актуатор
-    9,8,//клапан forward, backward
+    mod2_clap_rele_9_10,//клапан
     rele_7,//шаровый 
     //четвертая магистраль(соло)
     rele_15,//актуатор
-    11,10,//клапан forward, backward
+    mod2_clap_rele_9_10,//клапан
     rele_8,//шаровый 
     15,//пин RX(RO) для частоника
     14,//пин TX(DI) для частоника
@@ -70,6 +79,7 @@ void setup()
 {
     #if(!mode_work)//arduino
         Serial.begin(9600);
+        Serial3.begin(9600);
         d_println(F("start"));
         int val = freeRAM();
         d_println(freeRAM());

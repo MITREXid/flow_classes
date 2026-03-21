@@ -33,10 +33,10 @@ class Flow: public Universal_object<state_Flow>{
     public:
         // Magistral solo;
     Flow(
-        uint8_t p_act_1, uint8_t p_clap_1, uint8_t p_clap_b_1, uint8_t p_ball_1,
-        uint8_t p_act_2, uint8_t p_clap_2, uint8_t p_clap_b_2, uint8_t p_ball_2,
-        uint8_t p_act_3, uint8_t p_clap_3, uint8_t p_clap_b_3, uint8_t p_ball_3,
-        uint8_t p_act_4, uint8_t p_clap_4, uint8_t p_clap_b_4, uint8_t p_ball_4,
+        uint8_t p_act_1, uint8_t p_clap_1, uint8_t p_ball_1,
+        uint8_t p_act_2, uint8_t p_clap_2, uint8_t p_ball_2,
+        uint8_t p_act_3, uint8_t p_clap_3, uint8_t p_ball_3,
+        uint8_t p_act_4, uint8_t p_clap_4, uint8_t p_ball_4,
         uint8_t pin_RX_dyvka, uint8_t pin_TX_dyvka, uint8_t pin_power_v12_, uint8_t pin_power_v12_clapan_)
     : 
     group{
@@ -49,26 +49,36 @@ class Flow: public Universal_object<state_Flow>{
     pin_power_v12(pin_power_v12_),
     pwm{Shared_power(pin_power_v12_clapan_)}
     {}
+
     void init(){
+        setup_alg_magistral(kol_all_mag, data_alg);
         pinMode(pin_power_v12,OUTPUT);
         digitalWrite(pin_power_v12,HIGH);
         d_print(F("power_12V: HIGH"));
-        d_println(pin_power_v12);
+
+        pwm.init();
+
+
         uint32_t time_mark = millis();
-        while(millis()-time_mark<1000){}
-        setup_alg_magistral(kol_all_mag, data_alg);
+        while(millis()-time_mark<100){}
+
         dyvka.init();
+        
         for(uint8_t i = 0; i<kol_all_mag;++i){
             get_mag(i)->init();
+            //  get_mag(i)->update();
         }
+
         time_mark = millis();
-        while(millis()-time_mark<1000){}
+        while(millis()-time_mark<100){}
+
+
         digitalWrite(pin_power_v12,LOW);
         d_print(F("power_12V: LOW"));
-        d_println(pin_power_v12);
     }
 
     void update(){
+         pwm.update();
          for(uint8_t i = 0; i<kol_all_mag;++i){
             get_mag(i)->update();
          }

@@ -74,7 +74,7 @@
         }
       }
       void println(std::string val){d_print("(Serial.println) = ");d_println(val);}
-    } Serial;
+    } Serial, Serial3;
     
     inline void delayMicroseconds(uint32_t val){}
 
