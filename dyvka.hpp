@@ -48,6 +48,7 @@ class Dyvka : public Universal_object<state_Dyvka>{
         {
             setStatus(state_Dyvka::no_air);
         }
+
         void init(){
             //инициализвция SoftwareSerial
             rs485.begin(9600);
@@ -85,6 +86,7 @@ class Dyvka : public Universal_object<state_Dyvka>{
             d_println(F("Dyet"));
             state_air = State_air::on;
             node.writeSingleRegister(0x3000, goal_freq_chastot);//настроили частоту
+            time_break(10);
             node.writeSingleRegister(0x2000, 1);    // Пуск
             //нужна реализация
         }

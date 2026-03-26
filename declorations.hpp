@@ -146,6 +146,9 @@ inline int freeRAM() {
 //         constexpr operator bool() const { return func != nullptr; } \
 //         constexpr static uint8_t memory() { return sizeof(name); } \
 //     }
-
+inline void time_break(uint32_t t){
+    uint32_t time_init = millis();
+    while(millis() - time_init < t){}
+}
 
 #endif // DECLORATIONS_HPP

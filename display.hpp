@@ -34,6 +34,9 @@ private:
     Flow & flow;
     uint8_t pin_rx = -1;
     uint8_t pin_tx = -1;
+    uint32_t time_init;
+    bool flag_waiting = false;
+    uint32_t time_waiting = 15000;
     events_Display Check_message();
 
 public:
@@ -60,7 +63,7 @@ void Display::update(){
 
 void Display::init()
 {
-    uint32_t time_init = millis();
+    time_init = millis();
 
     while(millis() - time_init < 1000){}
     String cmd = "page page0";
@@ -75,6 +78,7 @@ void Display::init()
 
 void Display::logic()
 {
+
     if (flag == events_Display::AIR_STOP) {
         flow.stop();
     }
@@ -106,6 +110,7 @@ void Display::logic()
         flow.start(state_Flow::do_produvka);
   }
     flag = events_Display::NOTHING;
+
 }
 
 
