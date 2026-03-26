@@ -44,6 +44,7 @@ public:
     void update();
     void init();
     void logic();
+    void send_comand(String cmd);
 };
 
 Display::Display(Flow & flow_, uint8_t pin_rx_, uint8_t pin_tx_):
@@ -66,19 +67,41 @@ void Display::init()
     time_init = millis();
 
     while(millis() - time_init < 1000){}
-    String cmd = "page page0";
-    uint8_t ndt[3] = { 255,255,255};//0xFF, 0xFF, 0xFF};
+    send_comand("page page0");
+    time_break(10);
+    send_comand("tsw bt0,0");
+    time_break(10);
+    send_comand("tsw bt1,0");
+    time_break(10);
+    send_comand("tsw bt2,0");
+    time_break(10);
+    send_comand("tsw bt3,0");
+    time_break(10);
+    send_comand("tsw bt4,0");
 
-    // cmd = "page page0";
+}
 
+void Display::send_comand(String cmd){
     Serial3.print(cmd);
+    uint8_t ndt[3] = { 255,255,255};//0xFF, 0xFF, 0xFF};
     Serial3.write(ndt, 3);
 
 }
 
 void Display::logic()
 {
-
+    if(millis() - time_init > time_waiting && !flag_waiting){
+        flag_waiting = 1;
+        send_comand("tsw bt0,1");
+        time_break(10);
+        send_comand("tsw bt1,1");
+        time_break(10);
+        send_comand("tsw bt2,1");
+        time_break(10);
+        send_comand("tsw bt3,1");
+        time_break(10);
+        send_comand("tsw bt4,1");
+    }
     if (flag == events_Display::AIR_STOP) {
         flow.stop();
     }
