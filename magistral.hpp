@@ -62,6 +62,7 @@ private:
     // void setPathFlag( bool val,one_state_Magistral* st = nullptr);
     // bool getPathFlag(one_state_Magistral* st = nullptr);
     // bool getFlagResetTimer(one_state_Magistral* st = nullptr);
+    bool is_going_comp();
 };
 
 
@@ -81,11 +82,7 @@ bool Magistral::isStartedState(bool check_coponents_no_goin)
     if(check_coponents_no_goin == true){
         return true;
     }
-    if(
-        clapan.getStatus() == state_Component::in_going ||
-        actuator.getStatus() == state_Component::in_going ||
-        ball_cran.getStatus() == state_Component::in_going
-    ){
+    if(is_going_comp()){
         return false;
     }
 
@@ -224,14 +221,21 @@ void Magistral::stop(){
 }
 
 
+bool Magistral::is_going_comp(){
+    if(
+        clapan.getStatus() == state_Component::in_going ||
+        actuator.getStatus() == state_Component::in_going// ||
+        //ball_cran.getStatus() == state_Component::in_going
+    ){
+        return true;
+    }
+    return false;
+}
+
 void Magistral::logic(){
     
 
-    if(
-        clapan.getStatus() == state_Component::in_going ||
-        actuator.getStatus() == state_Component::in_going ||
-        ball_cran.getStatus() == state_Component::in_going
-    ){
+    if(is_going_comp() == false){
         return;
     }
     

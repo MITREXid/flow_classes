@@ -2,6 +2,7 @@
 #define DISPLAY_HPP
 #include "flow.hpp"
 
+#define SerialXXX Serial3
 
 /**
  * A0 - режим троицы
@@ -44,6 +45,7 @@ public:
     void update();
     void init();
     void logic();
+    void lock_btn(bool lock=true);
     void send_comand(String cmd);
 };
 
@@ -56,7 +58,7 @@ pin_tx(pin_tx_)
 }
 
 void Display::update(){
-    if (Serial3.available() > 0) {
+    if (SerialXXX.available() > 0) {
         flag = Check_message();
     }
     logic();
@@ -69,6 +71,12 @@ void Display::init()
     while(millis() - time_init < 1000){}
     send_comand("page page0");
     time_break(10);
+    lock_btn(true);
+}
+
+//lock = true - блокировка кнопок, false - разблокировка
+void Display::lock_btn(bool lock){
+    if(lock){
     send_comand("tsw bt0,0");
     time_break(10);
     send_comand("tsw bt1,0");
@@ -78,13 +86,28 @@ void Display::init()
     send_comand("tsw bt3,0");
     time_break(10);
     send_comand("tsw bt4,0");
-
+    }else{
+    send_comand("tsw bt0,1");
+    time_break(10);
+    send_comand("tsw bt1,1");
+    time_break(10);
+    send_comand("tsw bt2,1");
+    time_break(10);
+    send_comand("tsw bt3,1");
+    time_break(10);
+    send_comand("tsw bt4,1");
+    }
+    // for(int i = 0; i<5;++i){
+    //     char num_btn = ('0'+i);
+    //     send_comand(String("tsw bt")+String(&num_btn)+String(",")+String(lock==true?"0":"1"));
+    //     time_break(10);
+    // }
 }
 
 void Display::send_comand(String cmd){
-    Serial3.print(cmd);
+    SerialXXX.print(cmd);
     uint8_t ndt[3] = { 255,255,255};//0xFF, 0xFF, 0xFF};
-    Serial3.write(ndt, 3);
+    SerialXXX.write(ndt, 3);
 
 }
 
@@ -92,15 +115,7 @@ void Display::logic()
 {
     if(millis() - time_init > time_waiting && !flag_waiting){
         flag_waiting = 1;
-        send_comand("tsw bt0,1");
-        time_break(10);
-        send_comand("tsw bt1,1");
-        time_break(10);
-        send_comand("tsw bt2,1");
-        time_break(10);
-        send_comand("tsw bt3,1");
-        time_break(10);
-        send_comand("tsw bt4,1");
+        lock_btn(false);
     }
     if (flag == events_Display::AIR_STOP) {
         flow.stop();
@@ -140,29 +155,29 @@ void Display::logic()
 Display::events_Display Display::Check_message() {
 
     int length_of_message;
-    char command = Serial3.peek();
-    // Serial3.println(command, HEX);
+    char command = SerialXXX.peek();
+    // SerialXXX.println(command, HEX);
 
     switch (command) {
 
         case 0x41:
             length_of_message = 2;
-            Serial3.readBytes(buf, length_of_message);
-            // Serial3.println("ало START_EVENT"); 
+            SerialXXX.readBytes(buf, length_of_message);
+            // SerialXXX.println("ало START_EVENT"); 
             return events_Display::START_EVENT;
             break;
 
         case 0x40:
             length_of_message = 2;
-            Serial3.readBytes(buf, length_of_message);
-            // Serial3.println("алооооо STOP_EVENT");
+            SerialXXX.readBytes(buf, length_of_message);
+            // SerialXXX.println("алооооо STOP_EVENT");
             return events_Display::STOP_EVENT;
             break;
 
         case 0x42:
             length_of_message = 2;
-            Serial3.readBytes(buf, length_of_message);
-            // Serial3.println("алооооо");
+            SerialXXX.readBytes(buf, length_of_message);
+            // SerialXXX.println("алооооо");
 
             if (buf[1] == 0x31)
                 return events_Display::AIR_START;
@@ -172,7 +187,7 @@ Display::events_Display Display::Check_message() {
 
         case 0x68:
             length_of_message = 2;
-            Serial3.readBytes(buf, length_of_message);
+            SerialXXX.readBytes(buf, length_of_message);
             // buf[0] = 1;
             // buf[1] = 1;
             return events_Display::START_EVENT;
@@ -180,7 +195,7 @@ Display::events_Display Display::Check_message() {
 
         case 0x72:
             length_of_message = 2;
-            Serial3.readBytes(buf, length_of_message);
+            SerialXXX.readBytes(buf, length_of_message);
             // buf[0] = 1;
             // buf[1] = 0;
             return events_Display::STOP_EVENT;

@@ -103,7 +103,18 @@ void loop()
         display.update();
         flow.update();
     }
-
+    #if(mode_work)//g++
+        if(millis() - timer_event >= 15000 && state == 0) {
+            timer_event = millis();
+            flow.start(state_Flow::do_solo);
+            ++state;
+        }
+        //  if(millis() - timer_event >= 100 && state == 1) {
+        //     timer_event = millis();
+        //     flow.stop(); 
+        //     ++state;
+        // }
+    #endif
     // if(millis() - timer_event >= 15000 && state == 0) {
     //     timer_event = millis();
     //     flow.start(state_Flow::do_solo);

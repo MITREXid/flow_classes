@@ -38,8 +38,8 @@ public:
 Actuator::Actuator(state_Component first_state, uint8_t control_pin_)
     : Component(
         first_state, //состояние по умолчанию
-        2000, //время открытия
-        2000 //время закрытия
+        1000, //время открытия
+        1000 //время закрытия
     ),
     control_pin{control_pin_}
 {}

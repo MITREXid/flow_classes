@@ -198,8 +198,8 @@ private:
                 break;
             case state_Flow::do_produvka:
                 if(isStartState(num_curr_mag, true)){
-                        num_curr_mag = get_num_curr_mag_next();
-                        if(num_curr_mag != 0){//чтоб только по 1 разу кадждую
+                        num_curr_mag = get_num_curr_mag_prev();
+                        if(num_curr_mag != 3){//чтоб только по 1 разу кадждую
                             get_mag()->start(state_Alg_mag::produvka);
                         }else{
                             stop();//чтоб только по 1 разу кадждую
@@ -248,7 +248,7 @@ private:
                 get_mag(get_num_curr_mag_next(true))->start(state_Alg_mag::prepare);
                 break;
             case state_Flow::do_produvka:
-                num_curr_mag = 0;
+                num_curr_mag = 3;
                 get_mag()->start(state_Alg_mag::produvka);
                 break;
             case state_Flow::do_clearing:
