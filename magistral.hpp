@@ -229,8 +229,8 @@ void Magistral::logic(){
 
     if(
         clapan.getStatus() == state_Component::in_going ||
-        actuator.getStatus() == state_Component::in_going //||
-        // ball_cran.getStatus() == state_Component::in_going
+        actuator.getStatus() == state_Component::in_going ||
+        ball_cran.getStatus() == state_Component::in_going
     ){
         return;
     }
