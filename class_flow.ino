@@ -63,14 +63,9 @@ Flow flow(
 );
 
 Display display(flow);
-// Flow * flow2;
-// Magistral mag1(PWM,10,11,12);
-// Magistral mag2(PWM,10,11,12);
-// Magistral mag3(PWM,10,11,12);
-// Signal<> sig_start;
-// Signal<> sig_end;
-// Timer t1(1000, &sig_start, &sig_end, nullptr);
-// Data_alg dalg;
+
+
+
 unsigned long timer_delay_loop ;
 unsigned long timer_event;
 unsigned long state;
@@ -87,76 +82,36 @@ void setup()
         d_println(freeRAM());
     #endif
     
-// flow2 = new Flow(10,11,12,13);
-    // flow2->init();
-    // Flow flow1(10,11,12,13);
-// Magistral mag1(0, PWM,10,11,12, dalg);//149
-// dalg = setup_alg_magistral(4);//168
-display.init();
+    display.init();
     flow.init();
-    // flow.group[mag].init();
-    // flow.pwm.init();
-// act = new Actuator ( state_Component::close, PWM, 10);
-// Clapan *act2 = new Clapan (state_Component::open, PWM, 11);
-// Ball_cran *act3 = new Ball_cran (state_Component::close, 12);
-// Component *comp = new Component{
-//         0, //состояние по умолчанию
-//         700, //время открытия
-//         700 //время закрытия
-//     };
 
     #if(!mode_work)//arduino
         d_println(freeRAM());
         d_println(F("==="));
         d_println(val-freeRAM());
     #endif
-    // act.init();
-    // act2.init();
-    // act3.init();
-    // mag.init();
-    // mag1.init();
-    // mag2.init();
-    // mag3.init();
     timer_delay_loop = millis();
     timer_event = millis();
     state = 0;
-    // t1.restart();
-        d_print(F("Staart"));
+    d_println(F("Staart"));
 }
 
 void loop()
 {
     if(millis() - timer_delay_loop >= 100){
         timer_delay_loop = millis();
-
-
-    // flow.group[mag].update();
-    // flow.pwm.update();
-    display.update();
+        display.update();
         flow.update();
     }
 
-    // if(millis() - timer_event >= 3000 && state == 0) {
-        // timer_event = millis();
-// flow.group[mag].actuator.open();
-    // flow.start_solo();
-    // flow.start(state_Flow::do_trio);
-
-        // ++state;
-    // }
-    // if(millis() - timer_event >= 3000 && state == 1) {
-        // timer_event = millis();
-// flow.group[mag].actuator.close();
-        // flow.stop();
-        // state = 0;
-    // }
-    //  if(millis() - timer_event >= 50000 && state == 2) {
+    // if(millis() - timer_event >= 15000 && state == 0) {
     //     timer_event = millis();
-    // flow.start(state_Flow::do_trio);
-    //     // mag.start();
-    //     // // act.close();
-    //     // act2.close();
-    //     // act3.close();
+    //     flow.start(state_Flow::do_solo);
+    //     ++state;
+    // }
+    //  if(millis() - timer_event >= 100 && state == 1) {
+    //     timer_event = millis();
+    //     flow.stop(); 
     //     ++state;
     // }
     // // if(millis() - timer_event >= 5000 && state == 1){

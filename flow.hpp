@@ -53,8 +53,8 @@ class Flow: public Universal_object<state_Flow>{
     void init(){
         setup_alg_magistral(kol_all_mag, data_alg);
         pinMode(pin_power_v12,OUTPUT);
+        d_println(F("power_12V: HIGH"));
         digitalWrite(pin_power_v12,HIGH);
-        d_print(F("power_12V: HIGH"));
 
         pwm.init();
 
@@ -73,8 +73,8 @@ class Flow: public Universal_object<state_Flow>{
         while(millis()-time_mark<100){}
 
 
+        d_println(F("power_12V: LOW"));
         digitalWrite(pin_power_v12,LOW);
-        d_print(F("power_12V: LOW"));
     }
 
     void update(){
@@ -176,7 +176,7 @@ private:
                             if(activated_stop_on_this_mag == false){
                                 activated_stop_on_this_mag = true;
                                 d_print(F("Not START mag = "));
-                                d_println(num_curr_mag);
+                                d_println((int)num_curr_mag);
                                 get_mag(num_curr_mag)->stop();
                             }
                         }else{

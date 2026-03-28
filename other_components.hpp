@@ -65,27 +65,10 @@ public:
         update();
     }
 
-    //  void funcSigStartOpen(){
-    //     d_println(F("Start Open Clapan"));  
-    //     digitalWrite(control_pin, LOW);
-    // }
-    // void funcSigEndOpen(){
-    //     d_println(F("End Open Clapan"));
-    // }
-
-    // void funcSigStartClose(){
-    //     d_println(F("Start Close Clapan")); 
-    //     digitalWrite(control_pin, HIGH);
-        
-    // }
-    // void funcSigEndClose(){
-    //     d_println(F("End Close Clapan")); 
-    // }
-
 
     void funcSigStartOpen(){
         d_println(F("Start Open Clapan"));  
-        pinMode(control_pin, HIGH);
+        digitalWrite(control_pin, LOW);
         PWM.voltageON();
     }
 
@@ -96,7 +79,7 @@ public:
 
     void funcSigStartClose(){
         d_println(F("Start Close Clapan")); 
-        pinMode(control_pin, LOW);
+        digitalWrite(control_pin, HIGH);
        PWM.voltageON();
     }
     void funcSigEndClose(){

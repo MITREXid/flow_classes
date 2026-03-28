@@ -24,15 +24,24 @@
     // #define pinMode(a,b)  d_print("pinMode(");\
     //                        d_print((int)a);\
     //                        d_print(", ");\
-    //                        d_print(b);\
+                          //  d_print(b==OUTPUT?"OUTPUT":"INPUT"));\
     //                        d_println(")");
-    #define pinMode(a,b) ;//чтоб не писало ни сего
-    #define digitalWrite(a,b);
 
-    #define OUTPUT "OUTPUT"
-    #define INPUT "INPUT"
-    #define HIGH "HIGH"
-    #define LOW "LOW"
+    #define pinMode(a,b) static_assert((b==LOW||b==HIGH)?false:true, "Invalid pin mode")
+    #define digitalWrite(a,b) d_print("digitalWrite(");\
+                            d_print((int)a);\
+                            d_print(", ");\
+                            d_print(((int)b==HIGH?"HIGH":"LOW"));\
+                            d_println(")")
+
+    // #define OUTPUT "OUTPUT"
+    // #define INPUT "INPUT"
+    // #define HIGH "HIGH"
+    // #define LOW "LOW"
+    #define INPUT   0
+    #define OUTPUT  1
+    #define LOW     2
+    #define HIGH    3
     #define A0 16
     #define A1 17
     #define A2 18
