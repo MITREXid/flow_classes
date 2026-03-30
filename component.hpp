@@ -6,7 +6,7 @@
 #include "universal_object.hpp"
 #include "timer.hpp"
 
-enum state_Component {close = 0, in_going = 1, open = 2};
+enum state_Component {close = 0, going_close = 1, open = 2, going_open = 3};
 
 // Базовый класс без виртуальных функций
 class Component : public Universal_object<state_Component> {
@@ -24,12 +24,12 @@ protected:
 public:
     Component(){}
     
-
+    
         /// @brief конструктор задает начальные параметры
         /// @param curr_state состояние по умолчанию
     Component(state_Component curr_state) {
         Component();
-        if(curr_state == in_going) {
+        if(curr_state == going_close || curr_state == going_open) {
             d_println(F("Not correct start state. set close"));
             curr_state = state_Component::close;
         }
@@ -47,7 +47,7 @@ public:
         unsigned long in_time_close
     ) {
         Component();
-        if(curr_state == in_going) {
+        if(curr_state == going_close || curr_state == going_open) {
             d_println(F("Not correct start state. set close"));
             curr_state = state_Component::close;
         }
@@ -68,11 +68,11 @@ public:
             funcSigEndClose();
         }
         if(SigStartOpen.isTrueAndNotCheked()){  
-           setStatus(state_Component::in_going);
+           setStatus(state_Component::going_open);
             funcSigStartOpen();
         }
         if(SigStartClose.isTrueAndNotCheked()){  
-           setStatus(state_Component::in_going);
+           setStatus(state_Component::going_close);
             funcSigStartClose();
         }
         if(SigEndOpen.isTrueAndNotCheked()){  
@@ -84,29 +84,43 @@ public:
     }
     
     bool open() {
-        if(getStatus() == state_Component::in_going) {
-            d_println(F("cant open: in going"));
+        // if(!is_going()) {
+        //     d_println(F("cant open: in going"));
+        //     return false;
+        // }
+        if(getStatus() == state_Component::open) {
+            d_println(F("already open"));
             return false;
-        }
-        if(getStatus() == state_Component::close) {
+        } else if(getStatus() == state_Component::going_open) {
+            d_println(F("yet going_open"));
+            return true;
+        }else{
+            if(getStatus() == state_Component::going_close) {
+                d_println(F("was going_close, let's go open"));
+            }
             timer_opening.restart();
             timer_closing.stop();
-        } else {
-            d_println(F("cant open: already open"));
         }
         return true;
     }
     
     bool close() {
-        if(getStatus() == state_Component::in_going) {
-            d_println(F("cant close: in going"));
-            return false;
-        }
-        if(getStatus() == state_Component::open) {
+        // if(!is_going()) {
+        //     d_println(F("cant close: in going"));
+        //     return false;
+        // }
+        if(getStatus() == state_Component::close) {
+            d_println(F("already close"));
+            return true;
+        } else if(getStatus() == state_Component::going_close) {
+            d_println(F("yet going_close"));
+            return true;
+        }else{
+            if(getStatus() == state_Component::going_open) {
+                d_println(F("was going_open, let's go close"));
+            }
             timer_closing.restart();
             timer_opening.stop();
-        } else {
-            d_println(F("cant close: already close"));
         }
         return true;
     }
@@ -141,7 +155,7 @@ public:
     // Методы для проверки состояний остаются без изменений
     bool can_open() { return (getStatus() == state_Component::close); }
     bool can_close() { return (getStatus() == state_Component::open); }
-    
+    bool is_going(){if(getStatus() == going_close || getStatus() == going_open) {return true;}return false;}
 };
 
 

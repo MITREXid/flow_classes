@@ -223,9 +223,9 @@ void Magistral::stop(){
 
 bool Magistral::is_going_comp(){
     if(
-        clapan.getStatus() == state_Component::in_going ||
-        actuator.getStatus() == state_Component::in_going// ||
-        //ball_cran.getStatus() == state_Component::in_going
+        clapan.is_going() ||
+        actuator.is_going() ||
+        ball_cran.is_going()
     ){
         return true;
     }
@@ -235,7 +235,7 @@ bool Magistral::is_going_comp(){
 void Magistral::logic(){
     
 
-    if(is_going_comp() == false){
+    if(is_going_comp()){
         return;
     }
     

@@ -184,6 +184,7 @@ private:
                             activated_stop_on_this_mag = false;
                         }
                     }else{
+                        // d_println(F("FULL STOPED"));
                         activated_stop_on_this_mag = false;
                     }
                 break;
