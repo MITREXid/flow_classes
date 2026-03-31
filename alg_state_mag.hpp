@@ -143,15 +143,15 @@ Data_alg &result){
     one_state_Magistral* mag_start_state = new one_state_Magistral(4, kol_users);
     mag_start_state->set_curr_state(state_Magistral::start_state);
     mag_start_state->set_time_in_this(10);
-    one_state_Magistral* going_to_gate_ = new one_state_Magistral(1, kol_users);
-    going_to_gate_->set_curr_state(state_Magistral::going_to_gate);
-    going_to_gate_->set_time_in_this(2300);
-    one_state_Magistral* all_close_ = new one_state_Magistral(1, kol_users);
-    all_close_->set_curr_state(state_Magistral::all_close);
-    all_close_->set_time_in_this(1000);
+    one_state_Magistral* preparing_in_magistral_ = new one_state_Magistral(1, kol_users);
+    preparing_in_magistral_->set_curr_state(state_Magistral::in_magistral);
+    preparing_in_magistral_->set_time_in_this(500);
+    one_state_Magistral* skip_gate_ = new one_state_Magistral(1, kol_users);
+    skip_gate_->set_curr_state(state_Magistral::skip_gate);
+    skip_gate_->set_time_in_this(1500);
     one_state_Magistral* in_magistral_ = new one_state_Magistral(2, kol_users);
     in_magistral_->set_curr_state(state_Magistral::in_magistral);
-    in_magistral_->set_time_in_this(3000);
+    in_magistral_->set_time_in_this(2000);
     one_state_Magistral* air_on_ = new one_state_Magistral(2, kol_users);
     air_on_->set_curr_state(state_Magistral::air_on);
     air_on_->set_time_in_this(27000);
@@ -166,14 +166,14 @@ Data_alg &result){
     full_open_->set_time_in_this(15000);   
 
 
-    air_on_->set_path(0,going_to_gate_);//продолжить цикл
+    air_on_->set_path(0,preparing_in_magistral_);//продолжить цикл
     air_on_->set_path(1,mag_start_state);//на выход
     in_magistral_->set_path(0,air_on_);
     in_magistral_->set_path(1,in_magistral_);
-    all_close_->set_path(0,in_magistral_);
-    going_to_gate_->set_path(0,all_close_);
+    skip_gate_->set_path(0,in_magistral_);
+    preparing_in_magistral_->set_path(0,skip_gate_);
     mag_start_state->set_path(0,mag_start_state);
-    mag_start_state->set_path(1,going_to_gate_);
+    mag_start_state->set_path(1,preparing_in_magistral_);
     mag_start_state->set_path(2,produv_);
     mag_start_state->set_path(3,pred_full_open_);
     produv_->set_path(0,mag_start_state);

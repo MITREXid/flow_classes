@@ -182,6 +182,14 @@ void Magistral::turn_to(state_Magistral next_state){
                 clapan.open();
                 ball_cran.open();
             break;
+        case state_Magistral::skip_gate:
+                actuator.open();
+                clapan.open();
+                ball_cran.close();
+            break;
+        default:
+            d_println("ERRROR: not correct state Magistral");
+            break;
     };
     time_to_start_new_state = millis();
 }
