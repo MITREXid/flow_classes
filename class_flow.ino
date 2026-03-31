@@ -76,7 +76,6 @@ void setup()
 {
     #if(!mode_work)//arduino
         Serial.begin(9600);
-        Serial3.begin(9600);
         d_println(F("start"));
         int val = freeRAM();
         d_println(freeRAM());

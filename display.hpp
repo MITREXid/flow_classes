@@ -66,6 +66,7 @@ void Display::update(){
 
 void Display::init()
 {
+    SerialXXX.begin(9600);
     time_init = millis();
 
     while(millis() - time_init < 1000){}
