@@ -100,6 +100,10 @@
        void postTransmission( void (a)() ){}
        void writeSingleRegister(uint32_t reg, uint32_t val){}
     };
+
+    Serial_ Serial;
+    Serial_ Serial2;
+    Serial_ Serial3;
 #else//arduino
     #include <Arduino.h>
     #define start_def 

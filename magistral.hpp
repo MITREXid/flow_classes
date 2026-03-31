@@ -136,7 +136,7 @@ switch(mod){
 
 void Magistral::check_ball_for_dyvka()
 {
-    if(ball_cran.getStatus() == state_Component::close){
+    if(ball_cran.getStatus() == state_Component::close || ball_cran.getStatus() == state_Component::going_close){
         sig_ball_not_close.setState(false);
     }else{
         sig_ball_not_close.setState(true);
@@ -235,9 +235,9 @@ bool Magistral::is_going_comp(){
 void Magistral::logic(){
     
 
-    if(is_going_comp()){
-        return;
-    }
+    // if(is_going_comp()){
+    //     return;
+    // }
     
 
     uint32_t curr_time = millis() - time_to_start_new_state;
