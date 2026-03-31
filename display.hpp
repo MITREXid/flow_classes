@@ -141,6 +141,7 @@ void Display::logic()
                 break;
 
             case 0x33:
+                flow.start(state_Flow::do_triplet);
                 break;
         }
     }

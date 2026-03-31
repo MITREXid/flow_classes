@@ -16,7 +16,8 @@ enum class state_Flow{
         do_solo,
         do_trio,
         do_produvka,
-        do_clearing
+        do_clearing,
+        do_triplet
 };
 
 class Flow: public Universal_object<state_Flow>{
@@ -209,6 +210,8 @@ private:
                 break;
             case state_Flow::do_clearing:
                 break;
+            case state_Flow::do_triplet:
+                break;
          }
     }
 
@@ -256,6 +259,12 @@ private:
                 num_curr_mag = 0;
                 for(uint8_t i = 0; i<kol_all_mag;++i){
                     get_mag(i)->start(state_Alg_mag::clearing);
+                }
+                break;
+            case state_Flow::do_triplet:
+                num_curr_mag = 0;
+                for(uint8_t i = 0; i<kol_mag_group;++i){
+                    get_mag(i)->start(state_Alg_mag::prepare);
                 }
                 break;
 
