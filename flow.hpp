@@ -264,7 +264,7 @@ private:
             case state_Flow::do_triplet:
                 num_curr_mag = 0;
                 for(uint8_t i = 0; i<kol_mag_group;++i){
-                    get_mag(i)->start(state_Alg_mag::prepare);
+                    get_mag(i)->start(state_Alg_mag::one_cycle);
                 }
                 break;
 
