@@ -158,13 +158,18 @@ Data_alg &result){
     one_state_Magistral* produv_ = new one_state_Magistral(1, kol_users);
     produv_->set_curr_state(state_Magistral::air_on);
     produv_->set_time_in_this(27000);
-    one_state_Magistral* pred_full_open_ = new one_state_Magistral(1, kol_users);
-    pred_full_open_->set_curr_state(state_Magistral::going_to_gate);
-    pred_full_open_->set_time_in_this(500);  
-    one_state_Magistral* full_open_ = new one_state_Magistral(1, kol_users);
-    full_open_->set_curr_state(state_Magistral::full_open);
-    full_open_->set_time_in_this(15000);   
-
+    one_state_Magistral* pred_skip_gate_clearing_ = new one_state_Magistral(1, kol_users);
+    pred_skip_gate_clearing_->set_curr_state(state_Magistral::going_to_gate);
+    pred_skip_gate_clearing_->set_time_in_this(500);  
+    one_state_Magistral* skip_gate_clearing_ = new one_state_Magistral(1, kol_users);
+    skip_gate_clearing_->set_curr_state(state_Magistral::skip_gate);
+    skip_gate_clearing_->set_time_in_this(60000);   
+    one_state_Magistral* full_open_warning_clearing_ = new one_state_Magistral(1, kol_users);
+    full_open_warning_clearing_->set_curr_state(state_Magistral::full_open);
+    full_open_warning_clearing_->set_time_in_this(15000);   
+     one_state_Magistral* post_full_open_warning_clearing_ = new one_state_Magistral(1, kol_users);
+    pred_skip_gate_clearing_->set_curr_state(state_Magistral::going_to_gate);
+    pred_skip_gate_clearing_->set_time_in_this(500);
 
     air_on_->set_path(0,preparing_in_magistral_);//продолжить цикл
     air_on_->set_path(1,mag_start_state);//на выход
@@ -175,10 +180,12 @@ Data_alg &result){
     mag_start_state->set_path(0,mag_start_state);
     mag_start_state->set_path(1,preparing_in_magistral_);
     mag_start_state->set_path(2,produv_);
-    mag_start_state->set_path(3,pred_full_open_);
+    mag_start_state->set_path(3,pred_skip_gate_clearing_);
     produv_->set_path(0,mag_start_state);
-    full_open_->set_path(0,produv_);
-    pred_full_open_->set_path(0,full_open_);
+    skip_gate_clearing_->set_path(0,full_open_warning_clearing_);
+    pred_skip_gate_clearing_->set_path(0,skip_gate_clearing_);
+    full_open_warning_clearing_->set_path(0,post_full_open_warning_clearing_);
+    post_full_open_warning_clearing_->set_path(0,mag_start_state);
     // for(uint8_t i = 0;i<kol_users;++i){
     //     going_to_gate_->set_flag_reset_timer(i,true);
     //     mag_start_state->set_flag_reset_timer(i,true);
