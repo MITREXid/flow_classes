@@ -73,8 +73,8 @@ class Dyvka : public Universal_object<state_Dyvka>{
             setStatus(state_Dyvka::no_air);
         }
         void set_goal_frec(uint16_t frec){
-            if(frec>5000){
-                goal_freq_chastot = 5000;
+            if(frec>10000){
+                goal_freq_chastot = 10000;
             }
             goal_freq_chastot = frec;
         }
