@@ -68,6 +68,7 @@
       public:
       uint8_t peek(){}
       void readBytes(char *buf, int size){}
+      void begin(uint32_t bod){}
       uint8_t available(){}
       void print(std::string val){d_print("(Serial.print) = ");d_print(val);}
       void write(char val[], uint8_t size){
@@ -83,14 +84,13 @@
         }
       }
       void println(std::string val){d_print("(Serial.println) = ");d_println(val);}
-    } Serial, Serial3;
+    };
     
     inline void delayMicroseconds(uint32_t val){}
 
     class SoftwareSerial :public Serial_{
       public:
       SoftwareSerial(uint8_t rx, uint8_t tx){}
-      void begin(uint32_t bod){}
     };
 
     class ModbusMaster{

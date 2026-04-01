@@ -249,7 +249,7 @@ void Magistral::logic(){
     
 
     uint32_t curr_time = millis() - time_to_start_new_state;
-    if(current_state->get_time_in_this() < curr_time){ 
+    if(current_state->get_time_in_this(id) < curr_time){ 
         if(current_state->get_curr_state() != current_state->get_next_state(id)->get_curr_state()){
             cycle_ready_sig.setState(false);//Сигнал
             d_print(F("#"));

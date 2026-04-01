@@ -39,15 +39,36 @@ class one_state_Magistral{
                 sizeof(one_state_Magistral *) * kol_path, 
                 sizeof(one_state_Magistral *)
             );
+           time_in_this = (Time_in_this *)calloc(
+                sizeof(Time_in_this) * kol_users, 
+                sizeof(Time_in_this)
+            );
             paths[0] = this;
 
          }
          
-         Time_in_this get_time_in_this(){
-            return time_in_this;
+         Time_in_this get_time_in_this(int8_t user){
+             if(inRangeUsers(user)){
+                return time_in_this[user];
+            }  
+            d_println(F("ERROR: get_time_in_this in one_state_Magistral"));
+            return 0;
+
          }
-         void set_time_in_this(Time_in_this val){
-            time_in_this = val;
+         void set_time_in_this(Time_in_this val, int8_t user = -1){
+            if(user == -1){
+                for(int i = 0;i<kol_users;++i){
+                    if(inRangeUsers(i)){
+                        time_in_this[i] = val;
+                    }
+                }
+            }else{
+                if(inRangeUsers(user)){
+                    time_in_this[user] = val;
+                }
+                d_println(F("ERROR: set_time_in_this in one_state_Magistral"));
+                return;   
+            }
          }
 
          state_Magistral get_curr_state(){
@@ -109,7 +130,7 @@ class one_state_Magistral{
 private:
         uint8_t kol_path = 1;
         uint8_t kol_users = 1;
-        Time_in_this time_in_this = 0;
+        Time_in_this *time_in_this = 0;
         one_state_Magistral **paths = nullptr;//все возможные пути
         state_Magistral curr_state = state_Magistral::undefine;
         uint8_t *choose_path = nullptr;//куда дальше переходим
@@ -164,12 +185,13 @@ Data_alg &result){
     one_state_Magistral* skip_gate_clearing_ = new one_state_Magistral(1, kol_users);
     skip_gate_clearing_->set_curr_state(state_Magistral::skip_gate);
     skip_gate_clearing_->set_time_in_this(60000);   
+    // skip_gate_clearing_->set_time_in_this(10000, 0);//пример изменения времени одного состояния конкретной  магистрали
     one_state_Magistral* full_open_warning_clearing_ = new one_state_Magistral(1, kol_users);
     full_open_warning_clearing_->set_curr_state(state_Magistral::full_open);
     full_open_warning_clearing_->set_time_in_this(15000);   
      one_state_Magistral* post_full_open_warning_clearing_ = new one_state_Magistral(1, kol_users);
-    pred_skip_gate_clearing_->set_curr_state(state_Magistral::going_to_gate);
-    pred_skip_gate_clearing_->set_time_in_this(500);
+    post_full_open_warning_clearing_->set_curr_state(state_Magistral::going_to_gate);
+    post_full_open_warning_clearing_->set_time_in_this(500);
 
     air_on_->set_path(0,preparing_in_magistral_);//продолжить цикл
     air_on_->set_path(1,mag_start_state);//на выход
