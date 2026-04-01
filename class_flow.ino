@@ -25,7 +25,7 @@
 #define rele_13 35//актуатор
 #define rele_15 37//актуатор
 
-
+//тут ошибка по схеме FLOW3_v2.2 другое(в физике пока норм)
 #define mod2_clap_rele_1_2  47//клапан
 #define mod2_clap_rele_3_4 49//клапан
 #define mod2_clap_rele_5_6 39//клапан
