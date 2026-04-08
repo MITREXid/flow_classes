@@ -26,12 +26,12 @@
 #define rele_15 37//актуатор 37
 
 //тут ошибка по схеме FLOW3_v2.2 другое(в физике пока норм) в комментах, то что должно быть по схеме
-#define mod2_clap_rele_1_2  47//клапан 39
-#define mod2_clap_rele_3_4 49//клапан 45
-#define mod2_clap_rele_5_6 39//клапан 47
-#define mod2_clap_rele_7_8 53//клапан 49
+#define mod2_clap_rele_1_2  39//клапан 39
+#define mod2_clap_rele_3_4 45//клапан 45
+#define mod2_clap_rele_5_6 47//клапан 47
+#define mod2_clap_rele_7_8 49//клапан 49
 
-#define mod2_rele_15_power_clap 45// 53
+#define mod2_rele_15_power_clap 53// 53
 #define rele_2_power_act 23// 23
 
 #define pin_power_v12 rele_2_power_act
