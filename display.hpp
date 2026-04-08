@@ -92,8 +92,8 @@ void Display::lock_btn(bool lock){
     time_break(10);
     send_comand("tsw bt1,1");
     time_break(10);
-    send_comand("tsw bt2,1");
-    time_break(10);
+    // send_comand("tsw bt2,1");
+    // time_break(10);
     send_comand("tsw bt3,1");
     time_break(10);
     send_comand("tsw bt4,1");
@@ -137,7 +137,7 @@ void Display::logic()
                 break;
 
             case 0x32:
-                flow.start(state_Flow::do_clearing);
+                // flow.start(state_Flow::do_clearing);
                 break;
 
             case 0x33:

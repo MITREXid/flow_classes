@@ -15,24 +15,24 @@
 // Ball_cran act3(state_Component::close, 12);
 // Magistral mag(PWM,10,11,12, &mag_start_state);
 
-#define rele_5 27//шаровые
-#define rele_6 43//шаровые
-#define rele_7 29//шаровыеS
-#define rele_8 41//шаровые
+#define rele_5 27//шаровые 27
+#define rele_6 43//шаровые 43
+#define rele_7 29//шаровые 29
+#define rele_8 41//шаровые 41
 
-#define rele_9 31//актуатор
-#define rele_11 33//актуатор
-#define rele_13 35//актуатор
-#define rele_15 37//актуатор
+#define rele_9 31//актуатор 31
+#define rele_11 33//актуатор 33
+#define rele_13 35//актуатор  35
+#define rele_15 37//актуатор 37
 
-//тут ошибка по схеме FLOW3_v2.2 другое(в физике пока норм)
-#define mod2_clap_rele_1_2  47//клапан
-#define mod2_clap_rele_3_4 49//клапан
-#define mod2_clap_rele_5_6 39//клапан
-#define mod2_clap_rele_7_8 53//клапан
+//тут ошибка по схеме FLOW3_v2.2 другое(в физике пока норм) в комментах, то что должно быть по схеме
+#define mod2_clap_rele_1_2  47//клапан 39
+#define mod2_clap_rele_3_4 49//клапан 45
+#define mod2_clap_rele_5_6 39//клапан 47
+#define mod2_clap_rele_7_8 53//клапан 49
 
-#define mod2_rele_15_power_clap 45
-#define rele_2_power_act 23
+#define mod2_rele_15_power_clap 45// 53
+#define rele_2_power_act 23// 23
 
 #define pin_power_v12 rele_2_power_act
 #define pin_power_v12_clapan mod2_rele_15_power_clap
@@ -107,8 +107,8 @@ void loop()
             timer_event = millis();
             // flow.start(state_Flow::do_solo);
             // flow.start(state_Flow::do_clearing);
-            // flow.start(state_Flow::do_produvka);
-            flow.start(state_Flow::do_trio);
+            flow.start(state_Flow::do_produvka);
+            // flow.start(state_Flow::do_trio);
             ++state;
         }
         //  if(millis() - timer_event >= 100 && state == 1) {
