@@ -173,12 +173,21 @@ Data_alg &result){
     one_state_Magistral* in_magistral_ = new one_state_Magistral(2, kol_users);
     in_magistral_->set_curr_state(state_Magistral::in_magistral);
     in_magistral_->set_time_in_this(2000);
-    one_state_Magistral* air_on_ = new one_state_Magistral(2, kol_users);
+    one_state_Magistral* air_on_ = new one_state_Magistral(1, kol_users);
     air_on_->set_curr_state(state_Magistral::air_on);
     air_on_->set_time_in_this(27000);
     one_state_Magistral* produv_ = new one_state_Magistral(1, kol_users);
     produv_->set_curr_state(state_Magistral::air_on);
     produv_->set_time_in_this(27000);
+
+    //нужно после продувки(перед загрузкой) сделать задержку, чтоб кофе норм отнрузилось 
+    one_state_Magistral* waiting_for_air_off_ = new one_state_Magistral(2, kol_users);
+    waiting_for_air_off_->set_curr_state(state_Magistral::all_close);
+    waiting_for_air_off_->set_time_in_this(0);
+    waiting_for_air_off_->set_time_in_this(500, 3);//тоько для 4ой магистрали, которая соло
+
+
+    /* чистка */
     one_state_Magistral* pred_skip_gate_clearing_ = new one_state_Magistral(1, kol_users);
     pred_skip_gate_clearing_->set_curr_state(state_Magistral::going_to_gate);
     pred_skip_gate_clearing_->set_time_in_this(500);  
@@ -192,10 +201,17 @@ Data_alg &result){
      one_state_Magistral* post_full_open_warning_clearing_ = new one_state_Magistral(1, kol_users);
     post_full_open_warning_clearing_->set_curr_state(state_Magistral::going_to_gate);
     post_full_open_warning_clearing_->set_time_in_this(500);
+    /* чистка */
 
-    air_on_->set_path(0,preparing_in_magistral_);//продолжить цикл
-    air_on_->set_path(1,mag_start_state);//на выход
+    // air_on_->set_path(0,preparing_in_magistral_);//продолжить цикл
+    // air_on_->set_path(1,mag_start_state);//на выход
+    // in_magistral_->set_path(0,air_on_);
+
     in_magistral_->set_path(0,air_on_);
+    waiting_for_air_off_->set_path(0,preparing_in_magistral_);//продолжить цикл
+    waiting_for_air_off_->set_path(1,mag_start_state);//на выход
+    air_on_->set_path(0,waiting_for_air_off_);
+
     in_magistral_->set_path(1,in_magistral_);
     skip_gate_->set_path(0,in_magistral_);
     preparing_in_magistral_->set_path(0,skip_gate_);
@@ -204,18 +220,17 @@ Data_alg &result){
     mag_start_state->set_path(2,produv_);
     mag_start_state->set_path(3,pred_skip_gate_clearing_);
     produv_->set_path(0,mag_start_state);
+    /* чистка */
     skip_gate_clearing_->set_path(0,full_open_warning_clearing_);
     pred_skip_gate_clearing_->set_path(0,skip_gate_clearing_);
     full_open_warning_clearing_->set_path(0,post_full_open_warning_clearing_);
     post_full_open_warning_clearing_->set_path(0,mag_start_state);
-    // for(uint8_t i = 0;i<kol_users;++i){
-    //     going_to_gate_->set_flag_reset_timer(i,true);
-    //     mag_start_state->set_flag_reset_timer(i,true);
-    // }
+    /* чистка */
+   
 
     // Data_alg result;
     result.start_state = mag_start_state;
-    result.exit_main_cycle = air_on_;
+    result.exit_main_cycle = waiting_for_air_off_;
     result.in_mag = in_magistral_;
     return true;
 }
