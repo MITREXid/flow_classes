@@ -169,7 +169,7 @@ Data_alg &result){
     preparing_in_magistral_->set_time_in_this(500);
     one_state_Magistral* skip_gate_ = new one_state_Magistral(1, kol_users);
     skip_gate_->set_curr_state(state_Magistral::skip_gate);
-    skip_gate_->set_time_in_this(1700);
+    skip_gate_->set_time_in_this(1500);
     one_state_Magistral* in_magistral_ = new one_state_Magistral(2, kol_users);
     in_magistral_->set_curr_state(state_Magistral::in_magistral);
     in_magistral_->set_time_in_this(2000);
