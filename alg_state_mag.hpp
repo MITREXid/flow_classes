@@ -169,7 +169,7 @@ Data_alg &result){
     preparing_in_magistral_->set_time_in_this(500);
     one_state_Magistral* skip_gate_ = new one_state_Magistral(1, kol_users);
     skip_gate_->set_curr_state(state_Magistral::skip_gate);
-    skip_gate_->set_time_in_this(1500);
+    skip_gate_->set_time_in_this(1700);
     one_state_Magistral* in_magistral_ = new one_state_Magistral(2, kol_users);
     in_magistral_->set_curr_state(state_Magistral::in_magistral);
     in_magistral_->set_time_in_this(2000);
@@ -184,7 +184,7 @@ Data_alg &result){
     one_state_Magistral* waiting_for_air_off_ = new one_state_Magistral(2, kol_users);
     waiting_for_air_off_->set_curr_state(state_Magistral::all_close);
     waiting_for_air_off_->set_time_in_this(0);
-    waiting_for_air_off_->set_time_in_this(500, 3);//тоько для 4ой магистрали, которая соло
+    waiting_for_air_off_->set_time_in_this(2000, 3);//тоько для 4ой магистрали, которая соло
 
 
     /* чистка */

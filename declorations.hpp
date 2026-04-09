@@ -69,6 +69,7 @@
       uint8_t peek(){}
       void readBytes(char *buf, int size){}
       void begin(uint32_t bod){}
+      char read(){return 0;}
       uint8_t available(){}
       void print(std::string val){d_print("(Serial.print) = ");d_print(val);}
       void write(char val[], uint8_t size){

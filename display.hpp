@@ -158,38 +158,46 @@ Display::events_Display Display::Check_message() {
 
     int length_of_message;
     char command = SerialXXX.peek();
-    // SerialXXX.println(command, HEX);
+       d_print(F("\n\nDISPLAY: "));
 
     switch (command) {
 
         case 0x41:
             length_of_message = 2;
             SerialXXX.readBytes(buf, length_of_message);
-            // SerialXXX.println("ало START_EVENT"); 
+           // d_print(F("\n\nDISPLAY: "));
+            d_println(F("START_EVENT 0x41")); 
             return events_Display::START_EVENT;
             break;
 
         case 0x40:
             length_of_message = 2;
             SerialXXX.readBytes(buf, length_of_message);
-            // SerialXXX.println("алооооо STOP_EVENT");
+           // d_print(F("\n\nDISPLAY: "));
+            d_println(F("STOP_EVENT 0x40"));
             return events_Display::STOP_EVENT;
             break;
 
         case 0x42:
             length_of_message = 2;
             SerialXXX.readBytes(buf, length_of_message);
-            // SerialXXX.println("алооооо");
-
-            if (buf[1] == 0x31)
+           // d_print(F("\n\nDISPLAY: "));
+             d_println(F("AIR_EVENT 0x42"));
+            if (buf[1] == 0x31){
+                d_println(F("AIR_START 0x31"));
                 return events_Display::AIR_START;
-            else if (buf[1] == 0x30)
+            }
+            else if (buf[1] == 0x30){
+                d_println(F("AIR_STOP 0x30"));
                 return events_Display::AIR_STOP;
+            }
             break;
 
         case 0x68:
             length_of_message = 2;
             SerialXXX.readBytes(buf, length_of_message);
+           // d_print(F("\n\nDISPLAY: "));
+            d_println(F("START_EVENT 0x68"));
             // buf[0] = 1;
             // buf[1] = 1;
             return events_Display::START_EVENT;
@@ -198,12 +206,15 @@ Display::events_Display Display::Check_message() {
         case 0x72:
             length_of_message = 2;
             SerialXXX.readBytes(buf, length_of_message);
+           // d_print(F("\n\nDISPLAY: "));
+            d_println(F("STOP_EVENT 0x72"));
             // buf[0] = 1;
             // buf[1] = 0;
             return events_Display::STOP_EVENT;
             break;
 
         default:
+            SerialXXX.read(); //чтобы не застревать на нераспознанных командах
             return events_Display::NOTHING;
             break;
     }
