@@ -267,7 +267,7 @@ private:
                 break;
             case state_Flow::do_triplet:
                 num_curr_mag = 0;
-                dyvka.set_goal_frec(4000);
+                dyvka.set_goal_frec(5500);
                 for(uint8_t i = 0; i<kol_mag_group;++i){
                     get_mag(i)->start(state_Alg_mag::one_cycle);
                 }
