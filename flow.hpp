@@ -172,8 +172,8 @@ private:
          switch(getStatus()){
             case state_Flow::do_stop:
                 
-                    if(!isStartState(-1, false)){//если все магистрали в стартовом состоянии(компоненты должны быть перекоючены)
-                        if(!isStartState(num_curr_mag, false)){
+                    if(!isStartState(-1, true)){//если все магистрали в стартовом состоянии(компоненты должны быть перекоючены)
+                        if(!isStartState(num_curr_mag, true)){
                             if(activated_stop_on_this_mag == false){
                                 activated_stop_on_this_mag = true;
                                 d_print(F("Not START mag = "));
