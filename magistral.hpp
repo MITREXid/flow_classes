@@ -145,6 +145,7 @@ void Magistral::check_ball_for_dyvka()
 
 
 void Magistral::turn_to(state_Magistral next_state){
+    d_println(F("turn is:"));
     switch(next_state){
         case state_Magistral::undefine://актуатор закрыт клапан закрыт шаровой кран закрыт
                 data_alg.start_state->set_choose_path(id, 0);
@@ -207,11 +208,11 @@ void Magistral::init()
 
 void Magistral::update()
 {
+    logic();
     clapan.update();
     actuator.update();
     ball_cran.update();
 
-    logic();
     check_ball_for_dyvka();
 }
 
@@ -252,14 +253,17 @@ void Magistral::logic(){
     if(current_state->get_time_in_this(id) < curr_time){ 
         if(current_state->get_curr_state() != current_state->get_next_state(id)->get_curr_state()){
             cycle_ready_sig.setState(false);//Сигнал
-            d_print(F("#"));
-            d_print((int)id);
-            d_print(F(" ========state: "));
-            d_print(current_state->get_curr_state());
-            d_print(F("->"));
-            d_print(current_state->get_next_state(id)->get_curr_state());
-            d_println(F("turn is:"));
-            current_state = current_state->get_next_state(id);
+            do{
+                d_print(F("#"));
+                d_print((int)id);
+                d_print(F(" ========state: "));
+                d_print(current_state->get_curr_state());
+                d_print(F("->"));
+                d_print(current_state->get_next_state(id)->get_curr_state());
+                current_state = current_state->get_next_state(id);
+            }while(current_state->get_time_in_this(id) == 0 );//состояния которые длятся 0 сек пропускаются(без измен состояния)
+
+         
             turn_to(current_state->get_curr_state());
             if(current_state->get_curr_state() == current_state->get_next_state(id)->get_curr_state()){
                 cycle_ready_sig.setState(true);//Сигнал

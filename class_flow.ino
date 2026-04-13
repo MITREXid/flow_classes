@@ -111,11 +111,11 @@ void loop()
             flow.start(state_Flow::do_trio);
             ++state;
         }
-        //  if(millis() - timer_event >= 100 && state == 1) {
-        //     timer_event = millis();
-        //     flow.stop(); 
-        //     ++state;
-        // }
+         if(millis() - timer_event >= 100 && state == 1) {
+            timer_event = millis();
+            flow.stop(); 
+            ++state;
+        }
     #endif
     // if(millis() - timer_event >= 15000 && state == 0) {
     //     timer_event = millis();

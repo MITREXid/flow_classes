@@ -66,11 +66,11 @@
     }
     class Serial_{
       public:
-      uint8_t peek(){}
+      uint8_t peek(){return 0;}
       void readBytes(char *buf, int size){}
       void begin(uint32_t bod){}
       char read(){return 0;}
-      uint8_t available(){}
+      uint8_t available(){return 0;}
       void print(std::string val){d_print("(Serial.print) = ");d_print(val);}
       void write(char val[], uint8_t size){
         d_print("(Serial.write) = ");

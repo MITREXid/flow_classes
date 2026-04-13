@@ -47,7 +47,7 @@ class one_state_Magistral{
 
          }
          
-         Time_in_this get_time_in_this(int8_t user){
+         Time_in_this get_time_in_this(int8_t user){//состояния которые длятся 0 сек пропускаются(без измен состояния)
              if(inRangeUsers(user)){
                 return time_in_this[user];
             }  
@@ -55,7 +55,7 @@ class one_state_Magistral{
             return 0;
 
          }
-         void set_time_in_this(Time_in_this val, int8_t user = -1){
+         void set_time_in_this(Time_in_this val, int8_t user = -1){//состояния которые длятся 0 сек пропускаются(без измен состояния)
             if(user == -1){
                 for(int i = 0;i<kol_users;++i){
                     if(inRangeUsers(i)){
@@ -183,7 +183,7 @@ Data_alg &result){
     //нужно после продувки(перед загрузкой) сделать задержку, чтоб кофе норм отнрузилось 
     one_state_Magistral* waiting_for_air_off_ = new one_state_Magistral(2, kol_users);
     waiting_for_air_off_->set_curr_state(state_Magistral::all_close);
-    waiting_for_air_off_->set_time_in_this(0);
+    waiting_for_air_off_->set_time_in_this(0);//состояния которые длятся 0 сек пропускаются(без измен состояния)
     waiting_for_air_off_->set_time_in_this(2000, 3);//тоько для 4ой магистрали, которая соло
 
 

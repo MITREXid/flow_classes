@@ -80,11 +80,15 @@ class Flow: public Universal_object<state_Flow>{
 
     void update(){
          pwm.update();
-         for(uint8_t i = 0; i<kol_all_mag;++i){
-            get_mag(i)->update();
-         }
+         for(uint8_t j = 0; j<kol_all_mag+1;++j){
+            for(uint8_t i = 0; i<kol_all_mag;++i){
+                get_mag(i)->update();
+            }
+            logic();
+        }
         dyvka.update();
-        logic();
+        //для того чтобы не было швов(выкл дувки на мал время) нужно
+        // 
     }
 
      void start(state_Flow st, uint8_t mag = solo_mag){
