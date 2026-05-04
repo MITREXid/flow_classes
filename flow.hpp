@@ -67,6 +67,9 @@ class Flow: public Universal_object<state_Flow>{
         
         for(uint8_t i = 0; i<kol_all_mag;++i){
             get_mag(i)->init();
+            
+            time_mark = millis();
+            while(millis()-time_mark<500){}
             //  get_mag(i)->update();
         }
 

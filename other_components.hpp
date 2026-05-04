@@ -140,8 +140,8 @@ public:
 Ball_cran::Ball_cran(state_Component first_state, int control_pin_)
 : Component(
         first_state, //состояние по умолчанию
-        10000, //время открытия
-        10000 //время закрытия
+        15000, //время открытия
+        15000 //время закрытия
  ) ,
   control_pin{control_pin_}
 {}
