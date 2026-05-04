@@ -161,6 +161,7 @@ struct Data_alg{
     one_state_Magistral * wait_with_coffe_in_mag_trio =nullptr;  
     one_state_Magistral * wait_with_coffe_in_mag_solo =nullptr;  
     one_state_Magistral * wait_with_coffe_in_mag_triplet =nullptr;  
+    one_state_Magistral * wait_clearing = nullptr;
 };
 
 bool setup_alg_magistral(uint8_t kol_users, 
@@ -328,6 +329,40 @@ Data_alg &result){
     mag_start_state->set_path(5,produv_);//продувка 5ый путь
     produv_->set_path(0,mag_start_state);
     /*==========продувка конец==========*/
+
+
+    /*==========прочистка начало==========*/
+    one_state_Magistral* preparing_in_magistral_clearing = new one_state_Magistral(1, kol_users);
+    preparing_in_magistral_clearing->set_curr_state(state_Magistral::in_magistral);
+    preparing_in_magistral_clearing->set_time_in_this(500);
+    //preparing_in_magistral_clearing->set_time_in_this(500, 0);
+    //preparing_in_magistral_clearing->set_time_in_this(500, 1);
+    //preparing_in_magistral_clearing->set_time_in_this(500, 2);
+    //preparing_in_magistral_clearing->set_time_in_this(500, 3);
+    one_state_Magistral* skip_gate_clearing = new one_state_Magistral(2, kol_users);
+    skip_gate_clearing->set_curr_state(state_Magistral::skip_gate);
+    skip_gate_clearing->set_time_in_this(1500);
+    // skip_gate_clearing->set_time_in_this(1500, 0);
+    // skip_gate_clearing->set_time_in_this(1500, 1);
+    // skip_gate_clearing->set_time_in_this(1500, 2);
+    // skip_gate_clearing->set_time_in_this(1500, 3);
+    one_state_Magistral* in_magistral_clearing = new one_state_Magistral(1, kol_users);
+    in_magistral_clearing->set_curr_state(state_Magistral::in_magistral);
+    in_magistral_clearing->set_time_in_this(2000);
+    // in_magistral_clearing->set_time_in_this(2000, 0);
+    // in_magistral_clearing->set_time_in_this(2000, 1);
+    // in_magistral_clearing->set_time_in_this(2000, 2);
+    // in_magistral_clearing->set_time_in_this(2000, 3);
+
+
+    mag_start_state->set_path(3,preparing_in_magistral_clearing);//прочистка 3bй путь
+    preparing_in_magistral_clearing->set_path(0,skip_gate_clearing);
+    skip_gate_clearing->set_path(0,skip_gate_clearing);
+    skip_gate_clearing->set_path(1,in_magistral_clearing);
+    in_magistral_clearing->set_path(0,mag_start_state);
+
+    result.wait_clearing = skip_gate_clearing;//нажали на стоп и переключили
+    /*==========прочистка конец==========*/
 
 
     

@@ -264,7 +264,7 @@ private:
             case state_Flow::do_clearing:
                 num_curr_mag = 0;
                 dyvka.set_goal_frec(5000);
-                for(uint8_t i = 0; i<kol_all_mag;++i){
+                for(uint8_t i = 0; i<kol_mag_group;++i){
                     get_mag(i)->start(state_Alg_mag::clearing);
                 }
                 break;

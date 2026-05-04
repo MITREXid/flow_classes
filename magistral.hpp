@@ -109,6 +109,8 @@ switch(mod){
         data_alg.exit_main_cycle_solo->set_choose_path(id,1);
         data_alg.exit_main_cycle_trio->set_choose_path(id,1);
         data_alg.exit_main_cycle_triplet->set_choose_path(id,1);
+
+        data_alg.wait_clearing->set_choose_path(id,1);
         break;
 
 
@@ -167,7 +169,8 @@ switch(mod){
         data_alg.start_state->set_choose_path(id,5);
         break;
     case state_Alg_mag::clearing:
-        // data_alg.start_state->set_choose_path(id,3);
+        data_alg.start_state->set_choose_path(id,3);
+        data_alg.wait_clearing->set_choose_path(id,0);
         break;
     default:
         d_println(F("Error set_current_mode_alg HZ mod"));
