@@ -155,91 +155,267 @@ private:
 
 struct Data_alg{
     one_state_Magistral * start_state = nullptr;
-    one_state_Magistral * exit_main_cycle =nullptr;  
-    one_state_Magistral * in_mag =nullptr;  
+    one_state_Magistral * exit_main_cycle_trio =nullptr; 
+    one_state_Magistral * exit_main_cycle_solo =nullptr;  
+    one_state_Magistral * exit_main_cycle_triplet =nullptr; 
+    one_state_Magistral * wait_with_coffe_in_mag_trio =nullptr;  
+    one_state_Magistral * wait_with_coffe_in_mag_solo =nullptr;  
+    one_state_Magistral * wait_with_coffe_in_mag_triplet =nullptr;  
 };
 
 bool setup_alg_magistral(uint8_t kol_users, 
 Data_alg &result){
-    one_state_Magistral* mag_start_state = new one_state_Magistral(4, kol_users);
+    /*==========стартовое состояние==========*/
+    one_state_Magistral* mag_start_state = new one_state_Magistral(6, kol_users);
     mag_start_state->set_curr_state(state_Magistral::start_state);
     mag_start_state->set_time_in_this(10);
-    one_state_Magistral* preparing_in_magistral_ = new one_state_Magistral(1, kol_users);
-    preparing_in_magistral_->set_curr_state(state_Magistral::in_magistral);
-    preparing_in_magistral_->set_time_in_this(500);
-    one_state_Magistral* skip_gate_ = new one_state_Magistral(1, kol_users);
-    skip_gate_->set_curr_state(state_Magistral::skip_gate);
-    skip_gate_->set_time_in_this(1500);
-    one_state_Magistral* in_magistral_ = new one_state_Magistral(2, kol_users);
-    in_magistral_->set_curr_state(state_Magistral::in_magistral);
-    in_magistral_->set_time_in_this(2000);
-    one_state_Magistral* air_on_ = new one_state_Magistral(1, kol_users);
-    air_on_->set_curr_state(state_Magistral::air_on);
-    air_on_->set_time_in_this(27000);
+
+    mag_start_state->set_path(0,mag_start_state);
+
+    result.start_state = mag_start_state;
+    /*==========стартовое состояние==========*/
+
+   
+ /*==========трио начало==========*/
+    one_state_Magistral* preparing_in_magistral_trio = new one_state_Magistral(1, kol_users);
+    preparing_in_magistral_trio ->set_curr_state(state_Magistral::in_magistral);
+    preparing_in_magistral_trio ->set_time_in_this(500);
+    //preparing_in_magistral_trio ->set_time_in_this(500, 0);
+    //preparing_in_magistral_trio ->set_time_in_this(500, 1);
+    //preparing_in_magistral_trio ->set_time_in_this(500, 2);
+    //preparing_in_magistral_trio ->set_time_in_this(500, 3);
+    one_state_Magistral* skip_gate_trio = new one_state_Magistral(1, kol_users);
+    skip_gate_trio ->set_curr_state(state_Magistral::skip_gate);
+    skip_gate_trio ->set_time_in_this(1500);
+    // skip_gate_trio ->set_time_in_this(1500, 0);
+    // skip_gate_trio ->set_time_in_this(1500, 1);
+    // skip_gate_trio ->set_time_in_this(1500, 2);
+    // skip_gate_trio ->set_time_in_this(1500, 3);
+    one_state_Magistral* in_magistral_trio = new one_state_Magistral(2, kol_users);
+    in_magistral_trio ->set_curr_state(state_Magistral::in_magistral);
+    in_magistral_trio ->set_time_in_this(2000);
+    // in_magistral_trio ->set_time_in_this(2000, 0);
+    // in_magistral_trio ->set_time_in_this(2000, 1);
+    // in_magistral_trio ->set_time_in_this(2000, 2);
+    // in_magistral_trio ->set_time_in_this(2000, 3);
+    one_state_Magistral* air_on_trio = new one_state_Magistral(2, kol_users);
+    air_on_trio ->set_curr_state(state_Magistral::air_on);
+    air_on_trio ->set_time_in_this(27000);
+    // air_on_trio ->set_time_in_this(27000, 0);
+    // air_on_trio ->set_time_in_this(27000, 1);
+    // air_on_trio ->set_time_in_this(27000, 2);
+    // air_on_trio ->set_time_in_this(27000, 3);
+
+    mag_start_state->set_path(1,preparing_in_magistral_trio);//трио 1ый путь
+    preparing_in_magistral_trio ->set_path(0,skip_gate_trio);
+    skip_gate_trio ->set_path(0,in_magistral_trio);
+    in_magistral_trio ->set_path(1,in_magistral_trio);
+    in_magistral_trio ->set_path(0,air_on_trio);
+    air_on_trio ->set_path(0,preparing_in_magistral_trio);
+    air_on_trio ->set_path(1, mag_start_state);
+
+
+    result.exit_main_cycle_trio = air_on_trio;
+    result.wait_with_coffe_in_mag_trio = in_magistral_trio;
+    /*==========трио конец==========*/
+    
+    
+    /*==========соло начало==========*/
+    one_state_Magistral* preparing_in_magistral_solo = new one_state_Magistral(1, kol_users);
+    preparing_in_magistral_solo->set_curr_state(state_Magistral::in_magistral);
+    preparing_in_magistral_solo->set_time_in_this(500);
+    //preparing_in_magistral_solo->set_time_in_this(500, 0);
+    //preparing_in_magistral_solo->set_time_in_this(500, 1);
+    //preparing_in_magistral_solo->set_time_in_this(500, 2);
+    //preparing_in_magistral_solo->set_time_in_this(500, 3);
+    one_state_Magistral* skip_gate_solo = new one_state_Magistral(1, kol_users);
+    skip_gate_solo->set_curr_state(state_Magistral::skip_gate);
+    skip_gate_solo->set_time_in_this(1500);
+    // skip_gate_solo->set_time_in_this(1500, 0);
+    // skip_gate_solo->set_time_in_this(1500, 1);
+    // skip_gate_solo->set_time_in_this(1500, 2);
+    // skip_gate_solo->set_time_in_this(1500, 3);
+    one_state_Magistral* in_magistral_solo = new one_state_Magistral(2, kol_users);
+    in_magistral_solo->set_curr_state(state_Magistral::in_magistral);
+    in_magistral_solo->set_time_in_this(2000);
+    // in_magistral_solo->set_time_in_this(2000, 0);
+    // in_magistral_solo->set_time_in_this(2000, 1);
+    // in_magistral_solo->set_time_in_this(2000, 2);
+    // in_magistral_solo->set_time_in_this(2000, 3);
+    one_state_Magistral* air_on_solo = new one_state_Magistral(1, kol_users);
+    air_on_solo->set_curr_state(state_Magistral::air_on);
+    air_on_solo->set_time_in_this(27000);
+    // air_on_solo->set_time_in_this(27000, 0);
+    // air_on_solo->set_time_in_this(27000, 1);
+    // air_on_solo->set_time_in_this(27000, 2);
+    // air_on_solo->set_time_in_this(27000, 3);
+    //нужно после продувки(перед загрузкой) сделать задержку, чтоб кофе норм отнрузилось 
+    one_state_Magistral* waiting_for_air_off_solo = new one_state_Magistral(2, kol_users);
+    waiting_for_air_off_solo->set_curr_state(state_Magistral::all_close);
+    waiting_for_air_off_solo->set_time_in_this(2000);
+    // waiting_for_air_off_solo->set_time_in_this(2000, 0);
+    // waiting_for_air_off_solo->set_time_in_this(2000, 1);
+    // waiting_for_air_off_solo->set_time_in_this(2000, 2);
+    // waiting_for_air_off_solo->set_time_in_this(2000, 3);
+
+
+    mag_start_state->set_path(2,preparing_in_magistral_solo);//соло 2ой путь
+    preparing_in_magistral_solo->set_path(0,skip_gate_solo);
+    skip_gate_solo->set_path(0,in_magistral_solo);
+    in_magistral_solo->set_path(1,in_magistral_solo);
+    in_magistral_solo->set_path(0,air_on_solo);
+    air_on_solo->set_path(0,waiting_for_air_off_solo);
+    waiting_for_air_off_solo->set_path(0,preparing_in_magistral_solo);
+    waiting_for_air_off_solo->set_path(1,mag_start_state);
+    
+    result.exit_main_cycle_solo = waiting_for_air_off_solo;
+    result.wait_with_coffe_in_mag_solo = in_magistral_solo;
+    /*==========соло конец==========*/
+
+
+   /*==========триплет начало==========*/
+    one_state_Magistral* preparing_in_magistral_triplet = new one_state_Magistral(1, kol_users);
+    preparing_in_magistral_triplet->set_curr_state(state_Magistral::in_magistral);
+    preparing_in_magistral_triplet->set_time_in_this(500);
+    //preparing_in_magistral_triplet->set_time_in_this(500, 0);
+    //preparing_in_magistral_triplet->set_time_in_this(500, 1);
+    //preparing_in_magistral_triplet->set_time_in_this(500, 2);
+    //preparing_in_magistral_triplet->set_time_in_this(500, 3);
+    one_state_Magistral* skip_gate_triplet = new one_state_Magistral(1, kol_users);
+    skip_gate_triplet->set_curr_state(state_Magistral::skip_gate);
+    skip_gate_triplet->set_time_in_this(1500);
+    // skip_gate_triplet->set_time_in_this(1500, 0);
+    // skip_gate_triplet->set_time_in_this(1500, 1);
+    // skip_gate_triplet->set_time_in_this(1500, 2);
+    // skip_gate_triplet->set_time_in_this(1500, 3);
+    one_state_Magistral* in_magistral_triplet = new one_state_Magistral(2, kol_users);
+    in_magistral_triplet->set_curr_state(state_Magistral::in_magistral);
+    in_magistral_triplet->set_time_in_this(2000);
+    // in_magistral_triplet->set_time_in_this(2000, 0);
+    // in_magistral_triplet->set_time_in_this(2000, 1);
+    // in_magistral_triplet->set_time_in_this(2000, 2);
+    // in_magistral_triplet->set_time_in_this(2000, 3);
+    one_state_Magistral* air_on_triplet = new one_state_Magistral(2, kol_users);
+    air_on_triplet->set_curr_state(state_Magistral::air_on);
+    air_on_triplet->set_time_in_this(27000);
+    // air_on_triplet->set_time_in_this(27000, 0);
+    // air_on_triplet->set_time_in_this(27000, 1);
+    // air_on_triplet->set_time_in_this(27000, 2);
+    // air_on_triplet->set_time_in_this(27000, 3);
+
+    mag_start_state->set_path(4,preparing_in_magistral_triplet);//триплет 4ый путь
+    preparing_in_magistral_triplet->set_path(0,skip_gate_triplet);
+    skip_gate_triplet->set_path(0,in_magistral_triplet);
+    in_magistral_triplet->set_path(1,in_magistral_triplet);
+    in_magistral_triplet->set_path(0,air_on_triplet);
+    air_on_triplet->set_path(0,preparing_in_magistral_triplet);
+    air_on_triplet->set_path(1, mag_start_state);
+
+    result.exit_main_cycle_triplet = air_on_triplet;
+    result.wait_with_coffe_in_mag_triplet = in_magistral_triplet;
+    /*==========триплет конец==========*/
+
+    /*==========продувка начало==========*/
+    
     one_state_Magistral* produv_ = new one_state_Magistral(1, kol_users);
     produv_->set_curr_state(state_Magistral::air_on);
     produv_->set_time_in_this(27000);
-
-    //нужно после продувки(перед загрузкой) сделать задержку, чтоб кофе норм отнрузилось 
-    one_state_Magistral* waiting_for_air_off_ = new one_state_Magistral(2, kol_users);
-    waiting_for_air_off_->set_curr_state(state_Magistral::all_close);
-    waiting_for_air_off_->set_time_in_this(0);
-    waiting_for_air_off_->set_time_in_this(2000, 3);//тоько для 4ой магистрали, которая соло
-
-
-    /* чистка */
-    one_state_Magistral* pred_skip_gate_clearing_ = new one_state_Magistral(1, kol_users);
-    pred_skip_gate_clearing_->set_curr_state(state_Magistral::going_to_gate);
-    pred_skip_gate_clearing_->set_time_in_this(500);  
-    one_state_Magistral* skip_gate_clearing_ = new one_state_Magistral(1, kol_users);
-    skip_gate_clearing_->set_curr_state(state_Magistral::skip_gate);
-    skip_gate_clearing_->set_time_in_this(60000);   
-    // skip_gate_clearing_->set_time_in_this(10000, 0);//пример изменения времени одного состояния конкретной  магистрали
-    one_state_Magistral* full_open_warning_clearing_ = new one_state_Magistral(1, kol_users);
-    full_open_warning_clearing_->set_curr_state(state_Magistral::full_open);
-    full_open_warning_clearing_->set_time_in_this(15000);   
-     one_state_Magistral* post_full_open_warning_clearing_ = new one_state_Magistral(1, kol_users);
-    post_full_open_warning_clearing_->set_curr_state(state_Magistral::going_to_gate);
-    post_full_open_warning_clearing_->set_time_in_this(500);
-    /* чистка */
-
-    // air_on_->set_path(0,preparing_in_magistral_);//продолжить цикл
-    // air_on_->set_path(1,mag_start_state);//на выход
-    // in_magistral_->set_path(0,air_on_);
-
-    in_magistral_->set_path(0,air_on_);
-    waiting_for_air_off_->set_path(0,preparing_in_magistral_);//продолжить цикл
-    waiting_for_air_off_->set_path(1,mag_start_state);//на выход
-    air_on_->set_path(0,waiting_for_air_off_);
-
-    in_magistral_->set_path(1,in_magistral_);
-    skip_gate_->set_path(0,in_magistral_);
-    preparing_in_magistral_->set_path(0,skip_gate_);
-    mag_start_state->set_path(0,mag_start_state);
-    mag_start_state->set_path(1,preparing_in_magistral_);
-    mag_start_state->set_path(2,produv_);
-    mag_start_state->set_path(3,pred_skip_gate_clearing_);
+    // produv_->set_time_in_this(27000, 0);
+    // produv_->set_time_in_this(27000, 1);
+    // produv_->set_time_in_this(27000, 2);
+    // produv_->set_time_in_this(27000, 3);
+    
+    mag_start_state->set_path(5,produv_);//продувка 5ый путь
     produv_->set_path(0,mag_start_state);
-    /* чистка */
-    skip_gate_clearing_->set_path(0,full_open_warning_clearing_);
-    pred_skip_gate_clearing_->set_path(0,skip_gate_clearing_);
-    full_open_warning_clearing_->set_path(0,post_full_open_warning_clearing_);
-    post_full_open_warning_clearing_->set_path(0,mag_start_state);
-    /* чистка */
+    /*==========продувка конец==========*/
+
+
+    
+    // one_state_Magistral* preparing_in_magistral_ = new one_state_Magistral(1, kol_users);
+    // preparing_in_magistral_->set_curr_state(state_Magistral::in_magistral);
+    // preparing_in_magistral_->set_time_in_this(500);
+    // one_state_Magistral* skip_gate_ = new one_state_Magistral(1, kol_users);
+    // skip_gate_->set_curr_state(state_Magistral::skip_gate);
+    // skip_gate_->set_time_in_this(1500);
+    // one_state_Magistral* in_magistral_ = new one_state_Magistral(2, kol_users);
+    // in_magistral_->set_curr_state(state_Magistral::in_magistral);
+    // in_magistral_->set_time_in_this(2000);
+    // one_state_Magistral* air_on_ = new one_state_Magistral(1, kol_users);
+    // air_on_->set_curr_state(state_Magistral::air_on);
+    // air_on_->set_time_in_this(27000);
+    // one_state_Magistral* produv_ = new one_state_Magistral(1, kol_users);
+    // produv_->set_curr_state(state_Magistral::air_on);
+    // produv_->set_time_in_this(27000);
+
+    // //нужно после продувки(перед загрузкой) сделать задержку, чтоб кофе норм отнрузилось 
+    // one_state_Magistral* waiting_for_air_off_ = new one_state_Magistral(2, kol_users);
+    // waiting_for_air_off_->set_curr_state(state_Magistral::all_close);
+    // waiting_for_air_off_->set_time_in_this(0);
+    // waiting_for_air_off_->set_time_in_this(2000, 3);//тоько для 4ой магистрали, которая соло
+
+
+    // /*========== чистка ==========*/
+    // one_state_Magistral* pred_skip_gate_clearing_ = new one_state_Magistral(1, kol_users);
+    // pred_skip_gate_clearing_->set_curr_state(state_Magistral::going_to_gate);
+    // pred_skip_gate_clearing_->set_time_in_this(500);  
+    // one_state_Magistral* skip_gate_clearing_ = new one_state_Magistral(1, kol_users);
+    // skip_gate_clearing_->set_curr_state(state_Magistral::skip_gate);
+    // skip_gate_clearing_->set_time_in_this(60000);   
+    // // skip_gate_clearing_->set_time_in_this(10000, 0);//пример изменения времени одного состояния конкретной  магистрали
+    // one_state_Magistral* full_open_warning_clearing_ = new one_state_Magistral(1, kol_users);
+    // full_open_warning_clearing_->set_curr_state(state_Magistral::full_open);
+    // full_open_warning_clearing_->set_time_in_this(15000);   
+    //  one_state_Magistral* post_full_open_warning_clearing_ = new one_state_Magistral(1, kol_users);
+    // post_full_open_warning_clearing_->set_curr_state(state_Magistral::going_to_gate);
+    // post_full_open_warning_clearing_->set_time_in_this(500);
+    // /*========== чистка ==========*/
+
+    // // air_on_->set_path(0,preparing_in_magistral_);//продолжить цикл
+    // // air_on_->set_path(1,mag_start_state);//на выход
+    // // in_magistral_->set_path(0,air_on_);
+
+    // in_magistral_->set_path(0,air_on_);
+    // waiting_for_air_off_->set_path(0,preparing_in_magistral_);//продолжить цикл
+    // waiting_for_air_off_->set_path(1,mag_start_state);//на выход
+    // air_on_->set_path(0,waiting_for_air_off_);
+
+    // in_magistral_->set_path(1,in_magistral_);
+    // skip_gate_->set_path(0,in_magistral_);
+    // preparing_in_magistral_->set_path(0,skip_gate_);
+    // mag_start_state->set_path(0,mag_start_state);
+    // mag_start_state->set_path(1,preparing_in_magistral_);
+    // mag_start_state->set_path(2,produv_);
+    // mag_start_state->set_path(3,pred_skip_gate_clearing_);
+    // produv_->set_path(0,mag_start_state);
+    // /*========== чистка ==========*/
+    // skip_gate_clearing_->set_path(0,full_open_warning_clearing_);
+    // pred_skip_gate_clearing_->set_path(0,skip_gate_clearing_);
+    // full_open_warning_clearing_->set_path(0,post_full_open_warning_clearing_);
+    // post_full_open_warning_clearing_->set_path(0,mag_start_state);
+    // /*========== чистка ==========*/
    
 
     // Data_alg result;
-    result.start_state = mag_start_state;
-    result.exit_main_cycle = waiting_for_air_off_;
-    result.in_mag = in_magistral_;
+    // result.start_state = mag_start_state;
+    // result.exit_main_cycle = waiting_for_air_off_;
+    // result.in_mag = in_magistral_;
+
+
+
     return true;
 }
 
 enum class state_Alg_mag{
     stop,
-    prepare,
-    one_cycle,
-    cycle,
+    prepare_solo,
+    prepare_trio,
+    prepare_triplet,
+    one_cycle_solo,
+    one_cycle_trio,
+    one_cycle_triplet,
+    cycle_solo,
+    cycle_trio,
+    cycle_triplet,
     produvka,
     clearing
 };

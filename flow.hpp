@@ -194,8 +194,8 @@ private:
             case state_Flow::do_trio:
                 if(isStartState(num_curr_mag, true)){
                     num_curr_mag = get_num_curr_mag_next(true);
-                    get_mag()->start(state_Alg_mag::one_cycle);
-                    get_mag(get_num_curr_mag_next(true))->start(state_Alg_mag::prepare);
+                    get_mag()->start(state_Alg_mag::one_cycle_trio);
+                    get_mag(get_num_curr_mag_next(true))->start(state_Alg_mag::prepare_trio);
                 }
                 break;
             case state_Flow::do_produvka:
@@ -245,13 +245,13 @@ private:
             case state_Flow::do_solo:
                 num_curr_mag = mag;
                 dyvka.set_goal_frec(4000);
-                get_mag()->start(state_Alg_mag::cycle);
+                get_mag()->start(state_Alg_mag::cycle_solo);
                 break;
             case state_Flow::do_trio:
                 num_curr_mag = 0;
                 dyvka.set_goal_frec(4000);
-                get_mag()->start(state_Alg_mag::one_cycle);
-                get_mag(get_num_curr_mag_next(true))->start(state_Alg_mag::prepare);
+                get_mag()->start(state_Alg_mag::one_cycle_trio);
+                get_mag(get_num_curr_mag_next(true))->start(state_Alg_mag::prepare_trio);
                 break;
             case state_Flow::do_produvka:
                 num_curr_mag = 3;
@@ -269,7 +269,7 @@ private:
                 num_curr_mag = 0;
                 dyvka.set_goal_frec(5500);
                 for(uint8_t i = 0; i<kol_mag_group;++i){
-                    get_mag(i)->start(state_Alg_mag::one_cycle);
+                    get_mag(i)->start(state_Alg_mag::one_cycle_triplet);
                 }
                 break;
 

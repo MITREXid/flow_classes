@@ -100,33 +100,73 @@ curr_Alg_mode = mod;
 switch(mod){
     case state_Alg_mag::stop:
         data_alg.start_state->set_choose_path(id,0);
-        data_alg.in_mag->set_choose_path(id,0);
-        data_alg.exit_main_cycle->set_choose_path(id,1);
+
+        data_alg.wait_with_coffe_in_mag_solo->set_choose_path(id,0);
+        data_alg.wait_with_coffe_in_mag_trio->set_choose_path(id,0);
+        data_alg.wait_with_coffe_in_mag_triplet->set_choose_path(id,0);
+
+        data_alg.exit_main_cycle_solo->set_choose_path(id,1);
+        data_alg.exit_main_cycle_trio->set_choose_path(id,1);
+        data_alg.exit_main_cycle_triplet->set_choose_path(id,1);
         break;
-    case state_Alg_mag::prepare:
-        data_alg.start_state->set_choose_path(id,1);
-        data_alg.in_mag->set_choose_path(id,1);
-        data_alg.exit_main_cycle->set_choose_path(id,1);
-        break;
-    case state_Alg_mag::one_cycle:
-        data_alg.start_state->set_choose_path(id,1);
-        data_alg.in_mag->set_choose_path(id,0);
-        data_alg.exit_main_cycle->set_choose_path(id,1);
-        break;
-    case state_Alg_mag::cycle:
-        data_alg.start_state->set_choose_path(id,1);
-        data_alg.in_mag->set_choose_path(id,0);
-        data_alg.exit_main_cycle->set_choose_path(id,0);
-        break;
-    case state_Alg_mag::produvka:
+
+
+    case state_Alg_mag::prepare_solo:
         data_alg.start_state->set_choose_path(id,2);
-        data_alg.in_mag->set_choose_path(id,0);
-        data_alg.exit_main_cycle->set_choose_path(id,1);
+        data_alg.wait_with_coffe_in_mag_solo->set_choose_path(id,1);
+        data_alg.exit_main_cycle_solo->set_choose_path(id,1);
+        break;
+    case state_Alg_mag::prepare_trio:
+        data_alg.start_state->set_choose_path(id,1);
+        data_alg.wait_with_coffe_in_mag_trio->set_choose_path(id,1);
+        data_alg.exit_main_cycle_trio->set_choose_path(id,1);
+        break;
+    case state_Alg_mag::prepare_triplet:
+        data_alg.start_state->set_choose_path(id,4);
+        data_alg.wait_with_coffe_in_mag_triplet->set_choose_path(id,1);
+        data_alg.exit_main_cycle_triplet->set_choose_path(id,1);
+        break;
+
+
+    case state_Alg_mag::one_cycle_solo:
+        data_alg.start_state->set_choose_path(id,2);
+        data_alg.wait_with_coffe_in_mag_solo->set_choose_path(id,0);
+        data_alg.exit_main_cycle_solo->set_choose_path(id,1);
+        break;
+    case state_Alg_mag::one_cycle_trio:
+        data_alg.start_state->set_choose_path(id,1);
+        data_alg.wait_with_coffe_in_mag_trio->set_choose_path(id,0);
+        data_alg.exit_main_cycle_trio->set_choose_path(id,1);
+        break;
+    case state_Alg_mag::one_cycle_triplet:
+        data_alg.start_state->set_choose_path(id,4);
+        data_alg.wait_with_coffe_in_mag_triplet->set_choose_path(id,0);
+        data_alg.exit_main_cycle_triplet->set_choose_path(id,1);
+        break;
+
+
+    case state_Alg_mag::cycle_solo:
+        data_alg.start_state->set_choose_path(id,2);
+        data_alg.wait_with_coffe_in_mag_solo->set_choose_path(id,0);
+        data_alg.exit_main_cycle_solo->set_choose_path(id,0);
+        break;
+    case state_Alg_mag::cycle_trio:
+        data_alg.start_state->set_choose_path(id,1);
+        data_alg.wait_with_coffe_in_mag_trio->set_choose_path(id,0);
+        data_alg.exit_main_cycle_trio->set_choose_path(id,0);
+        break;
+    case state_Alg_mag::cycle_triplet:
+        data_alg.start_state->set_choose_path(id,4);
+        data_alg.wait_with_coffe_in_mag_triplet->set_choose_path(id,0);
+        data_alg.exit_main_cycle_triplet->set_choose_path(id,0);
+        break;
+
+
+    case state_Alg_mag::produvka:
+        data_alg.start_state->set_choose_path(id,5);
         break;
     case state_Alg_mag::clearing:
-        data_alg.start_state->set_choose_path(id,3);
-        data_alg.in_mag->set_choose_path(id,0);
-        data_alg.exit_main_cycle->set_choose_path(id,1);
+        // data_alg.start_state->set_choose_path(id,3);
         break;
     default:
         d_println(F("Error set_current_mode_alg HZ mod"));
