@@ -63,6 +63,7 @@ private:
     // bool getPathFlag(one_state_Magistral* st = nullptr);
     // bool getFlagResetTimer(one_state_Magistral* st = nullptr);
     bool is_going_comp();
+    char* num_state_mag_to_char(state_Magistral state_input);
 };
 
 
@@ -292,12 +293,12 @@ void Magistral::logic(){
     if(current_state->get_time_in_this(id) < curr_time){ 
         if(current_state->get_curr_state() != current_state->get_next_state(id)->get_curr_state()){
             cycle_ready_sig.setState(false);//Сигнал
-            d_print(F("#"));
+            d_print(F("======== Magistral: "));
             d_print((int)id);
-            d_print(F(" ========state: "));
-            d_print(current_state->get_curr_state());
+            d_print(F(" | state: "));
+            d_print(this->num_state_mag_to_char(current_state->get_curr_state()));
             d_print(F("->"));
-            d_print(current_state->get_next_state(id)->get_curr_state());
+            d_println(this->num_state_mag_to_char(current_state->get_next_state(id)->get_curr_state()));
             d_println(F("turn is:"));
             current_state = current_state->get_next_state(id);
             turn_to(current_state->get_curr_state());
@@ -314,7 +315,28 @@ void Magistral::logic(){
 
 }
 
-
+char* Magistral::num_state_mag_to_char(state_Magistral state_input){
+    switch(state_input){
+        case state_Magistral::undefine:
+            return "undefined";
+        case state_Magistral::start_state:
+            return "start_state";
+        case state_Magistral::going_to_gate:
+            return "going_to_gate";
+         case state_Magistral::all_close:
+            return "all_close";
+        case state_Magistral::in_magistral:
+            return "in_magistral";
+        case state_Magistral::air_on:
+            return "air_on";
+        case state_Magistral::full_open:
+            return "full_open";
+        case state_Magistral::skip_gate:
+            return "skip_gate";
+        default:
+            return "NOT CORRECT STATE!!!!!!!!";
+    };
+}
 
     // state_Magistral Magistral::getState(one_state_Magistral* st){
     //     if(st==nullptr){
