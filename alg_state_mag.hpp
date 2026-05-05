@@ -157,10 +157,9 @@ struct Data_alg{
     one_state_Magistral * start_state = nullptr;
     one_state_Magistral * exit_main_cycle_trio =nullptr; 
     one_state_Magistral * exit_main_cycle_solo =nullptr;  
-    one_state_Magistral * exit_main_cycle_triplet =nullptr; 
+    one_state_Magistral * exit_main_cycle_vulkan =nullptr; 
     one_state_Magistral * wait_with_coffe_in_mag_trio =nullptr;  
     one_state_Magistral * wait_with_coffe_in_mag_solo =nullptr;  
-    one_state_Magistral * wait_with_coffe_in_mag_triplet =nullptr;  
     one_state_Magistral * wait_clearing = nullptr;
 };
 
@@ -245,7 +244,7 @@ Data_alg &result){
     // in_magistral_solo->set_time_in_this(2000, 3);
     one_state_Magistral* air_on_solo = new one_state_Magistral(1, kol_users);
     air_on_solo->set_curr_state(state_Magistral::air_on);
-    air_on_solo->set_time_in_this(27000);
+    air_on_solo->set_time_in_this(37000);
     // air_on_solo->set_time_in_this(27000, 0);
     // air_on_solo->set_time_in_this(27000, 1);
     // air_on_solo->set_time_in_this(27000, 2);
@@ -253,7 +252,7 @@ Data_alg &result){
     //нужно после продувки(перед загрузкой) сделать задержку, чтоб кофе норм отнрузилось 
     one_state_Magistral* waiting_for_air_off_solo = new one_state_Magistral(2, kol_users);
     waiting_for_air_off_solo->set_curr_state(state_Magistral::all_close);
-    waiting_for_air_off_solo->set_time_in_this(2000);
+    waiting_for_air_off_solo->set_time_in_this(10000);
     // waiting_for_air_off_solo->set_time_in_this(2000, 0);
     // waiting_for_air_off_solo->set_time_in_this(2000, 1);
     // waiting_for_air_off_solo->set_time_in_this(2000, 2);
@@ -275,45 +274,43 @@ Data_alg &result){
 
 
    /*==========триплет начало==========*/
-    one_state_Magistral* preparing_in_magistral_triplet = new one_state_Magistral(1, kol_users);
-    preparing_in_magistral_triplet->set_curr_state(state_Magistral::in_magistral);
-    preparing_in_magistral_triplet->set_time_in_this(500);
-    //preparing_in_magistral_triplet->set_time_in_this(500, 0);
-    //preparing_in_magistral_triplet->set_time_in_this(500, 1);
-    //preparing_in_magistral_triplet->set_time_in_this(500, 2);
-    //preparing_in_magistral_triplet->set_time_in_this(500, 3);
-    one_state_Magistral* skip_gate_triplet = new one_state_Magistral(1, kol_users);
-    skip_gate_triplet->set_curr_state(state_Magistral::skip_gate);
-    skip_gate_triplet->set_time_in_this(1500);
-    // skip_gate_triplet->set_time_in_this(1500, 0);
-    // skip_gate_triplet->set_time_in_this(1500, 1);
-    // skip_gate_triplet->set_time_in_this(1500, 2);
-    // skip_gate_triplet->set_time_in_this(1500, 3);
-    one_state_Magistral* in_magistral_triplet = new one_state_Magistral(2, kol_users);
-    in_magistral_triplet->set_curr_state(state_Magistral::in_magistral);
-    in_magistral_triplet->set_time_in_this(2000);
-    // in_magistral_triplet->set_time_in_this(2000, 0);
-    // in_magistral_triplet->set_time_in_this(2000, 1);
-    // in_magistral_triplet->set_time_in_this(2000, 2);
-    // in_magistral_triplet->set_time_in_this(2000, 3);
-    one_state_Magistral* air_on_triplet = new one_state_Magistral(2, kol_users);
-    air_on_triplet->set_curr_state(state_Magistral::air_on);
-    air_on_triplet->set_time_in_this(27000);
-    // air_on_triplet->set_time_in_this(27000, 0);
-    // air_on_triplet->set_time_in_this(27000, 1);
-    // air_on_triplet->set_time_in_this(27000, 2);
-    // air_on_triplet->set_time_in_this(27000, 3);
+    one_state_Magistral* preparing_in_magistral_vulkan = new one_state_Magistral(1, kol_users);
+    preparing_in_magistral_vulkan->set_curr_state(state_Magistral::in_magistral);
+    preparing_in_magistral_vulkan->set_time_in_this(500);
+    //preparing_in_magistral_vulkan->set_time_in_this(500, 0);
+    //preparing_in_magistral_vulkan->set_time_in_this(500, 1);
+    //preparing_in_magistral_vulkan->set_time_in_this(500, 2);
+    //preparing_in_magistral_vulkan->set_time_in_this(500, 3);
+    one_state_Magistral* skip_gate_vulkan = new one_state_Magistral(1, kol_users);
+    skip_gate_vulkan->set_curr_state(state_Magistral::skip_gate);
+    skip_gate_vulkan->set_time_in_this(3000);
+    // skip_gate_vulkan->set_time_in_this(1500, 0);
+    // skip_gate_vulkan->set_time_in_this(1500, 1);
+    // skip_gate_vulkan->set_time_in_this(1500, 2);
+    // skip_gate_vulkan->set_time_in_this(1500, 3);
+    one_state_Magistral* in_magistral_vulkan = new one_state_Magistral(1, kol_users);
+    in_magistral_vulkan->set_curr_state(state_Magistral::in_magistral);
+    in_magistral_vulkan->set_time_in_this(2000);
+    // in_magistral_vulkan->set_time_in_this(2000, 0);
+    // in_magistral_vulkan->set_time_in_this(2000, 1);
+    // in_magistral_vulkan->set_time_in_this(2000, 2);
+    // in_magistral_vulkan->set_time_in_this(2000, 3);
+    one_state_Magistral* air_on_vulkan = new one_state_Magistral(2, kol_users);
+    air_on_vulkan->set_curr_state(state_Magistral::air_on);
+    air_on_vulkan->set_time_in_this(1000);
+    // air_on_vulkan->set_time_in_this(27000, 0);
+    // air_on_vulkan->set_time_in_this(27000, 1);
+    // air_on_vulkan->set_time_in_this(27000, 2);
+    // air_on_vulkan->set_time_in_this(27000, 3);
 
-    mag_start_state->set_path(4,preparing_in_magistral_triplet);//триплет 4ый путь
-    preparing_in_magistral_triplet->set_path(0,skip_gate_triplet);
-    skip_gate_triplet->set_path(0,in_magistral_triplet);
-    in_magistral_triplet->set_path(1,in_magistral_triplet);
-    in_magistral_triplet->set_path(0,air_on_triplet);
-    air_on_triplet->set_path(0,preparing_in_magistral_triplet);
-    air_on_triplet->set_path(1, mag_start_state);
+    mag_start_state->set_path(4,preparing_in_magistral_vulkan);//триплет 4ый путь
+    preparing_in_magistral_vulkan->set_path(0,skip_gate_vulkan);
+    skip_gate_vulkan->set_path(0,in_magistral_vulkan);
+    in_magistral_vulkan->set_path(0,air_on_vulkan);
+    air_on_vulkan->set_path(0,air_on_vulkan);
+    air_on_vulkan->set_path(1, mag_start_state);
 
-    result.exit_main_cycle_triplet = air_on_triplet;
-    result.wait_with_coffe_in_mag_triplet = in_magistral_triplet;
+    result.exit_main_cycle_vulkan = air_on_vulkan;
     /*==========триплет конец==========*/
 
     /*==========продувка начало==========*/
@@ -444,13 +441,11 @@ enum class state_Alg_mag{
     stop,
     prepare_solo,
     prepare_trio,
-    prepare_triplet,
     one_cycle_solo,
     one_cycle_trio,
-    one_cycle_triplet,
+    one_cycle_vulkan,
     cycle_solo,
     cycle_trio,
-    cycle_triplet,
     produvka,
     clearing
 };

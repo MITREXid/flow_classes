@@ -104,11 +104,11 @@ switch(mod){
 
         data_alg.wait_with_coffe_in_mag_solo->set_choose_path(id,0);
         data_alg.wait_with_coffe_in_mag_trio->set_choose_path(id,0);
-        data_alg.wait_with_coffe_in_mag_triplet->set_choose_path(id,0);
 
         data_alg.exit_main_cycle_solo->set_choose_path(id,1);
         data_alg.exit_main_cycle_trio->set_choose_path(id,1);
-        data_alg.exit_main_cycle_triplet->set_choose_path(id,1);
+
+        data_alg.exit_main_cycle_vulkan->set_choose_path(id,1);
 
         data_alg.wait_clearing->set_choose_path(id,1);
         break;
@@ -124,11 +124,6 @@ switch(mod){
         data_alg.wait_with_coffe_in_mag_trio->set_choose_path(id,1);
         data_alg.exit_main_cycle_trio->set_choose_path(id,1);
         break;
-    case state_Alg_mag::prepare_triplet:
-        data_alg.start_state->set_choose_path(id,4);
-        data_alg.wait_with_coffe_in_mag_triplet->set_choose_path(id,1);
-        data_alg.exit_main_cycle_triplet->set_choose_path(id,1);
-        break;
 
 
     case state_Alg_mag::one_cycle_solo:
@@ -141,10 +136,9 @@ switch(mod){
         data_alg.wait_with_coffe_in_mag_trio->set_choose_path(id,0);
         data_alg.exit_main_cycle_trio->set_choose_path(id,1);
         break;
-    case state_Alg_mag::one_cycle_triplet:
+    case state_Alg_mag::one_cycle_vulkan:
         data_alg.start_state->set_choose_path(id,4);
-        data_alg.wait_with_coffe_in_mag_triplet->set_choose_path(id,0);
-        data_alg.exit_main_cycle_triplet->set_choose_path(id,1);
+        data_alg.exit_main_cycle_vulkan->set_choose_path(id,0);
         break;
 
 
@@ -157,11 +151,6 @@ switch(mod){
         data_alg.start_state->set_choose_path(id,1);
         data_alg.wait_with_coffe_in_mag_trio->set_choose_path(id,0);
         data_alg.exit_main_cycle_trio->set_choose_path(id,0);
-        break;
-    case state_Alg_mag::cycle_triplet:
-        data_alg.start_state->set_choose_path(id,4);
-        data_alg.wait_with_coffe_in_mag_triplet->set_choose_path(id,0);
-        data_alg.exit_main_cycle_triplet->set_choose_path(id,0);
         break;
 
 

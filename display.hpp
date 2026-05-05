@@ -37,7 +37,7 @@ private:
     uint8_t pin_tx = -1;
     uint32_t time_init;
     bool flag_waiting = false;
-    uint32_t time_waiting = 18000;
+    uint32_t time_waiting = 25000;
     events_Display Check_message();
 
 public:
@@ -141,7 +141,7 @@ void Display::logic()
                 break;
 
             case 0x33:
-                flow.start(state_Flow::do_triplet);
+                flow.start(state_Flow::do_vulkan);
                 break;
         }
     }
