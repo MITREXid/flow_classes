@@ -187,7 +187,7 @@ Data_alg &result){
     //preparing_in_magistral_trio ->set_time_in_this(500, 3);
     one_state_Magistral* skip_gate_trio = new one_state_Magistral(1, kol_users);
     skip_gate_trio ->set_curr_state(state_Magistral::skip_gate);
-    skip_gate_trio ->set_time_in_this(1500);
+    skip_gate_trio ->set_time_in_this(3000);
     // skip_gate_trio ->set_time_in_this(1500, 0);
     // skip_gate_trio ->set_time_in_this(1500, 1);
     // skip_gate_trio ->set_time_in_this(1500, 2);
@@ -201,7 +201,7 @@ Data_alg &result){
     // in_magistral_trio ->set_time_in_this(2000, 3);
     one_state_Magistral* air_on_trio = new one_state_Magistral(2, kol_users);
     air_on_trio ->set_curr_state(state_Magistral::air_on);
-    air_on_trio ->set_time_in_this(27000);
+    air_on_trio ->set_time_in_this(17000);
     // air_on_trio ->set_time_in_this(27000, 0);
     // air_on_trio ->set_time_in_this(27000, 1);
     // air_on_trio ->set_time_in_this(27000, 2);

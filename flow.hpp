@@ -68,8 +68,23 @@ class Flow: public Universal_object<state_Flow>{
         for(uint8_t i = 0; i<kol_all_mag;++i){
             get_mag(i)->init();
             
+            d_println(F("power_12V: LOW"));
+            digitalWrite(pin_power_v12,LOW);
+            pwm.voltageON();
+            pwm.update();
+
             time_mark = millis();
-            while(millis()-time_mark<500){}
+            while(millis()-time_mark<1000){}
+
+            
+            d_println(F("power_12V: HIGH"));
+            digitalWrite(pin_power_v12,HIGH);
+            pwm.voltageOFF();
+            pwm.update();
+
+            
+            time_mark = millis();
+            while(millis()-time_mark<1000){}
             //  get_mag(i)->update();
         }
 
@@ -270,7 +285,7 @@ private:
                 break;
             case state_Flow::do_triplet:
                 num_curr_mag = 0;
-                dyvka.set_goal_frec(5500);
+                dyvka.set_goal_frec(5000);
                 for(uint8_t i = 0; i<kol_mag_group;++i){
                     get_mag(i)->start(state_Alg_mag::one_cycle_triplet);
                 }
