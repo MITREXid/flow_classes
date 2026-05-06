@@ -155,10 +155,9 @@ private:
 
 struct Data_alg{
     one_state_Magistral * start_state = nullptr;
-    one_state_Magistral * exit_main_cycle_trio =nullptr; 
+    one_state_Magistral * exit_main_cycle_complex =nullptr; 
     one_state_Magistral * exit_main_cycle_solo =nullptr;  
     one_state_Magistral * exit_main_cycle_triplet =nullptr; 
-    one_state_Magistral * wait_with_coffe_in_mag_trio =nullptr;  
     one_state_Magistral * wait_with_coffe_in_mag_solo =nullptr;  
     one_state_Magistral * wait_with_coffe_in_mag_triplet =nullptr;  
     one_state_Magistral * wait_clearing = nullptr;
@@ -176,51 +175,65 @@ Data_alg &result){
     result.start_state = mag_start_state;
     /*==========стартовое состояние==========*/
 
-   
- /*==========трио начало==========*/
-    one_state_Magistral* preparing_in_magistral_trio = new one_state_Magistral(1, kol_users);
-    preparing_in_magistral_trio ->set_curr_state(state_Magistral::in_magistral);
-    preparing_in_magistral_trio ->set_time_in_this(500);
-    //preparing_in_magistral_trio ->set_time_in_this(500, 0);
-    //preparing_in_magistral_trio ->set_time_in_this(500, 1);
-    //preparing_in_magistral_trio ->set_time_in_this(500, 2);
-    //preparing_in_magistral_trio ->set_time_in_this(500, 3);
-    one_state_Magistral* skip_gate_trio = new one_state_Magistral(1, kol_users);
-    skip_gate_trio ->set_curr_state(state_Magistral::skip_gate);
-    skip_gate_trio ->set_time_in_this(3000);
-    // skip_gate_trio ->set_time_in_this(1500, 0);
-    // skip_gate_trio ->set_time_in_this(1500, 1);
-    // skip_gate_trio ->set_time_in_this(1500, 2);
-    // skip_gate_trio ->set_time_in_this(1500, 3);
-    one_state_Magistral* in_magistral_trio = new one_state_Magistral(2, kol_users);
-    in_magistral_trio ->set_curr_state(state_Magistral::in_magistral);
-    in_magistral_trio ->set_time_in_this(2000);
-    // in_magistral_trio ->set_time_in_this(2000, 0);
-    // in_magistral_trio ->set_time_in_this(2000, 1);
-    // in_magistral_trio ->set_time_in_this(2000, 2);
-    // in_magistral_trio ->set_time_in_this(2000, 3);
-    one_state_Magistral* air_on_trio = new one_state_Magistral(2, kol_users);
-    air_on_trio ->set_curr_state(state_Magistral::air_on);
-    air_on_trio ->set_time_in_this(17000);
-    // air_on_trio ->set_time_in_this(27000, 0);
-    // air_on_trio ->set_time_in_this(27000, 1);
-    // air_on_trio ->set_time_in_this(27000, 2);
-    // air_on_trio ->set_time_in_this(27000, 3);
-
-    mag_start_state->set_path(1,preparing_in_magistral_trio);//трио 1ый путь
-    preparing_in_magistral_trio ->set_path(0,skip_gate_trio);
-    skip_gate_trio ->set_path(0,in_magistral_trio);
-    in_magistral_trio ->set_path(1,in_magistral_trio);
-    in_magistral_trio ->set_path(0,air_on_trio);
-    air_on_trio ->set_path(0,preparing_in_magistral_trio);
-    air_on_trio ->set_path(1, mag_start_state);
-
-
-    result.exit_main_cycle_trio = air_on_trio;
-    result.wait_with_coffe_in_mag_trio = in_magistral_trio;
-    /*==========трио конец==========*/
+ 
     
-    
+   /*==========комплекс начало==========*/
+    one_state_Magistral* preparing_all_close_complex = new one_state_Magistral(1, kol_users);
+    preparing_all_close_complex->set_curr_state(state_Magistral::all_close);
+    preparing_all_close_complex->set_time_in_this(0);
+    //preparing_all_close_complex->set_time_in_this(500, 0);
+    //preparing_all_close_complex->set_time_in_this(500, 1);
+    //preparing_all_close_complex->set_time_in_this(500, 2);
+    preparing_all_close_complex->set_time_in_this(500+ 3000 +2000 + 1000, 3);
+    one_state_Magistral* preparing_in_magistral_complex = new one_state_Magistral(1, kol_users);
+    preparing_in_magistral_complex->set_curr_state(state_Magistral::in_magistral);
+    preparing_in_magistral_complex->set_time_in_this(500);
+    //preparing_in_magistral_complex->set_time_in_this(500, 0);
+    //preparing_in_magistral_complex->set_time_in_this(500, 1);
+    //preparing_in_magistral_complex->set_time_in_this(500, 2);
+    preparing_in_magistral_complex->set_time_in_this(500+27000, 3);
+    one_state_Magistral* skip_gate_complex = new one_state_Magistral(1, kol_users);
+    skip_gate_complex->set_curr_state(state_Magistral::skip_gate);
+    skip_gate_complex->set_time_in_this(3000);
+    // skip_gate_complex->set_time_in_this(1500, 0);
+    // skip_gate_complex->set_time_in_this(1500, 1);
+    // skip_gate_complex->set_time_in_this(1500, 2);
+    // skip_gate_complex->set_time_in_this(1500, 3);
+    one_state_Magistral* in_magistral_complex = new one_state_Magistral(1, kol_users);
+    in_magistral_complex->set_curr_state(state_Magistral::in_magistral);
+    in_magistral_complex->set_time_in_this(2000);
+    // in_magistral_complex->set_time_in_this(2000, 0);
+    // in_magistral_complex->set_time_in_this(2000, 1);
+    // in_magistral_complex->set_time_in_this(2000, 2);
+    // in_magistral_complex->set_time_in_this(2000+27000, 3);
+    one_state_Magistral* air_on_complex = new one_state_Magistral(1, kol_users);
+    air_on_complex->set_curr_state(state_Magistral::air_on);
+    air_on_complex->set_time_in_this(27000);
+    // air_on_complex->set_time_in_this(27000, 0);
+    // air_on_complex->set_time_in_this(27000, 1);
+    // air_on_complex->set_time_in_this(27000, 2);
+    air_on_complex->set_time_in_this(37000, 3);
+    // one_state_Magistral* waiting_for_air_off_complex = new one_state_Magistral(1, kol_users);
+    // waiting_for_air_off_complex->set_curr_state(state_Magistral::all_close);
+    // waiting_for_air_off_complex->set_time_in_this(500+3000+2000+1000+27000);
+    // // waiting_for_air_off_complex->set_time_in_this(5000, 0);
+    // // waiting_for_air_off_complex->set_time_in_this(5000, 1);
+    // // waiting_for_air_off_complex->set_time_in_this(5000, 2);
+    // // waiting_for_air_off_complex->set_time_in_this(0, 3);
+
+    mag_start_state->set_path(1,preparing_all_close_complex);//комплекс 1ый путь
+    preparing_all_close_complex->set_path(0,preparing_in_magistral_complex);//комплекс 1ый путь
+    preparing_in_magistral_complex->set_path(0,skip_gate_complex);
+    skip_gate_complex->set_path(0,in_magistral_complex);
+    in_magistral_complex->set_path(0,air_on_complex);
+    air_on_complex->set_path(0,mag_start_state);
+    // air_on_complex->set_path(0,waiting_for_air_off_complex);
+    // waiting_for_air_off_complex->set_path(0, mag_start_state);
+
+    result.exit_main_cycle_complex = air_on_complex;
+    /*==========комплекс конец==========*/
+
+
     /*==========соло начало==========*/
     one_state_Magistral* preparing_in_magistral_solo = new one_state_Magistral(1, kol_users);
     preparing_in_magistral_solo->set_curr_state(state_Magistral::in_magistral);
@@ -443,13 +456,11 @@ Data_alg &result){
 enum class state_Alg_mag{
     stop,
     prepare_solo,
-    prepare_trio,
     prepare_triplet,
     one_cycle_solo,
-    one_cycle_trio,
+    one_cycle_complex,
     one_cycle_triplet,
     cycle_solo,
-    cycle_trio,
     cycle_triplet,
     produvka,
     clearing

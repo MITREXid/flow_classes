@@ -106,9 +106,9 @@ void loop()
         if(millis() - timer_event >= 15000 && state == 0) {
             timer_event = millis();
             // flow.start(state_Flow::do_solo);
-            flow.start(state_Flow::do_clearing);
+            // flow.start(state_Flow::do_clearing);
             // flow.start(state_Flow::do_produvka);
-            // flow.start(state_Flow::do_trio);
+            flow.start(state_Flow::do_complex);
             ++state;
         }
          if(millis() - timer_event >= 10000 && state == 1) {

@@ -14,7 +14,7 @@
 enum class state_Flow{
         do_stop,
         do_solo,
-        do_trio,
+        do_complex,
         do_produvka,
         do_clearing,
         do_triplet
@@ -209,11 +209,15 @@ private:
                 break;
             case state_Flow::do_solo:
                 break;
-            case state_Flow::do_trio:
+            case state_Flow::do_complex:
                 if(isStartState(num_curr_mag, true)){
-                    num_curr_mag = get_num_curr_mag_next(true);
-                    get_mag()->start(state_Alg_mag::one_cycle_trio);
-                    get_mag(get_num_curr_mag_next(true))->start(state_Alg_mag::prepare_trio);
+                    // num_curr_mag = get_num_curr_mag_next(true);
+                    // get_mag()->start(state_Alg_mag::one_cycle_complex);
+                    // get_mag(get_num_curr_mag_next(true))->start(state_Alg_mag::prepare_complex);
+                    dyvka.set_goal_frec(4000);
+                    // if(get_mag(0)->getState()==state_Magistral::start_state){
+
+                    // }
                 }
                 break;
             case state_Flow::do_produvka:
@@ -265,11 +269,12 @@ private:
                 dyvka.set_goal_frec(4000);
                 get_mag()->start(state_Alg_mag::cycle_solo);
                 break;
-            case state_Flow::do_trio:
+            case state_Flow::do_complex:
                 num_curr_mag = 0;
-                dyvka.set_goal_frec(4000);
-                get_mag()->start(state_Alg_mag::one_cycle_trio);
-                get_mag(get_num_curr_mag_next(true))->start(state_Alg_mag::prepare_trio);
+                dyvka.set_goal_frec(5500);
+                for(uint8_t i = 0; i<kol_all_mag;++i){
+                    get_mag(i)->start(state_Alg_mag::one_cycle_complex);
+                }
                 break;
             case state_Flow::do_produvka:
                 num_curr_mag = 3;
