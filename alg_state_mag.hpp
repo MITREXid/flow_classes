@@ -231,7 +231,7 @@ Data_alg &result){
     //preparing_in_magistral_solo->set_time_in_this(500, 3);
     one_state_Magistral* skip_gate_solo = new one_state_Magistral(1, kol_users);
     skip_gate_solo->set_curr_state(state_Magistral::skip_gate);
-    skip_gate_solo->set_time_in_this(1500);
+    skip_gate_solo->set_time_in_this(3000);
     // skip_gate_solo->set_time_in_this(1500, 0);
     // skip_gate_solo->set_time_in_this(1500, 1);
     // skip_gate_solo->set_time_in_this(1500, 2);
@@ -245,7 +245,7 @@ Data_alg &result){
     // in_magistral_solo->set_time_in_this(2000, 3);
     one_state_Magistral* air_on_solo = new one_state_Magistral(1, kol_users);
     air_on_solo->set_curr_state(state_Magistral::air_on);
-    air_on_solo->set_time_in_this(27000);
+    air_on_solo->set_time_in_this(37000);
     // air_on_solo->set_time_in_this(27000, 0);
     // air_on_solo->set_time_in_this(27000, 1);
     // air_on_solo->set_time_in_this(27000, 2);
@@ -253,7 +253,7 @@ Data_alg &result){
     //нужно после продувки(перед загрузкой) сделать задержку, чтоб кофе норм отнрузилось 
     one_state_Magistral* waiting_for_air_off_solo = new one_state_Magistral(2, kol_users);
     waiting_for_air_off_solo->set_curr_state(state_Magistral::all_close);
-    waiting_for_air_off_solo->set_time_in_this(2000);
+    waiting_for_air_off_solo->set_time_in_this(10000);
     // waiting_for_air_off_solo->set_time_in_this(2000, 0);
     // waiting_for_air_off_solo->set_time_in_this(2000, 1);
     // waiting_for_air_off_solo->set_time_in_this(2000, 2);
@@ -284,7 +284,7 @@ Data_alg &result){
     //preparing_in_magistral_triplet->set_time_in_this(500, 3);
     one_state_Magistral* skip_gate_triplet = new one_state_Magistral(1, kol_users);
     skip_gate_triplet->set_curr_state(state_Magistral::skip_gate);
-    skip_gate_triplet->set_time_in_this(1500);
+    skip_gate_triplet->set_time_in_this(3000);
     // skip_gate_triplet->set_time_in_this(1500, 0);
     // skip_gate_triplet->set_time_in_this(1500, 1);
     // skip_gate_triplet->set_time_in_this(1500, 2);
