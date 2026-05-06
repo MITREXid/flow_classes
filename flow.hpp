@@ -267,11 +267,11 @@ private:
             case state_Flow::do_solo:
                 num_curr_mag = mag;
                 dyvka.set_goal_frec(4000);
-                get_mag()->start(state_Alg_mag::cycle_solo);
+                get_mag()->start(state_Alg_mag::one_cycle_solo);
                 break;
             case state_Flow::do_complex:
                 num_curr_mag = 0;
-                dyvka.set_goal_frec(5500);
+                dyvka.set_goal_frec(6000);
                 for(uint8_t i = 0; i<kol_all_mag;++i){
                     get_mag(i)->start(state_Alg_mag::one_cycle_complex);
                 }

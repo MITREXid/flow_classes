@@ -57,6 +57,7 @@ class Dyvka : public Universal_object<state_Dyvka>{
             node.postTransmission(postTransmission);
             pinMode(pin_DE_RE, OUTPUT);
             digitalWrite(pin_DE_RE, 0);
+            air_off();
         }
         void update(){
             logic();
