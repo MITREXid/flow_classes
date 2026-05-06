@@ -17,7 +17,7 @@ enum class state_Flow{
         do_trio,
         do_produvka,
         do_clearing,
-        do_vulkan
+        do_triplet
 };
 
 class Flow: public Universal_object<state_Flow>{
@@ -228,7 +228,7 @@ private:
                 break;
             case state_Flow::do_clearing:
                 break;
-            case state_Flow::do_vulkan:
+            case state_Flow::do_triplet:
                 break;
          }
     }
@@ -283,11 +283,11 @@ private:
                     get_mag(i)->start(state_Alg_mag::clearing);
                 }
                 break;
-            case state_Flow::do_vulkan:
+            case state_Flow::do_triplet:
                 num_curr_mag = 0;
-                dyvka.set_goal_frec(3000);
+                dyvka.set_goal_frec(5000);
                 for(uint8_t i = 0; i<kol_mag_group;++i){
-                    get_mag(i)->start(state_Alg_mag::one_cycle_vulkan);
+                    get_mag(i)->start(state_Alg_mag::one_cycle_triplet);
                 }
                 break;
 
