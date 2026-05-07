@@ -52,6 +52,8 @@ class Flow: public Universal_object<state_Flow>{
     {}
 
     void init(){
+        d_print(F("Init Flow: "));
+        d_println(millis());
         setup_alg_magistral(kol_all_mag, data_alg);
         pinMode(pin_power_v12,OUTPUT);
         d_println(F("power_12V: HIGH"));
@@ -64,9 +66,12 @@ class Flow: public Universal_object<state_Flow>{
         while(millis()-time_mark<100){}
 
         dyvka.init();
-        
         for(uint8_t i = 0; i<kol_all_mag;++i){
-            get_mag(i)->init();
+            get_mag(i)->init_ball_cran();
+        }
+
+        for(uint8_t i = 0; i<kol_all_mag;++i){
+            get_mag(i)->init(true);//без шарового
             
             d_println(F("power_12V: LOW"));
             digitalWrite(pin_power_v12,LOW);
@@ -94,6 +99,9 @@ class Flow: public Universal_object<state_Flow>{
 
         d_println(F("power_12V: LOW"));
         digitalWrite(pin_power_v12,LOW);
+        
+        d_print(F("End Init Flow: "));
+        d_println(millis());
     }
 
     void update(){

@@ -130,10 +130,12 @@ public:
     void funcSigStartClose(){
         d_println(F("Start Close Ball_cran")); 
         digitalWrite(control_pin, HIGH);
+        //d_println(millis());
         
     }
     void funcSigEndClose(){
         d_println(F("End Close Ball_cran")); 
+        //d_println(millis());
     }
 };
 
