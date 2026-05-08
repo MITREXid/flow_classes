@@ -210,7 +210,7 @@ private:
             case state_Flow::do_solo:
                 break;
             case state_Flow::do_complex:
-                if(isStartState(num_curr_mag, true)){
+                if(isStartState(0, true)){
                     // num_curr_mag = get_num_curr_mag_next(true);
                     // get_mag()->start(state_Alg_mag::one_cycle_complex);
                     // get_mag(get_num_curr_mag_next(true))->start(state_Alg_mag::prepare_complex);
@@ -290,7 +290,7 @@ private:
                 break;
             case state_Flow::do_triplet:
                 num_curr_mag = 0;
-                dyvka.set_goal_frec(5000);
+                dyvka.set_goal_frec(6000);
                 for(uint8_t i = 0; i<kol_mag_group;++i){
                     get_mag(i)->start(state_Alg_mag::one_cycle_triplet);
                 }

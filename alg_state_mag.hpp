@@ -178,14 +178,14 @@ Data_alg &result){
 
  
     
-    /*==========комплекс начало==========*/
+   /*==========комплекс начало==========*/
     one_state_Magistral* preparing_all_close_complex = new one_state_Magistral(1, kol_users);
     preparing_all_close_complex->set_curr_state(state_Magistral::all_close);
     preparing_all_close_complex->set_time_in_this(0);
     //preparing_all_close_complex->set_time_in_this(500, 0);
     //preparing_all_close_complex->set_time_in_this(500, 1);
     //preparing_all_close_complex->set_time_in_this(500, 2);
-    preparing_all_close_complex->set_time_in_this(500+ 3000 +2000 + 1000, 3);
+    preparing_all_close_complex->set_time_in_this(500+ 3500 + 5000, 3);
     one_state_Magistral* preparing_in_magistral_complex = new one_state_Magistral(1, kol_users);
     preparing_in_magistral_complex->set_curr_state(state_Magistral::in_magistral);
     preparing_in_magistral_complex->set_time_in_this(500);
@@ -206,10 +206,10 @@ Data_alg &result){
     // in_magistral_complex->set_time_in_this(2000, 0);
     // in_magistral_complex->set_time_in_this(2000, 1);
     // in_magistral_complex->set_time_in_this(2000, 2);
-    in_magistral_complex->set_time_in_this(2000+27000, 3);
+    in_magistral_complex->set_time_in_this(2000+25000-(5000+3000), 3);
     one_state_Magistral* air_on_complex = new one_state_Magistral(1, kol_users);
     air_on_complex->set_curr_state(state_Magistral::air_on);
-    air_on_complex->set_time_in_this(27000);
+    air_on_complex->set_time_in_this(25000);
     // air_on_complex->set_time_in_this(27000, 0);
     // air_on_complex->set_time_in_this(27000, 1);
     // air_on_complex->set_time_in_this(27000, 2);
@@ -312,7 +312,7 @@ Data_alg &result){
     // in_magistral_triplet->set_time_in_this(2000, 3);
     one_state_Magistral* air_on_triplet = new one_state_Magistral(2, kol_users);
     air_on_triplet->set_curr_state(state_Magistral::air_on);
-    air_on_triplet->set_time_in_this(27000);
+    air_on_triplet->set_time_in_this(30000);
     // air_on_triplet->set_time_in_this(27000, 0);
     // air_on_triplet->set_time_in_this(27000, 1);
     // air_on_triplet->set_time_in_this(27000, 2);
@@ -334,7 +334,7 @@ Data_alg &result){
     
     one_state_Magistral* produv_ = new one_state_Magistral(1, kol_users);
     produv_->set_curr_state(state_Magistral::air_on);
-    produv_->set_time_in_this(27000);
+    produv_->set_time_in_this(15000);
     // produv_->set_time_in_this(27000, 0);
     // produv_->set_time_in_this(27000, 1);
     // produv_->set_time_in_this(27000, 2);

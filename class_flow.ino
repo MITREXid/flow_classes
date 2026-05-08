@@ -81,7 +81,7 @@ void setup()
         d_println(freeRAM());
     #endif
     
-    display.init();
+    //display.init();
     flow.init();
 
     #if(!mode_work)//arduino
@@ -98,52 +98,52 @@ void setup()
 void loop()
 {
     if(millis() - timer_delay_loop >= 100){
+        if(Ser_PC.available() > 0){
+        char c = Ser_PC.read();
+        d_print("available: ");
+        d_println(c);
+        if(c == '1'){
+            flow.start(state_Flow::do_complex);
+        }
+        if(c == '2'){
+            flow.start(state_Flow::do_solo);
+        }
+        if(c == '3'){
+            flow.start(state_Flow::do_clearing);
+        }
+        if(c == '4'){
+            flow.start(state_Flow::do_triplet);
+        }
+        if(c == '5'){
+            flow.start(state_Flow::do_produvka);
+        }
+        if(c == '0'){
+            flow.stop();
+        }
+    }
         timer_delay_loop = millis();
-        display.update();
+        //display.update();
         flow.update();
+
     }
     #if(mode_work)//g++
         if(millis() - timer_event >= 15000 && state == 0) {
             timer_event = millis();
-            flow.start(state_Flow::do_solo);
+            // flow.start(state_Flow::do_solo);
             // flow.start(state_Flow::do_clearing);
             // flow.start(state_Flow::do_produvka);
-            // flow.start(state_Flow::do_complex);
+            flow.start(state_Flow::do_complex);
             ++state;
         }
-        //  if(millis() - timer_event >= 10000 && state == 1) {
-        //     timer_event = millis();
-        //     // flow.stop(); 
-        //     ++state;
-        // }
-        // if(millis() - timer_event >= 15000 && state == 2) {
-        // timer_event = millis();
-        // // flow.start(state_Flow::do_produvka);
-        // ++state;
-        // }
-    #else//arduino
-    if(Ser_PC.available() > 0){
-            char c = Ser_PC.read();
-            d_print("available: ");
-            d_println(c);
-            if(c == '1'){
-                flow.start(state_Flow::do_complex);
-            }
-            if(c == '2'){
-                flow.start(state_Flow::do_solo);
-            }
-            if(c == '3'){
-                flow.start(state_Flow::do_clearing);
-            }
-            if(c == '4'){
-                flow.start(state_Flow::do_triplet);
-            }
-            if(c == '5'){
-                flow.start(state_Flow::do_produvka);
-            }
-            if(c == '0'){
-                flow.stop();
-            }
+         if(millis() - timer_event >= 10000 && state == 1) {
+            timer_event = millis();
+            flow.stop(); 
+            ++state;
+        }
+        if(millis() - timer_event >= 15000 && state == 2) {
+        timer_event = millis();
+        flow.start(state_Flow::do_produvka);
+        ++state;
         }
     #endif
     // if(millis() - timer_event >= 15000 && state == 0) {

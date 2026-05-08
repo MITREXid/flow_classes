@@ -158,7 +158,7 @@ Display::events_Display Display::Check_message() {
 
     int length_of_message;
     char command = SerialXXX.peek();
-       d_print(F("\n\nDISPLAY: "));
+    //    d_print(F("\n\nDISPLAY: "));
 
     switch (command) {
 
