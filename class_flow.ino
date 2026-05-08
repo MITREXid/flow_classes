@@ -121,6 +121,30 @@ void loop()
         // // flow.start(state_Flow::do_produvka);
         // ++state;
         // }
+    #else//arduino
+    if(Ser_PC.available() > 0){
+            char c = Ser_PC.read();
+            d_print("available: ");
+            d_println(c);
+            if(c == '1'){
+                flow.start(state_Flow::do_complex);
+            }
+            if(c == '2'){
+                flow.start(state_Flow::do_solo);
+            }
+            if(c == '3'){
+                flow.start(state_Flow::do_clearing);
+            }
+            if(c == '4'){
+                flow.start(state_Flow::do_triplet);
+            }
+            if(c == '5'){
+                flow.start(state_Flow::do_produvka);
+            }
+            if(c == '0'){
+                flow.stop();
+            }
+        }
     #endif
     // if(millis() - timer_event >= 15000 && state == 0) {
     //     timer_event = millis();
