@@ -81,7 +81,7 @@ void setup()
         d_println(freeRAM());
     #endif
     
-    //display.init();
+    display.init();
     flow.init();
 
     #if(!mode_work)//arduino
@@ -124,7 +124,7 @@ void loop()
             }
         #endif
         timer_delay_loop = millis();
-        //display.update();
+        display.update();
         flow.update();
 
     }
