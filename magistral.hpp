@@ -42,7 +42,7 @@ public:
         // clapan = new Clapan(state_Component::close, PWM_, control_pin_clapan);
         // ball_cran = new Ball_cran(state_Component::close, control_pin_ball_cran);
     }
-    void init();
+    void init(bool act = true, bool clap = true, bool ball = true);
     void update();
     void start(state_Alg_mag mod);
     void stop();
@@ -228,12 +228,19 @@ void Magistral::turn_to(state_Magistral next_state){
 }
 
 //Надо чтоб на этом этапе data_alg уже было заполнено
-void Magistral::init()
+
+void Magistral::init(bool act, bool clap, bool ball)
 {
     current_state = data_alg.start_state;
-    clapan.init();
-    actuator.init();
-    ball_cran.init();
+    if(act){
+        actuator.init();
+    }
+    if(clap){
+        clapan.init();
+    }
+    if(ball){
+        ball_cran.init();
+    }
     cycle_ready_sig.setState(true);
 }
 

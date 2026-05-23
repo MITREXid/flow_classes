@@ -65,32 +65,57 @@ class Flow: public Universal_object<state_Flow>{
 
         dyvka.init();
         
+
+        //========актуаторы инит
+        d_println(F("power_12V: LOW"));
+        digitalWrite(pin_power_v12,LOW);
+        
         for(uint8_t i = 0; i<kol_all_mag;++i){
-            get_mag(i)->init();
-            
-            d_println(F("power_12V: LOW"));
-            digitalWrite(pin_power_v12,LOW);
-            pwm.voltageON();
-            pwm.update();
-
-            time_mark = millis();
-            while(millis()-time_mark<1000){}
-
-            
-            d_println(F("power_12V: HIGH"));
-            digitalWrite(pin_power_v12,HIGH);
-            pwm.voltageOFF();
-            pwm.update();
-
-            
-            time_mark = millis();
-            while(millis()-time_mark<1000){}
-            //  get_mag(i)->update();
+            get_mag(i)->init(true, false,false);//актуаторы инит
         }
+        time_mark = millis();
+        while(millis()-time_mark<2000){}
+        d_println(F("power_12V: HIGH"));
+        digitalWrite(pin_power_v12, HIGH);
+        //========актуаторы инит
 
+        
+        time_mark = millis();
+        while(millis()-time_mark<100){}//перерыв
+        
+        //========клапана инит
+        d_println("PWM ONNNN");
+        pwm.voltageON();
+        pwm.update();
+
+        for(uint8_t i = 0; i<kol_all_mag;++i){
+            get_mag(i)->init(false, true ,false);//клапана инит
+        }
+        time_mark = millis();
+        while(millis()-time_mark<700){}
+        
+        pwm.voltageOFF();
+        pwm.update();
+        d_println("PWM OFFFF");
+        //========клапана инит
+
+
+        time_mark = millis();
+        while(millis()-time_mark<100){}//перерыв
+        
+        //========шаровые инит
+        for(uint8_t i = 0; i<kol_all_mag;++i){
+            get_mag(i)->init(false, false, true);//шаровые инит
+        }
+        //========шаровые инит
+
+        
         time_mark = millis();
         while(millis()-time_mark<100){}
 
+        
+        // pwm.voltageOFF();
+        // pwm.update();
 
         d_println(F("power_12V: LOW"));
         digitalWrite(pin_power_v12,LOW);
