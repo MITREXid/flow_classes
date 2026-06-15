@@ -97,7 +97,6 @@
     class ModbusMaster{
       public:
        void begin(uint32_t addr, SoftwareSerial &bod){}
-       void begin(uint32_t addr, Serial_ &bod){}
        void preTransmission( void (a)() ){}
        void postTransmission( void (a)() ){}
        void writeSingleRegister(uint32_t reg, uint32_t val){}

@@ -5,6 +5,7 @@
 #include "flow.hpp"
 
 #if !mode_work
+    #include <SoftwareSerial.h>
     #include <ModbusMaster.h>
 #endif
 
@@ -28,8 +29,11 @@ void postTransmission() {
 
 class Dyvka : public Universal_object<state_Dyvka>{
     private:
+        SoftwareSerial rs485;
         ModbusMaster node;
         uint8_t pin_DE_RE = -1;
+        uint8_t RX = -1;
+        uint8_t TX = -1;
         Signal<> (&sig_ball_not_close)[kol_all_mag];
         uint16_t goal_freq_chastot = 3500;//целевая частота для чатотника(умноженная 100) 
         // uint16_t curr_freq_chastot = 0;//текущая частота для чатотника(умноженная 100) 
@@ -37,15 +41,18 @@ class Dyvka : public Universal_object<state_Dyvka>{
     public:
         Dyvka( uint8_t RX_, uint8_t TX_, Signal<> (&sig)[kol_all_mag]):
         pin_DE_RE{pin_DE_RE_},
-        sig_ball_not_close{sig}
+        RX{RX_},
+        TX{TX_},
+        sig_ball_not_close{sig},
+        rs485(RX_,TX_)
         {
             setStatus(state_Dyvka::no_air);
         }
 
         void init(){
             //инициализвция SoftwareSerial
-            Serial2.begin(9600);
-            node.begin(1, Serial2);
+            rs485.begin(9600);
+            node.begin(1, rs485);
             node.preTransmission(preTransmission);
             node.postTransmission(postTransmission);
             pinMode(pin_DE_RE, OUTPUT);
