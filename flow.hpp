@@ -52,6 +52,8 @@ class Flow: public Universal_object<state_Flow>{
     void init(){
         //инициализвция SoftwareSerial
         rs485.begin(9600);
+        pinMode(pin_DE_RE, OUTPUT);
+        digitalWrite(pin_DE_RE, LOW);
         setup_alg_magistral(kol_all_mag, data_alg);
         pinMode(pin_power_v12,OUTPUT);
         d_println(F("power_12V: HIGH"));
