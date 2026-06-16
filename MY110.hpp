@@ -113,8 +113,17 @@ class MY110 : public Universal_object<state_MY110>{
 
 
         void logic(){
-            
-            if(comp_state_prev == state_Component::going_close || comp_state_prev == state_Component::going_open){
+            bool flag = false;
+            if(get_curr_type() == 0){
+                if(pointers_to_components.actuator[comp_id_curr]->is_going()){
+                    flag = true;
+                }
+            }else if(get_curr_type() == 1){
+                if(pointers_to_components.clapan[comp_id_curr-4]->is_going()){
+                    flag = true;
+                }
+            }
+            if(flag){//компонент в процессе смены состояния
                 if(comp_id_curr != comp_id_prev){
                     if(get_curr_type() == 0){//актуатор
                         comp_state_prev = pointers_to_components.actuator[comp_id_curr]->getStatus();
@@ -158,6 +167,10 @@ class MY110 : public Universal_object<state_MY110>{
         }
 
         void turn_ball(int8_t id_ball, state_Component state_prev){
+            d_print(F("turn_ball id = "));
+            d_print((int)id_ball);
+            d_print(F(" state_prev = "));
+            d_println((int)state_prev);
             int i = 0;
             if(pointers_to_components.ball_cran[id_ball]->getStatus() == state_Component::going_close){
                 pointers_to_components.ball_cran[id_ball]->close(false);
@@ -179,6 +192,10 @@ class MY110 : public Universal_object<state_MY110>{
 
 
         void turn_clap(int8_t id_clap, state_Component state_prev){
+            d_print(F("turn_clap id = "));
+            d_print((int)id_clap);
+            d_print(F(" state_prev = "));
+            d_println((int)state_prev);
             turn_to_default_act_and_clap();
             if(state_prev == state_Component::going_close){
                 pointers_to_components.clapan[id_clap]->close(false);// с аргументом конечного времени
@@ -197,10 +214,14 @@ class MY110 : public Universal_object<state_MY110>{
             }
             
             send_mask(mask_pins_new);
-            comp_id_curr = id_clap;
+            comp_id_prev = id_clap+4;
         }
 
         void turn_act(int8_t id_act, state_Component state_prev){
+            d_print(F("turn_act id = "));
+            d_print((int)id_act);
+            d_print(F(" state_prev = "));
+            d_println((int)state_prev);
             turn_to_default_act_and_clap();
             if(state_prev == state_Component::going_close){
                 pointers_to_components.actuator[id_act]->close(false);// с аргументом конечного времени
@@ -219,7 +240,7 @@ class MY110 : public Universal_object<state_MY110>{
             }
             
             send_mask(mask_pins_new);
-            comp_id_curr = id_act;
+            comp_id_prev = id_act;
         }
 
 
@@ -233,7 +254,7 @@ class MY110 : public Universal_object<state_MY110>{
             send_mask(mask_pins_new);
         }
 
-       void send_mask(uint16_t mask_){
+       void send_mask(uint32_t mask_){
 
             uint16_t reg97_mask = 0;//(Биты 1-16)
             uint16_t reg98_mask = 0;//(Биты 17-32)
@@ -244,6 +265,9 @@ class MY110 : public Universal_object<state_MY110>{
             node.setTransmitBuffer(1, reg98_mask); // Значение для регистра 0x0062
             uint8_t result = node.writeMultipleRegisters(0x0061, 2);
             //можно добавить проверку result на успешность записи, если нужно
+            char buffer[32];
+            d_print(F("send_mask: "));
+            d_println(to_binary_string(mask_, buffer));
             mask_pins_curr = mask_;
         }
 

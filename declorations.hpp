@@ -129,20 +129,40 @@ inline void time_break(uint32_t t){
     uint32_t time_init = millis();
     while(millis() - time_init < t){}
 }
-
+char* to_binary_string(uint32_t value, char* buffer);
 // Установить бит в 1
 uint32_t set_bit_1(uint32_t value, uint8_t bit_pos) {
+  // char buffer[32];
+  // d_print(F("set_bit_1: ")); 
+  // d_println(to_binary_string(value, buffer));
     return value | (1U << bit_pos);
 }
 
 // Установить бит в 0 (сбросить)
 uint32_t set_bit_0(uint32_t value, uint8_t bit_pos) {
+  char buffer[32];
+  d_print(F("set_bit_0, bit = "));
+  d_print((int)bit_pos);
+  d_print(F(" : "));
+  d_println(to_binary_string(value, buffer));
     return value & ~(1U << bit_pos);
 }
 
 // Инвертировать бит (0 -> 1, 1 -> 0)
 uint32_t toggle_bit(uint32_t value, uint8_t bit_pos) {
+  //  char buffer[32];
+  // d_print(F("toggle_bit: "));
+  // d_println(to_binary_string(value, buffer));
     return value ^ (1U << bit_pos);
+}
+
+char* to_binary_string(uint32_t value, char* buffer) {
+    for (int i = 31; i >= 0; i--) {
+        // Если бит равен 1, пишем символ '1', иначе '0'
+        buffer[31 - i] = (value & (1U << i)) ? '1' : '0';
+    }
+    buffer[32] = '\0'; // Обязательный нуль-терминатор в конце строки
+    return buffer;
 }
 
 #endif // DECLORATIONS_HPP

@@ -100,7 +100,7 @@ void loop()
 
     }
     #if(mode_work)//g++
-        if(millis() - timer_event >= 15000 && state == 0) {
+        if(millis() - timer_event >= 50000 && state == 0) {
             timer_event = millis();
             // flow.start(state_Flow::do_solo);
             // flow.start(state_Flow::do_clearing);

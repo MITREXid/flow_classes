@@ -74,7 +74,7 @@ class Flow: public Universal_object<state_Flow>{
     }
 
     void update(){
-         pwm.update();
+        //  pwm.update();
          for(uint8_t i = 0; i<kol_all_mag;++i){
             get_mag(i)->update();
          }

@@ -65,12 +65,7 @@ public:
         timer_closing.update();
         timer_opening.update();
 
-        if(SigEndClose.isTrueAndNotCheked()){  
-           setStatus(state_Component::close);
-           flag_infinite_process = true;
-            funcSigEndClose();
-        }
-        if(SigStartOpen.isTrueAndNotCheked()){  
+         if(SigStartOpen.isTrueAndNotCheked()){  
            setStatus(state_Component::going_open);
             funcSigStartOpen();
         }
@@ -78,12 +73,19 @@ public:
            setStatus(state_Component::going_close);
             funcSigStartClose();
         }
-        if(SigEndOpen.isTrueAndNotCheked()){  
-           setStatus(state_Component::open);
-           flag_infinite_process = true;
-            funcSigEndOpen();
-        }
 
+        if(!flag_infinite_process){//отключили сигналы окончания
+            if(SigEndClose.isTrueAndNotCheked()){  
+            setStatus(state_Component::close);
+            flag_infinite_process = true;
+                funcSigEndClose();
+            }
+            if(SigEndOpen.isTrueAndNotCheked()){  
+            setStatus(state_Component::open);
+            flag_infinite_process = true;
+                funcSigEndOpen();
+            }
+        }
 
     }
     
@@ -96,13 +98,12 @@ public:
         if(getStatus() == state_Component::open) {
             d_println(F("already open"));
             return false;
-        } else if(getStatus() == state_Component::going_open) {
-            d_println(F("yet going_open"));
-            return true;
         }else{
             if(getStatus() == state_Component::going_close) {
                 d_println(F("was going_close, let's go open"));
-            }
+            }else if(getStatus() == state_Component::going_open) {
+                d_println(F("yet going_open, restart"));
+            }   
             timer_opening.restart();
             timer_closing.stop();
         }
@@ -118,12 +119,11 @@ public:
         if(getStatus() == state_Component::close) {
             d_println(F("already close"));
             return true;
-        } else if(getStatus() == state_Component::going_close) {
-            d_println(F("yet going_close"));
-            return true;
-        }else{
+        } else{
             if(getStatus() == state_Component::going_open) {
                 d_println(F("was going_open, let's go close"));
+            }else if(getStatus() == state_Component::going_close) {
+                d_println(F("yet going_close, restart"));
             }
             timer_closing.restart();
             timer_opening.stop();
