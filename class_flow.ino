@@ -6,62 +6,33 @@
 #include "magistral.hpp"
 #include "flow.hpp"
 #include "display.hpp"
+#include "config.h"
 
-// Timer timer1;
-// Timer timer2;
-// Component comp(state_Component::open);
-// Shared_power_5V PWM(A1);
-// Actuator *act;
-// Ball_cran act3(state_Component::close, 12);
-// Magistral mag(PWM,10,11,12, &mag_start_state);
-
-#define rele_5 27//шаровые 27
-#define rele_6 43//шаровые 43
-#define rele_7 29//шаровые 29
-#define rele_8 41//шаровые 41
-
-#define rele_9 31//актуатор 31
-#define rele_11 33//актуатор 33
-#define rele_13 35//актуатор  35
-#define rele_15 37//актуатор 37
-
-//тут ошибка по схеме FLOW3_v2.2 другое(в физике пока норм) в комментах, то что должно быть по схеме
-#define mod2_clap_rele_1_2  39//клапан 39
-#define mod2_clap_rele_3_4 45//клапан 45
-#define mod2_clap_rele_5_6 47//клапан 47
-#define mod2_clap_rele_7_8 49//клапан 49
-
-#define mod2_rele_15_power_clap 53// 53
-#define rele_2_power_act 23// 23
-
-#define pin_power_v12 rele_2_power_act
-#define pin_power_v12_clapan mod2_rele_15_power_clap
-
-Data_alg dalg;
 Flow flow(
      //первая магистраль
-    rele_9,//актуатор
-    mod2_clap_rele_7_8,//клапан
-    rele_5,//шаровый 
+    mag_1_act,//актуатор
+    mag_1_clap,//клапан
+    mag_1_ball,//шаровый 
     //вторая магистраль
-    rele_11,//актуатор
-    mod2_clap_rele_5_6,//клапан
-    rele_6,//шаровый 
+    mag_2_act,//актуатор
+    mag_2_clap,//клапан
+    mag_2_ball,//шаровый 
      //третья магистраль
-    rele_13,//актуатор
-    mod2_clap_rele_3_4,//клапан
-    rele_7,//шаровый 
+    mag_3_act,//актуатор
+    mag_3_clap,//клапан
+    mag_3_ball,//шаровый 
     //четвертая магистраль(соло)
-    rele_15,//актуатор
-    mod2_clap_rele_1_2,//клапан
-    rele_8,//шаровый 
-    12,//пин RX(RO) для частоника
-    10,//пин TX(DI) для частоника
+    mag_4_act,//актуатор
+    mag_4_clap,//клапан
+    mag_4_ball,//шаровый 
+    RO_RS485,//пин RX(RO) для частоника
+    DI_RS485,//пин TX(DI) для частоника
     //пин RE/DE настраивается в файле dyvka.hpp (был D11)
-    pin_power_v12,//пин открывающий реле на котором 12В
-    pin_power_v12_clapan
+    pow_v12_act,//пин открывающий реле на котором 12В
+    pow_v12_clap
 );
 
+// Data_alg dalg;
 Display display(flow);
 
 
@@ -70,7 +41,7 @@ unsigned long timer_delay_loop ;
 unsigned long timer_event;
 unsigned long state;
 
-#define mag 0
+// #define mag 0
 
 void setup()
 {

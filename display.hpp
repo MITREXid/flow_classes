@@ -1,8 +1,7 @@
 #ifndef DISPLAY_HPP
 #define DISPLAY_HPP
 #include "flow.hpp"
-
-#define SerialXXX Serial3
+#include "display.hpp"
 
 /**
  * A0 - режим троицы
@@ -18,7 +17,6 @@
  * 
  */
 
-#define size_of_buf 15
 
 
 class Display{

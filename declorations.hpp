@@ -123,47 +123,11 @@ inline int freeRAM() {
 
 #endif
 
-// // Базовый класс для любого вызываемого объекта
-// struct CallableBase {
-//     virtual ~CallableBase() = default;
-//     virtual void invoke() = 0;
-// };
-
-// // Шаблонный класс для хранения конкретного вызываемого объекта
-// template<typename T>
-// struct Callable : CallableBase {
-//     T func;
-    
-//     Callable(T f) : func(f) {}
-//     void invoke() override { func(); }
-// };
-//  // Вспомогательный метод для безопасного удаления
-// inline void deleteIfNotNull(CallableBase* &ptr) {
-//     if (ptr != nullptr) {
-//         delete ptr;
-//         ptr = nullptr;
-//     }
-// }
-
-
-// // Используйте этот макрос для большинства случаев
-// #define DEFINE_ARDUINO_CALLBACK(name, ret, ...) \
-//     typedef ret (*name##_t)(__VA_ARGS__); \
-//     struct name { \
-//         name##_t func; \
-//         constexpr name() : func(nullptr) {} \
-//         constexpr name(name##_t f) : func(f) {} \
-//         template<typename F> \
-//         constexpr name(F f) : func(f) {} \
-//         constexpr ret operator()(__VA_ARGS__ args) const { \
-//             return func ? func(args) : (ret)0; \
-//         } \
-//         constexpr operator bool() const { return func != nullptr; } \
-//         constexpr static uint8_t memory() { return sizeof(name); } \
-//     }
 inline void time_break(uint32_t t){
     uint32_t time_init = millis();
     while(millis() - time_init < t){}
 }
+
+
 
 #endif // DECLORATIONS_HPP

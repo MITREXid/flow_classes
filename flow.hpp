@@ -2,13 +2,7 @@
 #define FLOW_HPP
 #include "universal_object.hpp"
 #include "magistral.hpp"
-
-
-#define kol_mag_group 3
-#define kol_all_mag 4
-#define solo_mag 3//nomer от 0
-
-
+#include "config.h"
 #include "dyvka.hpp"
 
 enum class state_Flow{
@@ -29,6 +23,9 @@ class Flow: public Universal_object<state_Flow>{
         Signal<> sig_ball_not_close[kol_all_mag];
         Dyvka dyvka;
         bool activated_stop_on_this_mag = false;//нужно чоб при остановке не отсылвть много раз stop()
+
+        
+        SoftwareSerial rs485;
     public:
         Shared_power pwm;
         Magistral group[kol_all_mag];//+1 это соло
@@ -38,7 +35,7 @@ class Flow: public Universal_object<state_Flow>{
         uint8_t p_act_2, uint8_t p_clap_2, uint8_t p_ball_2,
         uint8_t p_act_3, uint8_t p_clap_3, uint8_t p_ball_3,
         uint8_t p_act_4, uint8_t p_clap_4, uint8_t p_ball_4,
-        uint8_t pin_RX_dyvka, uint8_t pin_TX_dyvka, uint8_t pin_power_v12_, uint8_t pin_power_v12_clapan_)
+        uint8_t pin_RX_rs485, uint8_t pin_TX_rs485, uint8_t pin_power_v12_, uint8_t pin_power_v12_clapan_)
     : 
     group{
         Magistral(0x0, p_act_1, p_clap_1, p_ball_1, pwm, data_alg, sig_ready_mag[0], sig_ball_not_close[0]),
@@ -46,12 +43,15 @@ class Flow: public Universal_object<state_Flow>{
         Magistral(0x2, p_act_3, p_clap_3, p_ball_3, pwm, data_alg, sig_ready_mag[2], sig_ball_not_close[2]),
         Magistral(0x3, p_act_4, p_clap_4, p_ball_4, pwm, data_alg, sig_ready_mag[3], sig_ball_not_close[3]),//solo
     },
-    dyvka(pin_RX_dyvka, pin_TX_dyvka, sig_ball_not_close),
+    rs485{pin_RX_rs485, pin_TX_rs485},
+    dyvka(rs485, sig_ball_not_close),
     pin_power_v12(pin_power_v12_),
     pwm{Shared_power(pin_power_v12_clapan_)}
     {}
 
     void init(){
+        //инициализвция SoftwareSerial
+        rs485.begin(9600);
         setup_alg_magistral(kol_all_mag, data_alg);
         pinMode(pin_power_v12,OUTPUT);
         d_println(F("power_12V: HIGH"));

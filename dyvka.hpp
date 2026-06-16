@@ -3,6 +3,7 @@
 #include "universal_object.hpp"
 #include "signal.h"
 #include "flow.hpp"
+#include "config.h"
 
 #if !mode_work
     #include <SoftwareSerial.h>
@@ -15,48 +16,29 @@ enum class state_Dyvka{
     no_air
 };
 
-#define pin_DE_RE_ 11
-
-void preTransmission() {
-    digitalWrite(pin_DE_RE_, 1);
-    // delayMicroseconds(10);
-}
-
-void postTransmission() {
-    digitalWrite(pin_DE_RE_, 0);
-    // delayMicroseconds(10);
-}
 
 class Dyvka : public Universal_object<state_Dyvka>{
     private:
-        SoftwareSerial rs485;
+        SoftwareSerial &rs485;
         ModbusMaster node;
-        uint8_t pin_DE_RE = -1;
-        uint8_t RX = -1;
-        uint8_t TX = -1;
         Signal<> (&sig_ball_not_close)[kol_all_mag];
         uint16_t goal_freq_chastot = 3500;//целевая частота для чатотника(умноженная 100) 
         // uint16_t curr_freq_chastot = 0;//текущая частота для чатотника(умноженная 100) 
         enum class State_air{on, off} state_air;
     public:
-        Dyvka( uint8_t RX_, uint8_t TX_, Signal<> (&sig)[kol_all_mag]):
-        pin_DE_RE{pin_DE_RE_},
-        RX{RX_},
-        TX{TX_},
+        Dyvka(SoftwareSerial &rs485_, Signal<> (&sig)[kol_all_mag]):
         sig_ball_not_close{sig},
-        rs485(RX_,TX_)
+        rs485(rs485_)
         {
             setStatus(state_Dyvka::no_air);
         }
 
         void init(){
-            //инициализвция SoftwareSerial
-            rs485.begin(9600);
             node.begin(1, rs485);
             node.preTransmission(preTransmission);
             node.postTransmission(postTransmission);
             pinMode(pin_DE_RE, OUTPUT);
-            digitalWrite(pin_DE_RE, 0);
+            digitalWrite(pin_DE_RE, LOW);
             air_off();
         }
         void update(){
