@@ -25,8 +25,8 @@ class MY110 : public Universal_object<state_MY110>{
         uint32_t mask_pins_default = 0;
         
         //данные по одному компонентк(актуатор или клапан)
-        int8_t comp_id_curr = -1;//-1 начало, застревает на компоненте требующем смены состояния(0-3 актуаторы, 4-7 клапаны)
-        int8_t comp_id_prev = false;//нужно для того чтобы не застревать на одном компоненте, если он уже в процессе смены состояния
+        int8_t comp_id_curr = 0;//-1 начало, застревает на компоненте требующем смены состояния(0-3 актуаторы, 4-7 клапаны)
+        int8_t comp_id_prev = -1;//нужно для того чтобы не застревать на одном компоненте, если он уже в процессе смены состояния
         state_Component comp_state_prev = state_Component::undef;// дас  возможность досрочно поменять на противоположное состояние(до завершения текузего процесса смены у того же компонента)
 
         struct struct_pointers_to_components{
@@ -34,27 +34,42 @@ class MY110 : public Universal_object<state_MY110>{
             Clapan * clapan[kol_all_mag]; 
             Ball_cran * ball_cran[kol_all_mag]; 
         }pointers_to_components;
+
+        bool flag_ball_alredy_turn[kol_all_mag] = {false, false, false, false};//чтоб не повторять сигнал для шарового крана
     public:
         
         
 
-        MY110(SoftwareSerial &rs485_, 
-        Actuator *m1_act, Clapan *m1_clap, Ball_cran *m1_ball,
-        Actuator *m2_act, Clapan *m2_clap, Ball_cran *m2_ball,
-        Actuator *m3_act, Clapan *m3_clap, Ball_cran *m3_ball,
-        Actuator *m4_act, Clapan *m4_clap, Ball_cran *m4_ball
-        ):
-        rs485(rs485_),
-        pointers_to_components{
-            .actuator{m1_act,m2_act,m3_act,m4_act},
-            .clapan{m1_clap,m2_clap,m3_clap,m4_clap},
-            .ball_cran{m1_ball,m2_ball,m3_ball,m4_ball}
-        }
+        MY110(SoftwareSerial &rs485_):
+        rs485(rs485_)
+        
         {
             setStatus(state_MY110::working);
         }
 
-        void init(){
+        void init(Actuator *m1_act, Clapan *m1_clap, Ball_cran *m1_ball,
+        Actuator *m2_act, Clapan *m2_clap, Ball_cran *m2_ball,
+        Actuator *m3_act, Clapan *m3_clap, Ball_cran *m3_ball,
+        Actuator *m4_act, Clapan *m4_clap, Ball_cran *m4_ball
+        ){
+            // Заполняем массив actuator
+            pointers_to_components.actuator[0] = m1_act;
+            pointers_to_components.actuator[1] = m2_act;
+            pointers_to_components.actuator[2] = m3_act;
+            pointers_to_components.actuator[3] = m4_act;
+
+            // Заполняем массив clapan
+            pointers_to_components.clapan[0] = m1_clap;
+            pointers_to_components.clapan[1] = m2_clap;
+            pointers_to_components.clapan[2] = m3_clap;
+            pointers_to_components.clapan[3] = m4_clap;
+
+            // Заполняем массив ball_cran
+            pointers_to_components.ball_cran[0] = m1_ball;
+            pointers_to_components.ball_cran[1] = m2_ball;
+            pointers_to_components.ball_cran[2] = m3_ball;
+            pointers_to_components.ball_cran[3] = m4_ball;
+
             node.begin(16, rs485);
             node.preTransmission(preTransmission);
             node.postTransmission(postTransmission);
@@ -98,39 +113,70 @@ class MY110 : public Universal_object<state_MY110>{
 
 
         void logic(){
-            if(comp_id_curr != comp_id_prev){
-                if(get_curr_type() == 0){//актуатор
-                    comp_state_prev = pointers_to_components.actuator[comp_id_curr]->getStatus();
-                    turn_act(comp_id_curr, comp_state_prev);
-                }else if(get_curr_type() == 1){//клапан
-                    comp_state_prev = pointers_to_components.clapan[comp_id_curr-4]->getStatus();
-                    turn_clap(comp_id_curr-4, comp_state_prev);
-                }
-
-            }else{
-
-                if(get_curr_type() == 0){//актуато
-                    if(comp_state_prev != pointers_to_components.actuator[comp_id_curr]->getStatus()){
+            
+            if(comp_state_prev == state_Component::going_close || comp_state_prev == state_Component::going_open){
+                if(comp_id_curr != comp_id_prev){
+                    if(get_curr_type() == 0){//актуатор
                         comp_state_prev = pointers_to_components.actuator[comp_id_curr]->getStatus();
                         turn_act(comp_id_curr, comp_state_prev);
-                    }else{
-                        next_id();
-                    }
-                }else if(get_curr_type() == 1){//клапан
-                    if(comp_state_prev != pointers_to_components.clapan[comp_id_curr-4]->getStatus()){
+                    }else if(get_curr_type() == 1){//клапан
                         comp_state_prev = pointers_to_components.clapan[comp_id_curr-4]->getStatus();
                         turn_clap(comp_id_curr-4, comp_state_prev);
-                    }else{
-                        next_id();
                     }
-                }
 
+                }else{
+
+                    if(get_curr_type() == 0){//актуато
+                        if(comp_state_prev != pointers_to_components.actuator[comp_id_curr]->getStatus()){
+                            comp_state_prev = pointers_to_components.actuator[comp_id_curr]->getStatus();
+                            turn_act(comp_id_curr, comp_state_prev);
+                        }else{
+                            //ждем переход
+                        }
+                    }else if(get_curr_type() == 1){//клапан
+                        if(comp_state_prev != pointers_to_components.clapan[comp_id_curr-4]->getStatus()){
+                            comp_state_prev = pointers_to_components.clapan[comp_id_curr-4]->getStatus();
+                            turn_clap(comp_id_curr-4, comp_state_prev);
+                        }else{
+                           //ждем переход 
+                        }
+                    }
+
+                }
+            }else{
+                next_id();
             }
 
-
+            for(int i = 0; i<kol_all_mag;++i){
+                if(pointers_to_components.ball_cran[i]->is_going() && flag_ball_alredy_turn[i] == false){
+                    turn_ball(i, pointers_to_components.ball_cran[i]->getStatus());
+                    flag_ball_alredy_turn[i] = true;
+                }
+            }
             
 
         }
+
+        void turn_ball(int8_t id_ball, state_Component state_prev){
+            int i = 0;
+            if(pointers_to_components.ball_cran[id_ball]->getStatus() == state_Component::going_close){
+                pointers_to_components.ball_cran[id_ball]->close(false);
+                while(pins_MY110_all_mags_ball_forward[id_ball][i] != -1){
+                    mask_pins_new = set_bit_0(mask_pins_curr, pins_MY110_all_mags_ball_revers[id_ball][i]);
+                    mask_pins_new = set_bit_1(mask_pins_curr, pins_MY110_all_mags_ball_forward[id_ball][i]);
+                    i++;
+                }
+            }else if(pointers_to_components.ball_cran[id_ball]->getStatus() == state_Component::going_open){
+                pointers_to_components.ball_cran[id_ball]->open(false);
+                while(pins_MY110_all_mags_ball_forward[id_ball][i] != -1){
+                    mask_pins_new = set_bit_1(mask_pins_curr, pins_MY110_all_mags_ball_revers[id_ball][i]);
+                    mask_pins_new = set_bit_0(mask_pins_curr, pins_MY110_all_mags_ball_forward[id_ball][i]);
+                    i++;
+                }
+            }
+            send_mask(mask_pins_new);
+        }
+
 
         void turn_clap(int8_t id_clap, state_Component state_prev){
             turn_to_default_act_and_clap();
@@ -138,15 +184,14 @@ class MY110 : public Universal_object<state_MY110>{
                 pointers_to_components.clapan[id_clap]->close(false);// с аргументом конечного времени
                 int i = 0;
                 while(pins_MY110_all_mags_act_clap_forward[id_clap][i] != -1){
-                    mask_pins_new = set_bit_0(mask_pins_curr, pins_MY110_all_mags_act_clap_forward[id_clap+4][i]);
+                    mask_pins_new = set_bit_1(mask_pins_curr, pins_MY110_all_mags_act_clap_forward[id_clap+4][i]);
                     i++;
                 }
-            }
-            if(state_prev == state_Component::going_open){
+            }else if(state_prev == state_Component::going_open){
                 pointers_to_components.clapan[id_clap]->open(false);// с аргументом конечного времени
                 int i = 0;
                 while(pins_MY110_all_mags_act_clap_revers[id_clap][i] != -1){
-                    mask_pins_new = set_bit_0(mask_pins_curr, pins_MY110_all_mags_act_clap_revers[id_clap+4][i]);
+                    mask_pins_new = set_bit_1(mask_pins_curr, pins_MY110_all_mags_act_clap_revers[id_clap+4][i]);
                     i++;
                 }
             }
@@ -161,15 +206,14 @@ class MY110 : public Universal_object<state_MY110>{
                 pointers_to_components.actuator[id_act]->close(false);// с аргументом конечного времени
                 int i = 0;
                 while(pins_MY110_all_mags_act_clap_forward[id_act][i] != -1){
-                    mask_pins_new = set_bit_0(mask_pins_curr, pins_MY110_all_mags_act_clap_forward[id_act][i]);
+                    mask_pins_new = set_bit_1(mask_pins_curr, pins_MY110_all_mags_act_clap_forward[id_act][i]);
                     i++;
                 }
-            }
-            if(state_prev == state_Component::going_open){
+            }else if(state_prev == state_Component::going_open){
                 pointers_to_components.actuator[id_act]->open(false);// с аргументом конечного времени
                 int i = 0;
                 while(pins_MY110_all_mags_act_clap_revers[id_act][i] != -1){
-                    mask_pins_new = set_bit_0(mask_pins_curr, pins_MY110_all_mags_act_clap_revers[id_act][i]);
+                    mask_pins_new = set_bit_1(mask_pins_curr, pins_MY110_all_mags_act_clap_revers[id_act][i]);
                     i++;
                 }
             }

@@ -4,6 +4,7 @@
 #include "magistral.hpp"
 #include "config.h"
 #include "dyvka.hpp"
+#include "MY110.hpp"
 
 enum class state_Flow{
         do_stop,
@@ -23,7 +24,7 @@ class Flow: public Universal_object<state_Flow>{
         Signal<> sig_ball_not_close[kol_all_mag];
         Dyvka dyvka;
         bool activated_stop_on_this_mag = false;//нужно чоб при остановке не отсылвть много раз stop()
-
+        MY110 my110;
         
         SoftwareSerial rs485;
     public:
@@ -45,6 +46,7 @@ class Flow: public Universal_object<state_Flow>{
     },
     rs485{pin_RX_rs485, pin_TX_rs485},
     dyvka(rs485, sig_ball_not_close),
+    my110(rs485),
     pin_power_v12(pin_power_v12_),
     pwm{Shared_power(pin_power_v12_clapan_)}
     {}
@@ -55,72 +57,20 @@ class Flow: public Universal_object<state_Flow>{
         pinMode(pin_DE_RE, OUTPUT);
         digitalWrite(pin_DE_RE, LOW);
         setup_alg_magistral(kol_all_mag, data_alg);
-        pinMode(pin_power_v12,OUTPUT);
-        d_println(F("power_12V: HIGH"));
-        digitalWrite(pin_power_v12,HIGH);
 
-        pwm.init();
+        for(uint8_t i = 0; i<kol_all_mag;++i){
+            get_mag(i)->init();
+        }
 
-
-        uint32_t time_mark = millis();
-        while(millis()-time_mark<100){}
+       
 
         dyvka.init();
         
-
-        //========актуаторы инит
-        d_println(F("power_12V: LOW"));
-        digitalWrite(pin_power_v12,LOW);
-        
-        for(uint8_t i = 0; i<kol_all_mag;++i){
-            get_mag(i)->init(true, false,false);//актуаторы инит
-        }
-        time_mark = millis();
-        while(millis()-time_mark<2000){}
-        d_println(F("power_12V: HIGH"));
-        digitalWrite(pin_power_v12, HIGH);
-        //========актуаторы инит
-
-        
-        time_mark = millis();
-        while(millis()-time_mark<100){}//перерыв
-        
-        //========клапана инит
-        d_println("PWM ONNNN");
-        pwm.voltageON();
-        pwm.update();
-
-        for(uint8_t i = 0; i<kol_all_mag;++i){
-            get_mag(i)->init(false, true ,false);//клапана инит
-        }
-        time_mark = millis();
-        while(millis()-time_mark<700){}
-        
-        pwm.voltageOFF();
-        pwm.update();
-        d_println("PWM OFFFF");
-        //========клапана инит
-
-
-        time_mark = millis();
-        while(millis()-time_mark<100){}//перерыв
-        
-        //========шаровые инит
-        for(uint8_t i = 0; i<kol_all_mag;++i){
-            get_mag(i)->init(false, false, true);//шаровые инит
-        }
-        //========шаровые инит
-
-        
-        time_mark = millis();
-        while(millis()-time_mark<100){}
-
-        
-        // pwm.voltageOFF();
-        // pwm.update();
-
-        d_println(F("power_12V: LOW"));
-        digitalWrite(pin_power_v12,LOW);
+        my110.init(get_mag(0)->actuator.getPointer(), get_mag(0)->clapan.getPointer(), get_mag(0)->ball_cran.getPointer(),
+        get_mag(1)->actuator.getPointer(), get_mag(1)->clapan.getPointer(), get_mag(1)->ball_cran.getPointer(),
+        get_mag(2)->actuator.getPointer(), get_mag(2)->clapan.getPointer(), get_mag(2)->ball_cran.getPointer(),
+        get_mag(3)->actuator.getPointer(), get_mag(3)->clapan.getPointer(), get_mag(3)->ball_cran.getPointer()
+        );
     }
 
     void update(){
@@ -129,6 +79,7 @@ class Flow: public Universal_object<state_Flow>{
             get_mag(i)->update();
          }
         dyvka.update();
+        my110.update();
         logic();
     }
 

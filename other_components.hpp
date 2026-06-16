@@ -10,15 +10,12 @@ public:
     Actuator(state_Component first_state, uint8_t control_pin_);
     void update();
     void init(){
-        pinMode(control_pin, OUTPUT);
-        digitalWrite(control_pin, HIGH);
         Component::init();
         update();
     }
       
     void funcSigStartOpen(){
         d_println(F("Start Open Actuator"));  
-        digitalWrite(control_pin, LOW);
     }
 
     void funcSigEndOpen(){
@@ -27,11 +24,14 @@ public:
 
     void funcSigStartClose(){
         d_println(F("Start Close Actuator")); 
-        digitalWrite(control_pin, HIGH);
         
     }
     void funcSigEndClose(){
         d_println(F("End Close Actuator"));
+    }
+
+    Actuator* getPointer() {
+        return this;
     }
 };
  
@@ -59,8 +59,6 @@ public:
     void update();
 
     void init(){
-        pinMode(control_pin, OUTPUT);
-        digitalWrite(control_pin, HIGH);
         Component::init();
         update();
     }
@@ -68,23 +66,21 @@ public:
 
     void funcSigStartOpen(){
         d_println(F("Start Open Clapan"));  
-        digitalWrite(control_pin, LOW);
-        PWM.voltageON();
     }
 
     void funcSigEndOpen(){
         d_println(F("End Open Clapan"));
-       PWM.voltageOFF();
     }
 
     void funcSigStartClose(){
         d_println(F("Start Close Clapan")); 
-        digitalWrite(control_pin, HIGH);
-       PWM.voltageON();
     }
     void funcSigEndClose(){
         d_println(F("End Close Clapan")); 
-       PWM.voltageOFF();
+    }
+
+    Clapan* getPointer() {
+        return this;
     }
 };
  
@@ -121,7 +117,6 @@ public:
     
      void funcSigStartOpen(){
         d_println(F("Start Open Ball_cran"));  
-        digitalWrite(control_pin, LOW);
     }
     void funcSigEndOpen(){
         d_println(F("End Open Ball_cran"));
@@ -129,11 +124,14 @@ public:
 
     void funcSigStartClose(){
         d_println(F("Start Close Ball_cran")); 
-        digitalWrite(control_pin, HIGH);
         
     }
     void funcSigEndClose(){
         d_println(F("End Close Ball_cran")); 
+    }
+      
+    Ball_cran* getPointer() {
+        return this;
     }
 };
 
