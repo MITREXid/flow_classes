@@ -100,6 +100,8 @@
        void preTransmission( void (a)() ){}
        void postTransmission( void (a)() ){}
        void writeSingleRegister(uint32_t reg, uint32_t val){}
+        void setTransmitBuffer(uint8_t index, uint16_t val){}
+        uint8_t writeMultipleRegisters(uint16_t reg, uint16_t num_regs){return 0;}
     };
 
     Serial_ Serial;
@@ -128,6 +130,19 @@ inline void time_break(uint32_t t){
     while(millis() - time_init < t){}
 }
 
+// Установить бит в 1
+uint32_t set_bit_1(uint32_t value, uint8_t bit_pos) {
+    return value | (1U << bit_pos);
+}
 
+// Установить бит в 0 (сбросить)
+uint32_t set_bit_0(uint32_t value, uint8_t bit_pos) {
+    return value & ~(1U << bit_pos);
+}
+
+// Инвертировать бит (0 -> 1, 1 -> 0)
+uint32_t toggle_bit(uint32_t value, uint8_t bit_pos) {
+    return value ^ (1U << bit_pos);
+}
 
 #endif // DECLORATIONS_HPP

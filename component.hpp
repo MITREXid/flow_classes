@@ -6,7 +6,7 @@
 #include "universal_object.hpp"
 #include "timer.hpp"
 
-enum state_Component {close = 0, going_close = 1, open = 2, going_open = 3};
+enum state_Component {close = 0, going_close = 1, open = 2, going_open = 3, undef = 4};
 
 // Базовый класс без виртуальных функций
 class Component : public Universal_object<state_Component> {
@@ -17,6 +17,8 @@ protected:
     Signal<> SigStartOpen, SigEndOpen;
     state_Component default_state = state_Component::close;
     
+    bool flag_infinite_process = true; // если true, то процесс открытия/закрытия бесконечный, иначе ограничен временем таймера
+
     virtual void funcSigStartOpen(){};
     virtual void funcSigEndOpen(){};
     virtual void funcSigStartClose(){};
@@ -65,6 +67,7 @@ public:
 
         if(SigEndClose.isTrueAndNotCheked()){  
            setStatus(state_Component::close);
+           flag_infinite_process = true;
             funcSigEndClose();
         }
         if(SigStartOpen.isTrueAndNotCheked()){  
@@ -77,13 +80,15 @@ public:
         }
         if(SigEndOpen.isTrueAndNotCheked()){  
            setStatus(state_Component::open);
+           flag_infinite_process = true;
             funcSigEndOpen();
         }
 
 
     }
     
-    bool open() {
+    bool open(bool is_infinite_process = true) {
+        flag_infinite_process = is_infinite_process;
         // if(!is_going()) {
         //     d_println(F("cant open: in going"));
         //     return false;
@@ -104,7 +109,8 @@ public:
         return true;
     }
     
-    bool close() {
+    bool close(bool is_infinite_process = true) {
+        flag_infinite_process = is_infinite_process;
         // if(!is_going()) {
         //     d_println(F("cant close: in going"));
         //     return false;
@@ -126,6 +132,7 @@ public:
     }
     
     void to_default() {
+        flag_infinite_process = true;
         if(default_state == state_Component::close) {
             setStatus(state_Component::open);
             close();

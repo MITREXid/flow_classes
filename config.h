@@ -2,6 +2,7 @@
 #define CONFIG_HPP
 
 #include "flow.hpp"
+#include "declorations.hpp"
 
 // ==================== flow вцелом, пины
 
@@ -91,6 +92,94 @@ void postTransmission() {
 #define kol_all_mag 4
 #define solo_mag 3//nomer от 0
 
+//для MY110(-1 это конец массива, для того чтоб была динамичность кол-ва пинов)
+constexpr int8_t pins_MY110_mag1_act_forward[] = {25,29,24,20,-1};
+constexpr int8_t pins_MY110_mag1_act_revers[] = {26,30,24,20,-1};
 
+constexpr int8_t pins_MY110_mag2_act_forward[] = {25,29,24,20,-1};
+constexpr int8_t pins_MY110_mag2_act_revers[] = {26,30,24,20,-1};
+
+constexpr int8_t pins_MY110_mag3_act_forward[] = {25,29,24,20,-1};
+constexpr int8_t pins_MY110_mag3_act_revers[] = {26,30,24,20,-1};
+
+constexpr int8_t pins_MY110_mag4_act_forward[] = {25,29,24,20,-1};
+constexpr int8_t pins_MY110_mag4_act_revers[] = {26,30,24,20,-1};
+
+constexpr int8_t pins_MY110_mag1_clap_forward[] = {25,29,24,20,-1};
+constexpr int8_t pins_MY110_mag1_clap_revers[] = {26,30,24,20,-1};
+
+constexpr int8_t pins_MY110_mag2_clap_forward[] = {25,29,24,20,-1};
+constexpr int8_t pins_MY110_mag2_clap_revers[] = {26,30,24,20,-1};
+
+constexpr int8_t pins_MY110_mag3_clap_forward[] = {25,29,24,20,-1};
+constexpr int8_t pins_MY110_mag3_clap_revers[] = {26,30,24,20,-1};
+
+constexpr int8_t pins_MY110_mag4_clap_forward[] = {25,29,24,20,-1};
+constexpr int8_t pins_MY110_mag4_clap_revers[] = {26,30,24,20,-1};
+
+constexpr int8_t pins_MY110_mag1_ball_forward[] = {25,29,24,20,-1};
+constexpr int8_t pins_MY110_mag1_ball_revers[] = {26,30,24,20,-1};
+
+constexpr int8_t pins_MY110_mag2_ball_forward[] = {25,29,24,20,-1};
+constexpr int8_t pins_MY110_mag2_ball_revers[] = {26,30,24,20,-1};
+
+constexpr int8_t pins_MY110_mag3_ball_forward[] = {25,29,24,20,-1};
+constexpr int8_t pins_MY110_mag3_ball_revers[] = {26,30,24,20,-1};
+
+constexpr int8_t pins_MY110_mag4_ball_forward[] = {25,29,24,20,-1};
+constexpr int8_t pins_MY110_mag4_ball_revers[] = {26,30,24,20,-1};
+
+
+constexpr const int8_t* pins_MY110_all_mags_act_clap_forward[] = {
+    pins_MY110_mag1_act_forward, 
+    pins_MY110_mag2_act_forward, 
+    pins_MY110_mag3_act_forward, 
+    pins_MY110_mag4_act_forward,
+
+    pins_MY110_mag1_clap_forward, 
+    pins_MY110_mag2_clap_forward, 
+    pins_MY110_mag3_clap_forward, 
+    pins_MY110_mag4_clap_forward
+};
+
+constexpr const int8_t* pins_MY110_all_mags_act_clap_revers[] = {
+    pins_MY110_mag1_act_revers, 
+    pins_MY110_mag2_act_revers, 
+    pins_MY110_mag3_act_revers, 
+    pins_MY110_mag4_act_revers,
+
+    pins_MY110_mag1_clap_revers, 
+    pins_MY110_mag2_clap_revers,
+    pins_MY110_mag3_clap_revers, 
+    pins_MY110_mag4_clap_revers
+};
+
+constexpr const int8_t* pins_MY110_all_mags_ball_forward[] = {
+    pins_MY110_mag1_ball_forward, 
+    pins_MY110_mag2_ball_forward, 
+    pins_MY110_mag3_ball_forward, 
+    pins_MY110_mag4_ball_forward
+};
+
+constexpr const int8_t* pins_MY110_all_mags_ball_revers[] = {
+    pins_MY110_mag1_ball_revers, 
+    pins_MY110_mag2_ball_revers, 
+    pins_MY110_mag3_ball_revers, 
+    pins_MY110_mag4_ball_revers
+};
+
+constexpr int8_t pins_MY110_clear_act_clap[] = {
+    15,16,17,18,  
+    20,21,22,23, 
+    29,30,31,32,
+    34,35,36,37,
+    39,40,41,42,
+    44,45,46,47,    
+    -1};
+
+    // constexpr int8_t pins_MY110_clear_ball[] = {
+    // 5,6,7,8,  
+    // 10,11,12,13, 
+    // -1};
 
 #endif // CONFIG_HPPs
