@@ -140,11 +140,11 @@ uint32_t set_bit_1(uint32_t value, uint8_t bit_pos) {
 
 // Установить бит в 0 (сбросить)
 uint32_t set_bit_0(uint32_t value, uint8_t bit_pos) {
-  char buffer[32];
-  d_print(F("set_bit_0, bit = "));
-  d_print((int)bit_pos);
-  d_print(F(" : "));
-  d_println(to_binary_string(value, buffer));
+  // char buffer[32];
+  // d_print(F("set_bit_0, bit = "));
+  // d_print((int)bit_pos);
+  // d_print(F(" : "));
+  // d_println(to_binary_string(value, buffer));
     return value & ~(1U << bit_pos);
 }
 
