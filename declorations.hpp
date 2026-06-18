@@ -165,4 +165,9 @@ char* to_binary_string(uint32_t value, char* buffer) {
     return buffer;
 }
 
+//Проверяет бит
+bool check_bit(uint32_t value, int8_t bit_index) {
+    return value & (1 << bit_index);
+}
+
 #endif // DECLORATIONS_HPP

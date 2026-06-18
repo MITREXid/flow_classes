@@ -170,17 +170,20 @@ constexpr const int8_t* pins_MY110_all_mags_ball_revers[] = {
 };
 
 constexpr int8_t pins_MY110_clear_act_clap[] = {
-    15,16,17,18,  
-    20,21,22,23, 
-    29,30,31,32,
-    34,35,36,37,
-    39,40,41,42,
-    44,45,46,47,    
+    9,10,11,12,
+    13,14,15,16,
+    17,18,19,20,
+    21,22,23,24,
+    25,26,27,28,
+    29,30,31,32,    
     -1};
 
-    // constexpr int8_t pins_MY110_clear_ball[] = {
-    // 5,6,7,8,  
-    // 10,11,12,13, 
-    // -1};
+    constexpr int8_t pins_MY110_clear_ball[] = {
+    1,2,3,4,5,6,7,8,    
+    -1};
+constexpr const int8_t* pins_MY110_all_mags_clear[] = {
+    pins_MY110_clear_act_clap, 
+    pins_MY110_clear_ball
+};
 
 #endif // CONFIG_HPPs

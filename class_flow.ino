@@ -100,24 +100,24 @@ void loop()
 
     }
     #if(mode_work)//g++
-        if(millis() - timer_event >= 50000 && state == 0) {
+        if(millis() - timer_event >= 20000 && state == 0) {
             timer_event = millis();
-            // flow.start(state_Flow::do_solo);
+            flow.start(state_Flow::do_solo);
             // flow.start(state_Flow::do_clearing);
             // flow.start(state_Flow::do_produvka);
-            flow.start(state_Flow::do_complex);
+            // flow.start(state_Flow::do_complex);
             ++state;
         }
-         if(millis() - timer_event >= 10000 && state == 1) {
+         if(millis() - timer_event >= 100000 && state == 1) {
             timer_event = millis();
             flow.stop(); 
             ++state;
         }
-        if(millis() - timer_event >= 15000 && state == 2) {
-        timer_event = millis();
-        flow.start(state_Flow::do_produvka);
-        ++state;
-        }
+        // if(millis() - timer_event >= 15000 && state == 2) {
+        // timer_event = millis();
+        // flow.start(state_Flow::do_produvka);
+        // ++state;
+        // }
     #endif
     // if(millis() - timer_event >= 15000 && state == 0) {
     //     timer_event = millis();

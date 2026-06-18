@@ -74,6 +74,9 @@ class MY110 : public Universal_object<state_MY110>{
             node.preTransmission(preTransmission);
             node.postTransmission(postTransmission);
 
+            
+            turn_to_default_act_and_clap(false);
+
         }
         void update(){
             logic();
@@ -154,6 +157,8 @@ class MY110 : public Universal_object<state_MY110>{
                 }
             }else{
                 next_id();
+                turn_to_default_act_and_clap();
+            
             }
 
             for(int i = 0; i<kol_all_mag;++i){
@@ -166,6 +171,18 @@ class MY110 : public Universal_object<state_MY110>{
 
         }
 
+        bool is_default_mask_clap_and_act(){
+            int i = 0;
+            uint32_t mask_temp = mask_pins_curr;
+            while(pins_MY110_all_mags_clear[0][i] != -1){
+                if(check_bit(mask_temp, pins_MY110_all_mags_clear[0][i]-1) == 1){
+                    return false;
+                }
+                i++;
+            }
+            return true;
+        }
+
         void turn_ball(int8_t id_ball, state_Component state_prev){
             d_print(F("turn_ball id = "));
             d_print((int)id_ball);
@@ -173,22 +190,26 @@ class MY110 : public Universal_object<state_MY110>{
             d_println((int)state_prev);
             if(pointers_to_components.ball_cran[id_ball]->getStatus() == state_Component::going_close){
                 pointers_to_components.ball_cran[id_ball]->close(false);
-                int i = 0;
-                mask_pins_new = mask_pins_curr;
-                while(pins_MY110_all_mags_ball_forward[id_ball][i] != -1){
-                    mask_pins_new = set_bit_0(mask_pins_new, pins_MY110_all_mags_ball_revers[id_ball][i]);
-                    mask_pins_new = set_bit_1(mask_pins_new, pins_MY110_all_mags_ball_forward[id_ball][i]);
-                    i++;
-                }
+                mask_pins_new = set_mask(mask_pins_curr, id_ball,pins_MY110_all_mags_ball_revers,0);
+                mask_pins_new = set_mask(mask_pins_curr, id_ball,pins_MY110_all_mags_ball_forward,1);
+                // int i = 0;
+                // mask_pins_new = mask_pins_curr;
+                // while(pins_MY110_all_mags_ball_forward[id_ball][i] != -1){
+                //     mask_pins_new = set_bit_0(mask_pins_new, pins_MY110_all_mags_ball_revers[id_ball][i]);
+                //     mask_pins_new = set_bit_1(mask_pins_new, pins_MY110_all_mags_ball_forward[id_ball][i]);
+                //     i++;
+                // }
             }else if(pointers_to_components.ball_cran[id_ball]->getStatus() == state_Component::going_open){
                 pointers_to_components.ball_cran[id_ball]->open(false);
-                int i = 0;
-                mask_pins_new = mask_pins_curr;
-                while(pins_MY110_all_mags_ball_forward[id_ball][i] != -1){
-                    mask_pins_new = set_bit_1(mask_pins_new, pins_MY110_all_mags_ball_revers[id_ball][i]);
-                    mask_pins_new = set_bit_0(mask_pins_new, pins_MY110_all_mags_ball_forward[id_ball][i]);
-                    i++;
-                }
+                mask_pins_new = set_mask(mask_pins_curr, id_ball,pins_MY110_all_mags_ball_revers,1);
+                mask_pins_new = set_mask(mask_pins_curr, id_ball,pins_MY110_all_mags_ball_forward,0);
+                // int i = 0;
+                // mask_pins_new = mask_pins_curr;
+                // while(pins_MY110_all_mags_ball_forward[id_ball][i] != -1){
+                //     mask_pins_new = set_bit_1(mask_pins_new, pins_MY110_all_mags_ball_revers[id_ball][i]);
+                //     mask_pins_new = set_bit_0(mask_pins_new, pins_MY110_all_mags_ball_forward[id_ball][i]);
+                //     i++;
+                // }
             }
             send_mask(mask_pins_new);
         }
@@ -203,20 +224,23 @@ class MY110 : public Universal_object<state_MY110>{
             turn_to_default_act_and_clap();
             if(state_prev == state_Component::going_close){
                 pointers_to_components.clapan[id_clap]->close(false);// с аргументом конечного времени
-                int i = 0;
-                mask_pins_new = mask_pins_curr;
-                while(pins_MY110_all_mags_act_clap_forward[id_clap][i] != -1){
-                    mask_pins_new = set_bit_1(mask_pins_new, pins_MY110_all_mags_act_clap_forward[id_clap+4][i]);
-                    i++;
-                }
+                
+                mask_pins_new = set_mask(mask_pins_curr, id_clap+4,pins_MY110_all_mags_act_clap_forward,1);
+                // int i = 0;
+                // mask_pins_new = mask_pins_curr;
+                // while(pins_MY110_all_mags_act_clap_forward[id_clap][i] != -1){
+                //     mask_pins_new = set_bit_1(mask_pins_new, pins_MY110_all_mags_act_clap_forward[id_clap+4][i]);
+                //     i++;
+                // }
             }else if(state_prev == state_Component::going_open){
                 pointers_to_components.clapan[id_clap]->open(false);// с аргументом конечного времени
-                int i = 0;
-                mask_pins_new = mask_pins_curr;
-                while(pins_MY110_all_mags_act_clap_revers[id_clap][i] != -1){
-                    mask_pins_new = set_bit_1(mask_pins_new, pins_MY110_all_mags_act_clap_revers[id_clap+4][i]);
-                    i++;
-                }
+                mask_pins_new = set_mask(mask_pins_curr, id_clap+4,pins_MY110_all_mags_act_clap_revers,1);
+                // int i = 0;
+                // mask_pins_new = mask_pins_curr;
+                // while(pins_MY110_all_mags_act_clap_revers[id_clap][i] != -1){
+                //     mask_pins_new = set_bit_1(mask_pins_new, pins_MY110_all_mags_act_clap_revers[id_clap+4][i]);
+                //     i++;
+                // }
             }
             
             send_mask(mask_pins_new);
@@ -231,20 +255,22 @@ class MY110 : public Universal_object<state_MY110>{
             turn_to_default_act_and_clap();
             if(state_prev == state_Component::going_close){
                 pointers_to_components.actuator[id_act]->close(false);// с аргументом конечного времени
-                int i = 0;
-                mask_pins_new = mask_pins_curr;
-                while(pins_MY110_all_mags_act_clap_forward[id_act][i] != -1){
-                    mask_pins_new = set_bit_1(mask_pins_new, pins_MY110_all_mags_act_clap_forward[id_act][i]);
-                    i++;
-                }
+                mask_pins_new = set_mask(mask_pins_curr, id_act,pins_MY110_all_mags_act_clap_forward,1);
+                // int i = 0;
+                // mask_pins_new = mask_pins_curr;
+                // while(pins_MY110_all_mags_act_clap_forward[id_act][i] != -1){
+                //     mask_pins_new = set_bit_1(mask_pins_new, pins_MY110_all_mags_act_clap_forward[id_act][i]);
+                //     i++;
+                // }
             }else if(state_prev == state_Component::going_open){
                 pointers_to_components.actuator[id_act]->open(false);// с аргументом конечного времени
-                int i = 0;
-                mask_pins_new = mask_pins_curr;
-                while(pins_MY110_all_mags_act_clap_revers[id_act][i] != -1){
-                    mask_pins_new = set_bit_1(mask_pins_new, pins_MY110_all_mags_act_clap_revers[id_act][i]);
-                    i++;
-                }
+                mask_pins_new = set_mask(mask_pins_curr, id_act,pins_MY110_all_mags_act_clap_revers,1);
+                // int i = 0;
+                // mask_pins_new = mask_pins_curr;
+                // while(pins_MY110_all_mags_act_clap_revers[id_act][i] != -1){
+                //     mask_pins_new = set_bit_1(mask_pins_new, pins_MY110_all_mags_act_clap_revers[id_act][i]);
+                //     i++;
+                // }
             }
             
             send_mask(mask_pins_new);
@@ -253,13 +279,17 @@ class MY110 : public Universal_object<state_MY110>{
 
 
 
-        void turn_to_default_act_and_clap(){
-            int i = 0;
-            mask_pins_new = mask_pins_curr;
-            while(pins_MY110_clear_act_clap[i] != -1){
-                mask_pins_new = set_bit_0(mask_pins_new, pins_MY110_clear_act_clap[i]);
-                i++;
+        void turn_to_default_act_and_clap(bool is_check_default_state = true){
+            if(is_check_default_state && is_default_mask_clap_and_act()){
+                return;
             }
+            mask_pins_new = set_mask(mask_pins_curr, 0 ,pins_MY110_all_mags_clear,0);//id 0 - это клапана и актуаторы
+            // int i = 0;
+            // mask_pins_new = mask_pins_curr;
+            // while(pins_MY110_clear_act_clap[i] != -1){
+            //     mask_pins_new = set_bit_0(mask_pins_new, pins_MY110_clear_act_clap[i]);
+            //     i++;
+            // }
             send_mask(mask_pins_new);
         }
 
@@ -280,13 +310,34 @@ class MY110 : public Universal_object<state_MY110>{
             mask_pins_curr = mask_;
         }
 
-        // uint32_t set_mask(int32_t mask, int8_t id_comp, int8_t *pins_mask[], int mode){//mode: 0 = set_bit_0, 1 = set_bit_1
-        //     int i = 0;
-        //     while(pins_mask[id_comp][i] != -1){
-        //         mask = set_bit_1(mask, pins_mask[id_comp][i]);
-        //         i++;
-        //     }
-        // }//не проверить норм выход за границы
+        uint32_t set_mask(uint32_t mask, int8_t id_comp, const int8_t * const pins_mask[], int mode){//mode: 0 = set_bit_0, 1 = set_bit_1
+            int i = 0;
+            uint32_t mask_new = mask;
+            while(pins_mask[id_comp][i] != -1){
+                if(pins_mask[id_comp][i]<-1 || pins_mask[id_comp][i]>32){
+                    d_println("ERROR!!!!! set_mask more 100 el in masss");
+                    time_break(1000);
+                }
+                if(id_comp<0 || id_comp>7){
+                    d_println("ERROR!!!!! set_mask more 100 el in masss");
+                    time_break(1000);
+                }
+                if(i>32){
+                    d_println("ERROR!!!!! set_mask more 100 el in masss");
+                    time_break(1000);
+                }
+
+                if(mode == 0){
+                    mask_new = set_bit_0(mask_new, pins_mask[id_comp][i]-1);
+                }else if(mode == 1){
+                    mask_new = set_bit_1(mask_new, pins_mask[id_comp][i]-1);
+                }
+                i++;
+
+
+            }
+            return mask_new;
+        }
 
 };
 
