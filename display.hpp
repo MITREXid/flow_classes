@@ -127,7 +127,7 @@ void Display::logic()
     if (flag == events_Display::START_EVENT) {
         switch (buf[1]) {
             case 0x30:
-                flow.start(state_Flow::do_complex);
+                //flow.start(state_Flow::do_complex);
                 break;
 
             case 0x31:

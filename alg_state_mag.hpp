@@ -342,7 +342,7 @@ Data_alg &result){
     starting_in_magistral_triplet->set_path(0,preparing_in_magistral_triplet);
     preparing_in_magistral_triplet->set_path(0,skip_gate_triplet);
     skip_gate_triplet->set_path(0,in_magistral_triplet);
-    // in_magistral_triplet->set_path(1,in_magistral_triplet);
+    in_magistral_triplet->set_path(1,in_magistral_triplet);
     in_magistral_triplet->set_path(0,all_close_triplet);
     all_close_triplet->set_path(0,air_on_triplet);
     air_on_triplet->set_path(0,preparing_in_magistral_triplet);

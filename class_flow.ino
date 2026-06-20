@@ -69,7 +69,7 @@ void setup()
 void loop()
 {
     if(millis() - timer_delay_loop >= 10){
-        #if(!mode_work)//g++
+        #if(!mode_work && false)//g++
             if(Ser_PC.available() > 0){
                 char c = Ser_PC.read();
                 d_print("available: ");
