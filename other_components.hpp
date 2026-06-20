@@ -38,8 +38,8 @@ public:
 Actuator::Actuator(state_Component first_state, uint8_t control_pin_)
     : Component(
         first_state, //состояние по умолчанию
-        1000, //время открытия
-        1000 //время закрытия
+        600, //время открытия
+        600 //время закрытия
     ),
     control_pin{control_pin_}
 {}
@@ -138,8 +138,8 @@ public:
 Ball_cran::Ball_cran(state_Component first_state, int control_pin_)
 : Component(
         first_state, //состояние по умолчанию
-        15000, //время открытия
-        15000 //время закрытия
+        15500, //время открытия
+        15500 //время закрытия
  ) ,
   control_pin{control_pin_}
 {}

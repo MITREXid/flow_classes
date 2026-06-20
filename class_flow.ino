@@ -68,7 +68,7 @@ void setup()
 
 void loop()
 {
-    if(millis() - timer_delay_loop >= 100){
+    if(millis() - timer_delay_loop >= 10){
         #if(!mode_work)//g++
             if(Ser_PC.available() > 0){
                 char c = Ser_PC.read();
@@ -100,7 +100,7 @@ void loop()
 
     }
     #if(mode_work)//g++
-        if(millis() - timer_event >= 20000 && state == 0) {
+        if(millis() - timer_event >= 18000 && state == 0) {
             timer_event = millis();
             flow.start(state_Flow::do_solo);
             // flow.start(state_Flow::do_clearing);

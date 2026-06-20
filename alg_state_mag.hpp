@@ -238,7 +238,7 @@ Data_alg &result){
     /*==========соло начало==========*/
     one_state_Magistral* preparing_in_magistral_solo = new one_state_Magistral(1, kol_users);
     preparing_in_magistral_solo->set_curr_state(state_Magistral::in_magistral);
-    preparing_in_magistral_solo->set_time_in_this(500);
+    preparing_in_magistral_solo->set_time_in_this(550);
     //preparing_in_magistral_solo->set_time_in_this(500, 0);
     //preparing_in_magistral_solo->set_time_in_this(500, 1);
     //preparing_in_magistral_solo->set_time_in_this(500, 2);

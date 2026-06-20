@@ -22,12 +22,12 @@ class MY110 : public Universal_object<state_MY110>{
         ModbusMaster node;
         uint32_t mask_pins_curr = 0;
         uint32_t mask_pins_new = 0;
-        uint32_t mask_pins_default = 0;
+        uint32_t mask_pins_last = 0;
         
         //данные по одному компонентк(актуатор или клапан)
         int8_t comp_id_curr = 0;//-1 начало, застревает на компоненте требующем смены состояния(0-3 актуаторы, 4-7 клапаны)
         int8_t comp_id_prev = -1;//нужно для того чтобы не застревать на одном компоненте, если он уже в процессе смены состояния
-        state_Component comp_state_prev = state_Component::undef;// дас  возможность досрочно поменять на противоположное состояние(до завершения текузего процесса смены у того же компонента)
+        state_Component comp_clap_act_state_prev = state_Component::undef;// дас  возможность досрочно поменять на противоположное состояние(до завершения текузего процесса смены у того же компонента)
 
         struct struct_pointers_to_components{
             Actuator * actuator[kol_all_mag]; 
@@ -35,7 +35,7 @@ class MY110 : public Universal_object<state_MY110>{
             Ball_cran * ball_cran[kol_all_mag]; 
         }pointers_to_components;
 
-        bool flag_ball_alredy_turn[kol_all_mag] = {false, false, false, false};//чтоб не повторять сигнал для шарового крана
+        state_Component comp_ball_state_prev[kol_all_mag] = {state_Component::undef, state_Component::undef, state_Component::undef, state_Component::undef};//чтоб не повторять сигнал для шарового крана
     public:
         
         
@@ -129,26 +129,26 @@ class MY110 : public Universal_object<state_MY110>{
             if(flag){//компонент в процессе смены состояния
                 if(comp_id_curr != comp_id_prev){
                     if(get_curr_type() == 0){//актуатор
-                        comp_state_prev = pointers_to_components.actuator[comp_id_curr]->getStatus();
-                        turn_act(comp_id_curr, comp_state_prev);
+                        comp_clap_act_state_prev = pointers_to_components.actuator[comp_id_curr]->getStatus();
+                        turn_act(comp_id_curr, comp_clap_act_state_prev);
                     }else if(get_curr_type() == 1){//клапан
-                        comp_state_prev = pointers_to_components.clapan[comp_id_curr-4]->getStatus();
-                        turn_clap(comp_id_curr-4, comp_state_prev);
+                        comp_clap_act_state_prev = pointers_to_components.clapan[comp_id_curr-4]->getStatus();
+                        turn_clap(comp_id_curr-4, comp_clap_act_state_prev);
                     }
 
                 }else{
 
                     if(get_curr_type() == 0){//актуато
-                        if(comp_state_prev != pointers_to_components.actuator[comp_id_curr]->getStatus()){
-                            comp_state_prev = pointers_to_components.actuator[comp_id_curr]->getStatus();
-                            turn_act(comp_id_curr, comp_state_prev);
+                        if(comp_clap_act_state_prev != pointers_to_components.actuator[comp_id_curr]->getStatus()){
+                            comp_clap_act_state_prev = pointers_to_components.actuator[comp_id_curr]->getStatus();
+                            turn_act(comp_id_curr, comp_clap_act_state_prev);
                         }else{
                             //ждем переход
                         }
                     }else if(get_curr_type() == 1){//клапан
-                        if(comp_state_prev != pointers_to_components.clapan[comp_id_curr-4]->getStatus()){
-                            comp_state_prev = pointers_to_components.clapan[comp_id_curr-4]->getStatus();
-                            turn_clap(comp_id_curr-4, comp_state_prev);
+                        if(comp_clap_act_state_prev != pointers_to_components.clapan[comp_id_curr-4]->getStatus()){
+                            comp_clap_act_state_prev = pointers_to_components.clapan[comp_id_curr-4]->getStatus();
+                            turn_clap(comp_id_curr-4, comp_clap_act_state_prev);
                         }else{
                            //ждем переход 
                         }
@@ -156,19 +156,25 @@ class MY110 : public Universal_object<state_MY110>{
 
                 }
             }else{
+                // d_print(F("next_id = "));
+                // d_print((int)comp_id_curr);
+                // d_print(F("->"));
                 next_id();
+                // d_println((int)comp_id_curr);
                 turn_to_default_act_and_clap();
             
             }
 
-            for(int i = 0; i<kol_all_mag;++i){
-                if(pointers_to_components.ball_cran[i]->is_going() && flag_ball_alredy_turn[i] == false){
-                    turn_ball(i, pointers_to_components.ball_cran[i]->getStatus());
-                    flag_ball_alredy_turn[i] = true;
+            for(int j = 0; j<kol_all_mag;++j){
+                if(pointers_to_components.ball_cran[j]->is_going() && comp_ball_state_prev[j] != pointers_to_components.ball_cran[j]->getStatus()){
+                    comp_ball_state_prev[j] = pointers_to_components.ball_cran[j]->getStatus();
+                    turn_ball(j, pointers_to_components.ball_cran[j]->getStatus());
                 }
             }
             
-
+            if(mask_pins_last != mask_pins_curr){
+                send_mask(mask_pins_curr, true);
+            }
         }
 
         bool is_default_mask_clap_and_act(){
@@ -191,7 +197,7 @@ class MY110 : public Universal_object<state_MY110>{
             if(pointers_to_components.ball_cran[id_ball]->getStatus() == state_Component::going_close){
                 pointers_to_components.ball_cran[id_ball]->close(false);
                 mask_pins_new = set_mask(mask_pins_curr, id_ball,pins_MY110_all_mags_ball_revers,0);
-                mask_pins_new = set_mask(mask_pins_curr, id_ball,pins_MY110_all_mags_ball_forward,1);
+                mask_pins_new = set_mask(mask_pins_new, id_ball,pins_MY110_all_mags_ball_forward,1);
                 // int i = 0;
                 // mask_pins_new = mask_pins_curr;
                 // while(pins_MY110_all_mags_ball_forward[id_ball][i] != -1){
@@ -202,7 +208,7 @@ class MY110 : public Universal_object<state_MY110>{
             }else if(pointers_to_components.ball_cran[id_ball]->getStatus() == state_Component::going_open){
                 pointers_to_components.ball_cran[id_ball]->open(false);
                 mask_pins_new = set_mask(mask_pins_curr, id_ball,pins_MY110_all_mags_ball_revers,1);
-                mask_pins_new = set_mask(mask_pins_curr, id_ball,pins_MY110_all_mags_ball_forward,0);
+                mask_pins_new = set_mask(mask_pins_new, id_ball,pins_MY110_all_mags_ball_forward,0);
                 // int i = 0;
                 // mask_pins_new = mask_pins_curr;
                 // while(pins_MY110_all_mags_ball_forward[id_ball][i] != -1){
@@ -293,20 +299,24 @@ class MY110 : public Universal_object<state_MY110>{
             send_mask(mask_pins_new);
         }
 
-       void send_mask(uint32_t mask_){
+       void send_mask(uint32_t mask_, bool is_real_send = false){
+            if(is_real_send){
+                uint16_t reg97_mask = 0;//(Биты 1-16)
+                uint16_t reg98_mask = 0;//(Биты 17-32)
+                reg97_mask = mask_ & 0xFFFF; // Извлекаем младшие 16 бит
+                reg98_mask = (mask_ >> 16) & 0xFFFF; // Извлекаем старшие 16 бит
 
-            uint16_t reg97_mask = 0;//(Биты 1-16)
-            uint16_t reg98_mask = 0;//(Биты 17-32)
-            reg97_mask = mask_ & 0xFFFF; // Извлекаем младшие 16 бит
-            reg98_mask = (mask_ >> 16) & 0xFFFF; // Извлекаем старшие 16 бит
-
-            node.setTransmitBuffer(0, reg97_mask); // Значение для регистра 0x0061
-            node.setTransmitBuffer(1, reg98_mask); // Значение для регистра 0x0062
-            uint8_t result = node.writeMultipleRegisters(0x0061, 2);
+                node.setTransmitBuffer(0, reg97_mask); // Значение для регистра 0x0061
+                node.setTransmitBuffer(1, reg98_mask); // Значение для регистра 0x0062
+                uint8_t result = node.writeMultipleRegisters(0x0061, 2);
+                d_println(F("\b\b ----> REAL send RS485"));
+                mask_pins_last = mask_pins_curr;
+            }else{
+                char buffer[32];
+                d_print(F("send_mask: "));
+                d_println(to_binary_string(mask_, buffer));
+            }
             //можно добавить проверку result на успешность записи, если нужно
-            char buffer[32];
-            d_print(F("send_mask: "));
-            d_println(to_binary_string(mask_, buffer));
             mask_pins_curr = mask_;
         }
 

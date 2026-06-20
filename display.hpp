@@ -35,7 +35,7 @@ private:
     uint8_t pin_tx = -1;
     uint32_t time_init;
     bool flag_waiting = false;
-    uint32_t time_waiting = 20000;
+    uint32_t time_waiting = 17000;
     events_Display Check_message();
 
 public:
