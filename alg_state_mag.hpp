@@ -316,7 +316,7 @@ Data_alg &result){
     // skip_gate_triplet->set_time_in_this(1500, 1);
     // skip_gate_triplet->set_time_in_this(1500, 2);
     // skip_gate_triplet->set_time_in_this(1500, 3);
-    one_state_Magistral* in_magistral_triplet = new one_state_Magistral(1, kol_users);
+    one_state_Magistral* in_magistral_triplet = new one_state_Magistral(2, kol_users);
     in_magistral_triplet->set_curr_state(state_Magistral::in_magistral);
     // in_magistral_triplet->set_time_in_this(t_in_magistral_triplet);
     in_magistral_triplet->set_time_in_this(pause_for_one * 3, 0);

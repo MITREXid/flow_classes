@@ -135,7 +135,7 @@ inline uint32_t set_bit_1(uint32_t value, uint8_t bit_pos) {
   // char buffer[32];
   // d_print(F("set_bit_1: ")); 
   // d_println(to_binary_string(value, buffer));
-    return value | (1U << bit_pos);
+    return value | (1UL << bit_pos);
 }
 
 // Установить бит в 0 (сбросить)
@@ -145,7 +145,7 @@ inline uint32_t set_bit_0(uint32_t value, uint8_t bit_pos) {
   // d_print((int)bit_pos);
   // d_print(F(" : "));
   // d_println(to_binary_string(value, buffer));
-    return value & ~(1U << bit_pos);
+    return value & ~(1UL << bit_pos);
 }
 
 // Инвертировать бит (0 -> 1, 1 -> 0)
@@ -153,13 +153,13 @@ inline uint32_t toggle_bit(uint32_t value, uint8_t bit_pos) {
   //  char buffer[32];
   // d_print(F("toggle_bit: "));
   // d_println(to_binary_string(value, buffer));
-    return value ^ (1U << bit_pos);
+    return value ^ (1UL << bit_pos);
 }
 
 inline char* to_binary_string(uint32_t value, char* buffer) {
     for (int i = 31; i >= 0; i--) {
         // Если бит равен 1, пишем символ '1', иначе '0'
-        buffer[31 - i] = (value & (1U << i)) ? '1' : '0';
+        buffer[31 - i] = (value & (1UL << i)) ? '1' : '0';
     }
     buffer[32] = '\0'; // Обязательный нуль-терминатор в конце строки
     return buffer;
@@ -167,7 +167,7 @@ inline char* to_binary_string(uint32_t value, char* buffer) {
 
 //Проверяет бит
 inline bool check_bit(uint32_t value, int8_t bit_index) {
-    return value & (1 << bit_index);
+    return value & (1UL << bit_index);
 }
 
 #endif // DECLORATIONS_HPP
