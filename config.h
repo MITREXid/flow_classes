@@ -93,8 +93,8 @@ void postTransmission() {
 #define solo_mag 3//nomer от 0
 
 //для MY110(-1 это конец массива, для того чтоб была динамичность кол-ва пинов)
-constexpr int8_t pins_MY110_mag1_act_forward[] = {25,29,17,20,-1};
-constexpr int8_t pins_MY110_mag1_act_revers[] = {26,30,17,20,-1};
+constexpr int8_t pins_MY110_mag1_act_forward[] = {25,29,17,21,-1};
+constexpr int8_t pins_MY110_mag1_act_revers[] = {26,30,17,21,-1};
 
 constexpr int8_t pins_MY110_mag2_act_forward[] = {25,29,18,22,-1};
 constexpr int8_t pins_MY110_mag2_act_revers[] = {26,30,18,22,-1};
@@ -102,8 +102,8 @@ constexpr int8_t pins_MY110_mag2_act_revers[] = {26,30,18,22,-1};
 constexpr int8_t pins_MY110_mag3_act_forward[] = {25,29,19,23,-1};
 constexpr int8_t pins_MY110_mag3_act_revers[] = {26,30,19,23,-1};
 
-constexpr int8_t pins_MY110_mag4_act_forward[] = {25,29,24,20,-1};
-constexpr int8_t pins_MY110_mag4_act_revers[] = {26,30,24,20,-1};
+constexpr int8_t pins_MY110_mag4_act_forward[] = {25,29,20,24,-1};
+constexpr int8_t pins_MY110_mag4_act_revers[] = {26,30,20,24,-1};
 
 constexpr int8_t pins_MY110_mag1_clap_forward[] = {31,28,12,16,-1};
 constexpr int8_t pins_MY110_mag1_clap_revers[] = {32,27,12,16,-1};

@@ -307,8 +307,8 @@ class MY110 : public Universal_object<state_MY110>{
                 reg98_mask = (mask_ >> 16) & 0xFFFF; // Извлекаем старшие 16 бит
                 
 
-                node.setTransmitBuffer(0, reg97_mask); // Значение для регистра 0x0061
-                node.setTransmitBuffer(1, reg98_mask); // Значение для регистра 0x0062
+                node.setTransmitBuffer(0, reg98_mask); // Значение для регистра 0x0061
+                node.setTransmitBuffer(1, reg97_mask); // Значение для регистра 0x0062
                 uint8_t result = node.writeMultipleRegisters(0x0061, 2);
                 d_println(F("\b\b ----> REAL send RS485"));
                 mask_pins_last = mask_pins_curr;
