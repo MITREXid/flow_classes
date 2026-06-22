@@ -117,17 +117,17 @@ constexpr int8_t pins_MY110_mag3_clap_revers[] = {32,27,10,14,-1};
 constexpr int8_t pins_MY110_mag4_clap_forward[] = {31,28,9,13,-1};
 constexpr int8_t pins_MY110_mag4_clap_revers[] = {32,27,9,13,-1};
 
-constexpr int8_t pins_MY110_mag1_ball_forward[] = {4,-1};
-constexpr int8_t pins_MY110_mag1_ball_revers[] = {8,-1};
+constexpr int8_t pins_MY110_mag1_ball_revers[] = {4,-1};
+constexpr int8_t pins_MY110_mag1_ball_forward[] = {8,-1};
 
-constexpr int8_t pins_MY110_mag2_ball_forward[] = {3,-1};
-constexpr int8_t pins_MY110_mag2_ball_revers[] = {7,-1};
+constexpr int8_t pins_MY110_mag2_ball_revers[] = {3,-1};
+constexpr int8_t pins_MY110_mag2_ball_forward[] = {7,-1};
 
-constexpr int8_t pins_MY110_mag3_ball_forward[] = {2,-1};
-constexpr int8_t pins_MY110_mag3_ball_revers[] = {6,-1};
+constexpr int8_t pins_MY110_mag3_ball_revers[] = {2,-1};
+constexpr int8_t pins_MY110_mag3_ball_forward[] = {6,-1};
 
-constexpr int8_t pins_MY110_mag4_ball_forward[] = {1,-1};
-constexpr int8_t pins_MY110_mag4_ball_revers[] = {5,-1};
+constexpr int8_t pins_MY110_mag4_ball_revers[] = {1,-1};
+constexpr int8_t pins_MY110_mag4_ball_forward[] = {5,-1};
 
 
 
