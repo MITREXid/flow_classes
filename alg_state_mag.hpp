@@ -290,7 +290,7 @@ Data_alg &result){
 
    /*==========триплет начало==========*/
    
-   Time_in_this t_preparing_in_magistral_triplet = 550;
+   Time_in_this t_preparing_in_magistral_triplet = 650;
    Time_in_this t_skip_gate_triplet = 3500;
    Time_in_this t_in_magistral_triplet = 700;//2000;
    Time_in_this pause_for_one = t_preparing_in_magistral_triplet + t_skip_gate_triplet + t_in_magistral_triplet;//600 на переключение клапана после отгрузки
