@@ -102,11 +102,11 @@ void loop()
     #if(mode_work)//g++
         if(millis() - timer_event >= 18000 && state == 0) {
             timer_event = millis();
-            // flow.start(state_Flow::do_solo);
+            flow.start(state_Flow::do_solo);
             // flow.start(state_Flow::do_clearing);
             // flow.start(state_Flow::do_produvka);
             // flow.start(state_Flow::do_complex);
-            flow.start(state_Flow::do_triplet);
+            // flow.start(state_Flow::do_triplet);
             ++state;
         }
          if(millis() - timer_event >= 100000 && state == 1) {
