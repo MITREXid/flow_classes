@@ -58,6 +58,8 @@ class Flow: public Universal_object<state_Flow>{
         digitalWrite(pin_DE_RE, LOW);
         setup_alg_magistral(kol_all_mag, data_alg);
 
+        my110.init();
+        
         for(uint8_t i = 0; i<kol_all_mag;++i){
             get_mag(i)->init();
         }
@@ -66,7 +68,8 @@ class Flow: public Universal_object<state_Flow>{
 
         dyvka.init();
         
-        my110.init(get_mag(0)->actuator.getPointer(), get_mag(0)->clapan.getPointer(), get_mag(0)->ball_cran.getPointer(),
+        
+        my110.set_component(get_mag(0)->actuator.getPointer(), get_mag(0)->clapan.getPointer(), get_mag(0)->ball_cran.getPointer(),
         get_mag(1)->actuator.getPointer(), get_mag(1)->clapan.getPointer(), get_mag(1)->ball_cran.getPointer(),
         get_mag(2)->actuator.getPointer(), get_mag(2)->clapan.getPointer(), get_mag(2)->ball_cran.getPointer(),
         get_mag(3)->actuator.getPointer(), get_mag(3)->clapan.getPointer(), get_mag(3)->ball_cran.getPointer()

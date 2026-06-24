@@ -47,7 +47,18 @@ class MY110 : public Universal_object<state_MY110>{
             setStatus(state_MY110::working);
         }
 
-        void init(Actuator *m1_act, Clapan *m1_clap, Ball_cran *m1_ball,
+        void init(){
+
+            node.begin(16, rs485);
+            node.preTransmission(preTransmission);
+            node.postTransmission(postTransmission);
+
+            
+            turn_to_default_act_and_clap(false);
+
+        }
+
+        void set_component(Actuator *m1_act, Clapan *m1_clap, Ball_cran *m1_ball,
         Actuator *m2_act, Clapan *m2_clap, Ball_cran *m2_ball,
         Actuator *m3_act, Clapan *m3_clap, Ball_cran *m3_ball,
         Actuator *m4_act, Clapan *m4_clap, Ball_cran *m4_ball
@@ -70,14 +81,8 @@ class MY110 : public Universal_object<state_MY110>{
             pointers_to_components.ball_cran[2] = m3_ball;
             pointers_to_components.ball_cran[3] = m4_ball;
 
-            node.begin(16, rs485);
-            node.preTransmission(preTransmission);
-            node.postTransmission(postTransmission);
-
-            
-            turn_to_default_act_and_clap(false);
-
         }
+
         void update(){
             logic();
         }
