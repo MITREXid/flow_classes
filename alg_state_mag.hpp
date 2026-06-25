@@ -389,21 +389,21 @@ Data_alg &result){
     /*==========прочистка начало==========*/
     one_state_Magistral* preparing_in_magistral_clearing = new one_state_Magistral(1, kol_users);
     preparing_in_magistral_clearing->set_curr_state(state_Magistral::in_magistral);
-    preparing_in_magistral_clearing->set_time_in_this(2500);
+    preparing_in_magistral_clearing->set_time_in_this(750*4);
     //preparing_in_magistral_clearing->set_time_in_this(500, 0);
     //preparing_in_magistral_clearing->set_time_in_this(500, 1);
     //preparing_in_magistral_clearing->set_time_in_this(500, 2);
     //preparing_in_magistral_clearing->set_time_in_this(500, 3);
     one_state_Magistral* skip_gate_clearing = new one_state_Magistral(2, kol_users);
     skip_gate_clearing->set_curr_state(state_Magistral::skip_gate);
-    skip_gate_clearing->set_time_in_this(2100);
+    skip_gate_clearing->set_time_in_this(650*4);
     // skip_gate_clearing->set_time_in_this(1500, 0);
     // skip_gate_clearing->set_time_in_this(1500, 1);
     // skip_gate_clearing->set_time_in_this(1500, 2);
     // skip_gate_clearing->set_time_in_this(1500, 3);
     one_state_Magistral* in_magistral_clearing = new one_state_Magistral(1, kol_users);
     in_magistral_clearing->set_curr_state(state_Magistral::in_magistral);
-    in_magistral_clearing->set_time_in_this(2000);
+    in_magistral_clearing->set_time_in_this(750*4);
     // in_magistral_clearing->set_time_in_this(2000, 0);
     // in_magistral_clearing->set_time_in_this(2000, 1);
     // in_magistral_clearing->set_time_in_this(2000, 2);
