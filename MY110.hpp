@@ -55,7 +55,9 @@ class MY110 : public Universal_object<state_MY110>{
 
             
             turn_to_default_act_and_clap(false);
-
+            send_mask(mask_pins_new, true);
+            
+            d_println(F("MY110 init done"));
         }
 
         void set_component(Actuator *m1_act, Clapan *m1_clap, Ball_cran *m1_ball,
