@@ -75,11 +75,13 @@
 
 void preTransmission() {
     digitalWrite(pin_DE_RE, 1);
+    time_break(20);
     // delayMicroseconds(10);
 }
 
 void postTransmission() {
     digitalWrite(pin_DE_RE, 0);
+    time_break(20);
     // delayMicroseconds(10);
 }
 

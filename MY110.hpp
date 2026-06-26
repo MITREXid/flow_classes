@@ -319,7 +319,6 @@ class MY110 : public Universal_object<state_MY110>{
                 uint8_t result = node.writeMultipleRegisters(0x0061, 2);
                 d_println(F("\b\b ----> REAL send RS485"));
                 mask_pins_last = mask_pins_curr;
-                time_break(15);
             }else{
                 char buffer[32];
                 d_print(F("send_mask: "));

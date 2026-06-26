@@ -192,10 +192,11 @@ private:
                 break;
             case state_Flow::do_complex:
                 if(isStartState(0, true)){
+                    dyvka.set_goal_frec(4000);
+                    get_mag(3)->start(state_Alg_mag::one_cycle_solo);
                     // num_curr_mag = get_num_curr_mag_next(true);
                     // get_mag()->start(state_Alg_mag::one_cycle_complex);
                     // get_mag(get_num_curr_mag_next(true))->start(state_Alg_mag::prepare_complex);
-                    dyvka.set_goal_frec(4000);
                     // if(get_mag(0)->getState()==state_Magistral::start_state){
 
                     // }
@@ -253,7 +254,7 @@ private:
             case state_Flow::do_complex:
                 num_curr_mag = 0;
                 dyvka.set_goal_frec(6000);
-                for(uint8_t i = 0; i<kol_all_mag;++i){
+                for(uint8_t i = 0; i<kol_mag_group;++i){
                     get_mag(i)->start(state_Alg_mag::one_cycle_complex);
                 }
                 break;
