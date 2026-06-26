@@ -24,6 +24,7 @@ class Flow: public Universal_object<state_Flow>{
         Signal<> sig_ball_not_close[kol_all_mag];
         Dyvka dyvka;
         bool activated_stop_on_this_mag = false;//нужно чоб при остановке не отсылвть много раз stop()
+        bool flag_already_started_solo_in_complex = false;//нужно чоб при остановке не отсылвть много раз stop()
         MY110 my110;
         
         SoftwareSerial rs485;
@@ -191,7 +192,8 @@ private:
             case state_Flow::do_solo:
                 break;
             case state_Flow::do_complex:
-                if(isStartState(0, true)){
+                if(isStartState(0, true) && !flag_already_started_solo_in_complex){
+                    flag_already_started_solo_in_complex = true;
                     dyvka.set_goal_frec(4000);
                     get_mag(3)->start(state_Alg_mag::one_cycle_solo);
                     // num_curr_mag = get_num_curr_mag_next(true);
@@ -252,6 +254,7 @@ private:
                 get_mag()->start(state_Alg_mag::one_cycle_solo);
                 break;
             case state_Flow::do_complex:
+                    flag_already_started_solo_in_complex = false;
                 num_curr_mag = 0;
                 dyvka.set_goal_frec(6000);
                 for(uint8_t i = 0; i<kol_mag_group;++i){
