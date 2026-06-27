@@ -276,7 +276,7 @@ Data_alg &result){
     // in_magistral_solo->set_time_in_this(2000, 1);
     // in_magistral_solo->set_time_in_this(2000, 2);
     // in_magistral_solo->set_time_in_this(2000, 3);
-    one_state_Magistral* air_on_solo = new one_state_Magistral(1, kol_users);
+    one_state_Magistral* air_on_solo = new one_state_Magistral(2, kol_users);
     air_on_solo->set_curr_state(state_Magistral::air_on);
     air_on_solo->set_time_in_this(43000);
     // air_on_solo->set_time_in_this(27000, 0);
@@ -284,7 +284,7 @@ Data_alg &result){
     // air_on_solo->set_time_in_this(27000, 2);
     // air_on_solo->set_time_in_this(27000, 3);
     //нужно после продувки(перед загрузкой) сделать задержку, чтоб кофе норм отнрузилось 
-    one_state_Magistral* waiting_for_air_off_solo = new one_state_Magistral(2, kol_users);
+    one_state_Magistral* waiting_for_air_off_solo = new one_state_Magistral(1, kol_users);
     waiting_for_air_off_solo->set_curr_state(state_Magistral::all_close);
     waiting_for_air_off_solo->set_time_in_this(10000);
     // waiting_for_air_off_solo->set_time_in_this(2000, 0);
@@ -299,10 +299,10 @@ Data_alg &result){
     in_magistral_solo->set_path(1,in_magistral_solo);
     in_magistral_solo->set_path(0,air_on_solo);
     air_on_solo->set_path(0,waiting_for_air_off_solo);
+    air_on_solo->set_path(1,mag_start_state);
     waiting_for_air_off_solo->set_path(0,preparing_in_magistral_solo);
-    waiting_for_air_off_solo->set_path(1,mag_start_state);
     
-    result.exit_main_cycle_solo = waiting_for_air_off_solo;
+    result.exit_main_cycle_solo = air_on_solo;
     result.wait_with_coffe_in_mag_solo = in_magistral_solo;
     /*==========соло конец==========*/
 
