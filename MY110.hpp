@@ -123,6 +123,14 @@ class MY110 : public Universal_object<state_MY110>{
 
 
         void logic(){
+
+            for(int j = 0; j<kol_all_mag;++j){
+                if(pointers_to_components.ball_cran[j]->is_going() && comp_ball_state_prev[j] != pointers_to_components.ball_cran[j]->getStatus()){
+                    comp_ball_state_prev[j] = pointers_to_components.ball_cran[j]->getStatus();
+                    turn_ball(j, pointers_to_components.ball_cran[j]->getStatus());
+                }
+            }
+
             bool flag = false;
             if(get_curr_type() == 0){
                 if(pointers_to_components.actuator[comp_id_curr]->is_going()){
@@ -172,13 +180,6 @@ class MY110 : public Universal_object<state_MY110>{
             
             }
 
-            for(int j = 0; j<kol_all_mag;++j){
-                if(pointers_to_components.ball_cran[j]->is_going() && comp_ball_state_prev[j] != pointers_to_components.ball_cran[j]->getStatus()){
-                    comp_ball_state_prev[j] = pointers_to_components.ball_cran[j]->getStatus();
-                    turn_ball(j, pointers_to_components.ball_cran[j]->getStatus());
-                }
-            }
-            
             if(mask_pins_last != mask_pins_curr){
                 send_mask(mask_pins_curr, true);
             }
@@ -317,8 +318,13 @@ class MY110 : public Universal_object<state_MY110>{
                 node.setTransmitBuffer(0, reg98_mask); // Значение для регистра 0x0061
                 node.setTransmitBuffer(1, reg97_mask); // Значение для регистра 0x0062
                 uint8_t result = node.writeMultipleRegisters(0x0061, 2);
-                d_println(F("\b\b ----> REAL send RS485"));
-                mask_pins_last = mask_pins_curr;
+                d_println(F("----> REAL send RS485"));
+                if(result == node.ku8MBSuccess){
+                    mask_pins_last = mask_pins_curr;
+                }else{
+                    d_print(F("MY110 send_mask error: "));
+                    d_println((int)result);
+                }
             }else{
                 char buffer[32];
                 d_print(F("send_mask: "));

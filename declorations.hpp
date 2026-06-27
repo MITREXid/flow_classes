@@ -102,6 +102,7 @@
        void writeSingleRegister(uint32_t reg, uint32_t val){}
         void setTransmitBuffer(uint8_t index, uint16_t val){}
         uint8_t writeMultipleRegisters(uint16_t reg, uint16_t num_regs){return 0;}
+        uint8_t ku8MBSuccess = 0;
     };
 
     Serial_ Serial;
