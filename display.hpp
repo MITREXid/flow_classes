@@ -118,10 +118,12 @@ void Display::logic()
     }
     if (flag == events_Display::AIR_STOP) {
         flow.stop();
+        lock_btn(true);
     }
 
     if (flag == events_Display::STOP_EVENT) {
         flow.stop();
+        lock_btn(true);
     }
 
     if (flag == events_Display::START_EVENT) {
