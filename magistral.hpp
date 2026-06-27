@@ -45,8 +45,9 @@ public:
     state_Alg_mag get_current_mode_alg();
     state_Magistral getState();
     uint8_t get_id(){return id;};
-    
+    uint8_t get_curr_id_alg_state();
     bool isStartedState(bool check_coponents_no_goin = false);
+    bool Magistral::inThisStateId(uint8_t id_, bool check_coponents_no_goin = false);
 private:
     void logic();//Для объединения логики поведения(используется в update())
     void turn_to(state_Magistral next_state);
@@ -61,6 +62,28 @@ private:
     bool is_going_comp();
     char* num_state_mag_to_char(state_Magistral state_input);
 };
+
+
+uint8_t Magistral::get_curr_id_alg_state(){
+    return current_state->get_id();
+}
+
+bool Magistral::inThisStateId(uint8_t id_, bool check_coponents_no_goin)
+{
+    
+    if(current_state->get_id() != id_){
+        return false;
+    }
+    if(check_coponents_no_goin == true){
+        return true;
+    }
+    if(is_going_comp()){
+        return false;
+    }
+
+    return true;
+}
+
 
 
 state_Magistral Magistral::getState(){
