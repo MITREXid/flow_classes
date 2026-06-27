@@ -47,7 +47,7 @@ public:
     uint8_t get_id(){return id;};
     uint8_t get_curr_id_alg_state();
     bool isStartedState(bool check_coponents_no_goin = false);
-    bool Magistral::inThisStateId(uint8_t id_, bool check_coponents_no_goin = false);
+    bool inThisStateId(uint8_t id_, bool check_coponents_no_goin = false);
 private:
     void logic();//Для объединения логики поведения(используется в update())
     void turn_to(state_Magistral next_state);
