@@ -7,7 +7,7 @@ class Actuator: public Component{
 protected:
     uint8_t control_pin; 
 public:
-    Actuator(state_Component first_state, uint8_t control_pin_);
+    Actuator(state_Component first_state, int8_t id);
     void update();
     void init(){
         Component::init();
@@ -35,13 +35,12 @@ public:
     }
 };
  
-Actuator::Actuator(state_Component first_state, uint8_t control_pin_)
+Actuator::Actuator(state_Component first_state, int8_t id)
     : Component(
         first_state, //состояние по умолчанию
         600, //время открытия
         600 //время закрытия
-    ),
-    control_pin{control_pin_}
+    )
 {}
 
 void Actuator::update(){
@@ -51,11 +50,10 @@ void Actuator::update(){
 
 class Clapan: public Component{
 private:
-    Shared_power& PWM;
     int control_pin; 
 public:
     
-    Clapan(state_Component first_state, Shared_power &PWM_, int control_pin_);
+    Clapan(state_Component first_state, int8_t id);
     void update();
 
     void init(){
@@ -84,18 +82,15 @@ public:
     }
 };
  
-Clapan::Clapan(state_Component first_state, Shared_power &PWM_, int control_pin_)
+Clapan::Clapan(state_Component first_state, int8_t id)
     : Component(
         first_state, //состояние по умолчанию
         500, //время открытия
         500 //время закрытия
-    ),
-    PWM{PWM_},
-    control_pin{control_pin_}
+    )
 {}
 void Clapan::update(){
     Component::update();
-    PWM.update();
 }
 
 
@@ -105,12 +100,10 @@ class Ball_cran: public Component{
 protected:
     int control_pin = -1; 
 public:
-    Ball_cran(state_Component first_state, int control_pin_);
+    Ball_cran(state_Component first_state, int8_t id);
     void update();
 
     void init(){
-        pinMode(control_pin, OUTPUT);
-        digitalWrite(control_pin, HIGH);
         Component::init();
         update();
     }
@@ -135,13 +128,12 @@ public:
     }
 };
 
-Ball_cran::Ball_cran(state_Component first_state, int control_pin_)
+Ball_cran::Ball_cran(state_Component first_state, int8_t id)
 : Component(
         first_state, //состояние по умолчанию
         15500, //время открытия
         15500 //время закрытия
- ) ,
-  control_pin{control_pin_}
+ ) 
 {}
 
 void Ball_cran::update(){

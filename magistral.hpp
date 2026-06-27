@@ -29,19 +29,15 @@ public:
     Actuator actuator;
     Clapan clapan;
     Ball_cran ball_cran;
-    Magistral(uint8_t id_, uint8_t control_pin_actuator, uint8_t control_pin_clapan, uint8_t control_pin_ball_cran, Shared_power &pwm_, Data_alg& d_, Signal<> &sig_r, Signal<> &sig_d)
+    Magistral(uint8_t id_, Data_alg& d_, Signal<> &sig_r, Signal<> &sig_d)
     :data_alg{d_},
     cycle_ready_sig{sig_r},
     sig_ball_not_close{sig_d},
     id(id_),
-    actuator(state_Component::close, control_pin_actuator),
-    clapan(state_Component::close,  pwm_, control_pin_clapan ),
-    ball_cran(state_Component::close, control_pin_ball_cran)
-    {
-        // actuator = new Actuator(state_Component::close, PWM_, control_pin_actuator);
-        // clapan = new Clapan(state_Component::close, PWM_, control_pin_clapan);
-        // ball_cran = new Ball_cran(state_Component::close, control_pin_ball_cran);
-    }
+    actuator(state_Component::close, id*10+1),
+    clapan(state_Component::close,  id*10+2 ),
+    ball_cran(state_Component::close, id*10+3)
+    {}
     void init(bool act = true, bool clap = true, bool ball = true);
     void update();
     void start(state_Alg_mag mod);
