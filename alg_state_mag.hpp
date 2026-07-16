@@ -232,11 +232,11 @@ Data_alg &result){
     all_close_complex->set_time_in_this(0, 3);
     one_state_Magistral* air_on_complex= new one_state_Magistral(1, kol_users, 16);
     air_on_complex->set_curr_state(state_Magistral::air_on);
-    air_on_complex->set_time_in_this(30000);
+    air_on_complex->set_time_in_this(25000);
     // air_on_complex->set_time_in_this(27000, 0);
     // air_on_complex->set_time_in_this(27000, 1);
     // air_on_complex->set_time_in_this(27000, 2);
-    air_on_complex->set_time_in_this(40000, 3);
+    air_on_complex->set_time_in_this(43000, 3);
 
     mag_start_state->set_path(1,starting_in_magistral_complex);//триплет 5ый путь
     starting_in_magistral_complex->set_path(0,preparing_in_magistral_complex);
