@@ -262,7 +262,7 @@ Data_alg &result){
     //preparing_in_magistral_solo->set_time_in_this(500, 3);
     one_state_Magistral* skip_gate_solo = new one_state_Magistral(1, kol_users, 22);
     skip_gate_solo->set_curr_state(state_Magistral::skip_gate);
-    skip_gate_solo->set_time_in_this(3500);
+    skip_gate_solo->set_time_in_this(2500);
     // skip_gate_solo->set_time_in_this(1500, 0);
     // skip_gate_solo->set_time_in_this(1500, 1);
     // skip_gate_solo->set_time_in_this(1500, 2);
@@ -373,7 +373,7 @@ Data_alg &result){
     
     one_state_Magistral* produv_ = new one_state_Magistral(1, kol_users, 41);
     produv_->set_curr_state(state_Magistral::air_on);
-    produv_->set_time_in_this(15000);
+    produv_->set_time_in_this(10000);
     // produv_->set_time_in_this(27000, 0);
     // produv_->set_time_in_this(27000, 1);
     // produv_->set_time_in_this(27000, 2);

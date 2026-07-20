@@ -184,7 +184,7 @@ private:
             case state_Flow::do_complex:
                 if(isStartState(0, true) && !flag_already_started_solo_in_complex){
                     flag_already_started_solo_in_complex = true;
-                    dyvka.set_goal_frec(4000);
+                    dyvka.set_goal_frec(2500);
                     get_mag(3)->start(state_Alg_mag::one_cycle_complex);
                     // num_curr_mag = get_num_curr_mag_next(true);
                     // get_mag()->start(state_Alg_mag::one_cycle_complex);
@@ -240,7 +240,7 @@ private:
                 break;
             case state_Flow::do_solo:
                 num_curr_mag = mag;
-                dyvka.set_goal_frec(4000);
+                dyvka.set_goal_frec(2500);
                 get_mag()->start(state_Alg_mag::one_cycle_solo);
                 break;
             case state_Flow::do_complex:
