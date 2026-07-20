@@ -73,13 +73,13 @@ constexpr const uint32_t T_COMPLEX_AIRON_SOLO = 39000;
 // constexpr const uint32_t T_TRIPLET_AIRON_SOLO = T_COMPLEX_AIRON_SOLO;
 
 constexpr const uint32_t T_SOLO_PRED_SKIP = 650;
-constexpr const uint32_t T_SOLO_SKIP = 3000;
+constexpr const uint32_t T_SOLO_SKIP = 2500;
 constexpr const uint32_t T_SOLO_POST_SKIP = 3200;
 constexpr const uint32_t T_SOLO_AIRON = 39000;
 constexpr const uint32_t T_SOLO_WAIT_AIROFF = 10000;
 
 
-constexpr const uint32_t T_AIR_AIRON = 15000;
+constexpr const uint32_t T_AIR_AIRON = 10000;
 
 constexpr const uint32_t T_CLEARING_PRED = 600*5;
 constexpr const uint32_t T_CLEARING_SKIP = 500 + TIME_ACTUATOR_FULL_OPEN_CLOSE[0]+TIME_ACTUATOR_FULL_OPEN_CLOSE[1]+TIME_ACTUATOR_FULL_OPEN_CLOSE[2]+TIME_ACTUATOR_FULL_OPEN_CLOSE[3];
@@ -87,7 +87,7 @@ constexpr const uint32_t T_CLEARING_POST = 500 + TIME_ACTUATOR_FULL_OPEN_CLOSE[0
 
 
 
-constexpr const uint32_t FREQ_SOLO = 4000;
+constexpr const uint32_t FREQ_SOLO = 2500;
 constexpr const uint32_t FREQ_COMPLEX = 6000;
 constexpr const uint32_t FREQ_COMPLEX_PART_SOLO = 4000;
 constexpr const uint32_t FREQ_AIR = 5000;
