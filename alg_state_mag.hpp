@@ -183,7 +183,7 @@ Data_alg &result){
 
  
     Time_in_this t_preparing_in_magistral_triplet_complex = 800;
-    Time_in_this t_skip_gate_triplet_complex = 3500;
+    Time_in_this t_skip_gate_triplet_complex = 1500;
     Time_in_this t_in_magistral_triplet_complex = 800;//2000;
     Time_in_this pause_for_one_triplet_complex = t_preparing_in_magistral_triplet_complex + t_skip_gate_triplet_complex + t_in_magistral_triplet_complex ;//600 на переключение клапана после отгрузки
     Time_in_this pred_pause_triplet_complex = 100;
