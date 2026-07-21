@@ -181,16 +181,27 @@ Data_alg &result){
     result.start_state = mag_start_state;
     /*==========стартовое состояние==========*/
 
- 
+    Time_in_this t_delta_2_mag_skip_gate_triplet_complex = 500;
+
+
+    
+    
     Time_in_this t_preparing_in_magistral_triplet_complex = 800;
     Time_in_this t_skip_gate_triplet_complex = 1500;
-    Time_in_this t_in_magistral_triplet_complex = 800;//2000;
+    Time_in_this t_in_magistral_triplet_complex = 800 + t_delta_2_mag_skip_gate_triplet_complex;//2000;
     Time_in_this pause_for_one_triplet_complex = t_preparing_in_magistral_triplet_complex + t_skip_gate_triplet_complex + t_in_magistral_triplet_complex ;//600 на переключение клапана после отгрузки
     Time_in_this pred_pause_triplet_complex = 100;
     Time_in_this post_pause_triplet_complex = 500;
+    
+    
 
     
-   /*==========комплекс начало==========*/
+    Time_in_this t_2_mag_skip_gate_triplet_complex = t_skip_gate_triplet_complex + t_delta_2_mag_skip_gate_triplet_complex;
+    Time_in_this t_2_mag_in_magistral_triplet_complex = t_in_magistral_triplet_complex - t_delta_2_mag_skip_gate_triplet_complex;
+   
+   
+   
+    /*==========комплекс начало==========*/
    
    one_state_Magistral* starting_in_magistral_complex= new one_state_Magistral(1, kol_users, 11);
     starting_in_magistral_complex->set_curr_state(state_Magistral::all_close);
@@ -212,14 +223,14 @@ Data_alg &result){
     skip_gate_complex->set_curr_state(state_Magistral::skip_gate);
     skip_gate_complex->set_time_in_this(t_skip_gate_triplet_complex);
     // skip_gate_complex->set_time_in_this(1500, 0);
-    // skip_gate_complex->set_time_in_this(1500, 1);
+    skip_gate_complex->set_time_in_this(t_2_mag_skip_gate_triplet_complex, 1);
     // skip_gate_complex->set_time_in_this(1500, 2);
     // skip_gate_complex->set_time_in_this(1500, 3);
     one_state_Magistral* in_magistral_complex= new one_state_Magistral(1, kol_users, 14);
     in_magistral_complex->set_curr_state(state_Magistral::in_magistral);
     // in_magistral_complex->set_time_in_this(t_in_magistral_triplet_complex);
     in_magistral_complex->set_time_in_this(t_in_magistral_triplet_complex+ pause_for_one_triplet_complex + pause_for_one_triplet_complex + post_pause_triplet_complex, 0);
-    in_magistral_complex->set_time_in_this(t_in_magistral_triplet_complex + pause_for_one_triplet_complex + post_pause_triplet_complex, 1);
+    in_magistral_complex->set_time_in_this(t_2_mag_in_magistral_triplet_complex + pause_for_one_triplet_complex + post_pause_triplet_complex, 1);
     in_magistral_complex->set_time_in_this(t_in_magistral_triplet_complex + post_pause_triplet_complex, 2);
     in_magistral_complex->set_time_in_this(t_in_magistral_triplet_complex , 3);
 
@@ -327,14 +338,14 @@ Data_alg &result){
     skip_gate_triplet->set_curr_state(state_Magistral::skip_gate);
     skip_gate_triplet->set_time_in_this(t_skip_gate_triplet_complex);
     // skip_gate_triplet->set_time_in_this(1500, 0);
-    // skip_gate_triplet->set_time_in_this(1500, 1);
+    skip_gate_triplet->set_time_in_this(t_2_mag_skip_gate_triplet_complex, 1);
     // skip_gate_triplet->set_time_in_this(1500, 2);
     skip_gate_triplet->set_time_in_this(0, 3);
     one_state_Magistral* in_magistral_triplet = new one_state_Magistral(1, kol_users, 34);
     in_magistral_triplet->set_curr_state(state_Magistral::in_magistral);
     // in_magistral_triplet->set_time_in_this(t_in_magistral_triplet_complex);
     in_magistral_triplet->set_time_in_this(t_in_magistral_triplet_complex+ pause_for_one_triplet_complex + pause_for_one_triplet_complex + post_pause_triplet_complex, 0);
-    in_magistral_triplet->set_time_in_this(t_in_magistral_triplet_complex + pause_for_one_triplet_complex + post_pause_triplet_complex, 1);
+    in_magistral_triplet->set_time_in_this(t_2_mag_in_magistral_triplet_complex + pause_for_one_triplet_complex + post_pause_triplet_complex, 1);
     in_magistral_triplet->set_time_in_this(t_in_magistral_triplet_complex + post_pause_triplet_complex, 2);
     in_magistral_triplet->set_time_in_this(0 , 3);
 
