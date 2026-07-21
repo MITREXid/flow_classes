@@ -55,7 +55,7 @@ class Dyvka : public Universal_object<state_Dyvka>{
         }
         void set_goal_frec(uint16_t frec){
             if(frec>10000){
-                goal_freq_chastot = 10000;
+                frec = 10000;
             }
             goal_freq_chastot = frec;
         }
