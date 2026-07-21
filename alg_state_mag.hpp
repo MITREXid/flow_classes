@@ -182,11 +182,8 @@ Data_alg &result){
     /*==========стартовое состояние==========*/
 
 
-
-
-
-    
-   /*==========комплекс начало==========*/
+   
+    /*==========комплекс начало==========*/
    
    one_state_Magistral* starting_in_magistral_complex= new one_state_Magistral(1, kol_users, 11);
     starting_in_magistral_complex->set_curr_state(state_Magistral::all_close);
