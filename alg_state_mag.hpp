@@ -181,7 +181,8 @@ Data_alg &result){
     result.start_state = mag_start_state;
     /*==========стартовое состояние==========*/
 
- 
+
+
 
 
     

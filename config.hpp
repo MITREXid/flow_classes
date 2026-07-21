@@ -37,13 +37,13 @@ constexpr const uint32_t T_COMPLEX_PRED_SKIP_2_MAG = T_COMPLEX_PRED_SKIP;
 constexpr const uint32_t T_COMPLEX_PRED_SKIP_3_MAG = T_COMPLEX_PRED_SKIP;
 constexpr const uint32_t T_COMPLEX_PRED_SKIP_4_MAG = T_COMPLEX_PRED_SKIP;
 
-constexpr const uint32_t T_COMPLEX_SKIP = 3500;
+constexpr const uint32_t T_COMPLEX_SKIP = 1500;
 constexpr const uint32_t T_COMPLEX_SKIP_1_MAG = T_COMPLEX_SKIP - 1000;
 constexpr const uint32_t T_COMPLEX_SKIP_2_MAG = 1000;
 constexpr const uint32_t T_COMPLEX_SKIP_3_MAG = T_COMPLEX_SKIP - 1500;
 constexpr const uint32_t T_COMPLEX_SKIP_4_MAG = T_COMPLEX_SKIP - 1000;
 
-constexpr const uint32_t T_COMPLEX_POST_SKIP = 3200;
+constexpr const uint32_t T_COMPLEX_POST_SKIP = 800;
 constexpr const uint32_t T_COMPLEX_POST_SKIP_1_MAG = T_COMPLEX_POST_SKIP;
 constexpr const uint32_t T_COMPLEX_POST_SKIP_2_MAG = 2000;
 constexpr const uint32_t T_COMPLEX_POST_SKIP_3_MAG = T_COMPLEX_POST_SKIP;
