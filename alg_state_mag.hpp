@@ -181,7 +181,7 @@ Data_alg &result){
     result.start_state = mag_start_state;
     /*==========стартовое состояние==========*/
 
-    Time_in_this t_delta_2_mag_skip_gate_triplet_complex = 500;
+    Time_in_this t_delta_2_mag_skip_gate_triplet_complex = 2500;
 
 
     
@@ -273,7 +273,7 @@ Data_alg &result){
     //preparing_in_magistral_solo->set_time_in_this(500, 3);
     one_state_Magistral* skip_gate_solo = new one_state_Magistral(1, kol_users, 22);
     skip_gate_solo->set_curr_state(state_Magistral::skip_gate);
-    skip_gate_solo->set_time_in_this(2500);
+    skip_gate_solo->set_time_in_this(3500);
     // skip_gate_solo->set_time_in_this(1500, 0);
     // skip_gate_solo->set_time_in_this(1500, 1);
     // skip_gate_solo->set_time_in_this(1500, 2);

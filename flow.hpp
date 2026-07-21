@@ -246,7 +246,7 @@ private:
             case state_Flow::do_complex:
                     flag_already_started_solo_in_complex = false;
                 num_curr_mag = 0;
-                dyvka.set_goal_frec(6000);
+                dyvka.set_goal_frec(5000);
                 for(uint8_t i = 0; i<kol_mag_group;++i){
                     get_mag(i)->start(state_Alg_mag::one_cycle_complex);
                 }
@@ -265,7 +265,7 @@ private:
                 break;
             case state_Flow::do_triplet:
                 num_curr_mag = 0;
-                dyvka.set_goal_frec(6000);
+                dyvka.set_goal_frec(5000);
                 for(uint8_t i = 0; i<kol_mag_group;++i){
                     get_mag(i)->start(state_Alg_mag::one_cycle_triplet);
                 }
