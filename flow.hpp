@@ -241,7 +241,7 @@ private:
             case state_Flow::do_solo:
                 num_curr_mag = mag;
                 dyvka.set_goal_frec(2500);
-                get_mag()->start(state_Alg_mag::one_cycle_solo);
+                get_mag()->start(state_Alg_mag::retry_one_cycle_solo_and_wait);
                 break;
             case state_Flow::do_complex:
                     flag_already_started_solo_in_complex = false;

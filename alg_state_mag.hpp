@@ -167,6 +167,8 @@ struct Data_alg{
     one_state_Magistral * wait_with_coffe_in_mag_solo =nullptr;  
     one_state_Magistral * wait_with_coffe_in_mag_triplet =nullptr;  
     one_state_Magistral * wait_clearing = nullptr;
+    
+    one_state_Magistral * wait_start_new_cycle_solo= nullptr;
 };
 
 bool setup_alg_magistral(uint8_t kol_users, 
@@ -300,6 +302,9 @@ Data_alg &result){
     // waiting_for_air_off_solo->set_time_in_this(2000, 1);
     // waiting_for_air_off_solo->set_time_in_this(2000, 2);
     // waiting_for_air_off_solo->set_time_in_this(2000, 3);
+     one_state_Magistral* waiting_for_new_cycle = new one_state_Magistral(2, kol_users, 26);
+    waiting_for_new_cycle->set_curr_state(state_Magistral::all_close);
+    waiting_for_new_cycle->set_time_in_this(500);
 
 
     mag_start_state->set_path(2,preparing_in_magistral_solo);//соло 2ой путь
@@ -309,8 +314,12 @@ Data_alg &result){
     in_magistral_solo->set_path(0,air_on_solo);
     air_on_solo->set_path(0,waiting_for_air_off_solo);
     air_on_solo->set_path(1,mag_start_state);
-    waiting_for_air_off_solo->set_path(0,preparing_in_magistral_solo);
+    waiting_for_air_off_solo->set_path(0,waiting_for_new_cycle);
+    waiting_for_new_cycle->set_path(0,waiting_for_new_cycle);
+    waiting_for_new_cycle->set_path(1,preparing_in_magistral_solo);
     
+
+    result.wait_start_new_cycle_solo = waiting_for_new_cycle;
     result.exit_main_cycle_solo = air_on_solo;
     result.wait_with_coffe_in_mag_solo = in_magistral_solo;
     /*==========соло конец==========*/
@@ -441,6 +450,7 @@ enum class state_Alg_mag{
     one_cycle_solo,
     one_cycle_complex,
     one_cycle_triplet,
+    retry_one_cycle_solo_and_wait,
     cycle_solo,
     cycle_triplet,
     produvka,

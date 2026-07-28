@@ -8,6 +8,8 @@
 
 
 
+constexpr const int32_t t_waiting_for_long_cycle_solo =  2 * 60 *1000;
+
 
 
 
@@ -24,6 +26,8 @@ private:
     state_Alg_mag curr_Alg_mode;
     Signal<> &cycle_ready_sig;//сигнал о том, что магистраль готова что-то делать, т.к. зациклилась в каком-то состоянии 
     Signal<> &sig_ball_not_close;//сигналы Для воздуходувки(дуй), чтоб она не дула в закрытые шаровые
+
+    uint32_t time_for_long_cycle_solo = 0;
     
 public:
     Actuator actuator;
@@ -50,6 +54,8 @@ public:
     bool inThisStateId(uint8_t id_, bool check_coponents_no_goin = false);
 private:
     void logic();//Для объединения логики поведения(используется в update())
+    void go_to_next_state();
+    void logic_in_cyclical_states();
     void turn_to(state_Magistral next_state);
     void set_current_mode_alg(state_Alg_mag mod);
     void check_ball_for_dyvka();
@@ -129,19 +135,7 @@ switch(mod){
         data_alg.exit_main_cycle_triplet->set_choose_path(id,1);
 
         data_alg.wait_clearing->set_choose_path(id,1);
-        break;
-
-
-    case state_Alg_mag::prepare_solo:
-        data_alg.start_state->set_choose_path(id,2);
-        data_alg.wait_with_coffe_in_mag_solo->set_choose_path(id,1);
-        data_alg.exit_main_cycle_solo->set_choose_path(id,1);
-        break;
-
-    case state_Alg_mag::prepare_triplet:
-        data_alg.start_state->set_choose_path(id,4);
-        data_alg.wait_with_coffe_in_mag_triplet->set_choose_path(id,1);
-        data_alg.exit_main_cycle_triplet->set_choose_path(id,1);
+        data_alg.wait_start_new_cycle_solo->set_choose_path(id,1);
         break;
 
 
@@ -149,27 +143,47 @@ switch(mod){
         data_alg.start_state->set_choose_path(id,2);
         data_alg.wait_with_coffe_in_mag_solo->set_choose_path(id,0);
         data_alg.exit_main_cycle_solo->set_choose_path(id,1);
+        data_alg.wait_start_new_cycle_solo->set_choose_path(id,1);
         break;
+    case state_Alg_mag::retry_one_cycle_solo_and_wait:
+        data_alg.start_state->set_choose_path(id,2);
+        data_alg.wait_with_coffe_in_mag_solo->set_choose_path(id,0);
+        data_alg.exit_main_cycle_solo->set_choose_path(id,0);
+        //это нужно для того чтобы при вызове нового retry_one_cycle_solo_and_wait проходили через цикличное состояние и потом снова в нем остановиись
+        data_alg.wait_start_new_cycle_solo->set_choose_path(id,1);
+        break;
+    case state_Alg_mag::cycle_solo:
+        data_alg.start_state->set_choose_path(id,2);
+        data_alg.wait_with_coffe_in_mag_solo->set_choose_path(id,0);
+        data_alg.exit_main_cycle_solo->set_choose_path(id,0);
+        data_alg.wait_start_new_cycle_solo->set_choose_path(id,1);
+        break;
+    case state_Alg_mag::prepare_solo:
+        data_alg.start_state->set_choose_path(id,2);
+        data_alg.wait_with_coffe_in_mag_solo->set_choose_path(id,1);
+        data_alg.exit_main_cycle_solo->set_choose_path(id,1);
+        data_alg.wait_start_new_cycle_solo->set_choose_path(id,1);
+        break;
+
     case state_Alg_mag::one_cycle_complex:
         data_alg.start_state->set_choose_path(id,1);
         data_alg.exit_main_cycle_complex->set_choose_path(id,0);
         break;
+
     case state_Alg_mag::one_cycle_triplet:
         data_alg.start_state->set_choose_path(id,4);
         data_alg.wait_with_coffe_in_mag_triplet->set_choose_path(id,0);
         data_alg.exit_main_cycle_triplet->set_choose_path(id,1);
         break;
-
-
-    case state_Alg_mag::cycle_solo:
-        data_alg.start_state->set_choose_path(id,2);
-        data_alg.wait_with_coffe_in_mag_solo->set_choose_path(id,0);
-        data_alg.exit_main_cycle_solo->set_choose_path(id,0);
-        break;
     case state_Alg_mag::cycle_triplet:
         data_alg.start_state->set_choose_path(id,4);
         data_alg.wait_with_coffe_in_mag_triplet->set_choose_path(id,0);
         data_alg.exit_main_cycle_triplet->set_choose_path(id,0);
+        break;
+    case state_Alg_mag::prepare_triplet:
+        data_alg.start_state->set_choose_path(id,4);
+        data_alg.wait_with_coffe_in_mag_triplet->set_choose_path(id,1);
+        data_alg.exit_main_cycle_triplet->set_choose_path(id,1);
         break;
 
 
@@ -299,6 +313,8 @@ bool Magistral::is_going_comp(){
     return false;
 }
 
+
+
 void Magistral::logic(){
     
 
@@ -309,20 +325,31 @@ void Magistral::logic(){
 
     uint32_t curr_time = millis() - time_to_start_new_state;
     if(current_state->get_time_in_this(id) < curr_time){ 
-        if(current_state->get_curr_state() != current_state->get_next_state(id)->get_curr_state()){
+        if(current_state->get_id() != current_state->get_next_state(id)->get_id()){
             cycle_ready_sig.setState(false);//Сигнал
-            d_print(F("======== Magistral: "));
+            d_print(F("(t : "));
+            d_print(millis());
+            d_print(F(")"));
+            d_print(F("============ Magistral: "));
             d_print((int)id);
             d_print(F(" | state: "));
             d_print(this->num_state_mag_to_char(current_state->get_curr_state()));
-            d_print(F("->"));
-            d_println(this->num_state_mag_to_char(current_state->get_next_state(id)->get_curr_state()));
+            d_print(F("("));
+            d_print((int)current_state->get_id());
+            d_print(F(") ->"));
+            d_print(this->num_state_mag_to_char(current_state->get_next_state(id)->get_curr_state()));
+            d_print(F("("));
+            d_print((int)current_state->get_next_state(id)->get_id());
+            d_print(F(")"));
+            d_print(F("\n"));
             d_println(F("turn is:"));
-            current_state = current_state->get_next_state(id);
+            go_to_next_state();
             turn_to(current_state->get_curr_state());
-            if(current_state->get_curr_state() == current_state->get_next_state(id)->get_curr_state()){
+            if(current_state->get_id() == current_state->get_next_state(id)->get_id()){
                 cycle_ready_sig.setState(true);//Сигнал
             }
+        }else{
+            logic_in_cyclical_states();
         }
         // else{
         //     if(cycle_ready_sig.isChecked() == false || cycle_ready_sig.getStateWithoutSetChecked() == false ){//типа чтоб не обновляли при цикличности, когда посмотрели, cheked обнулится при условии выше в любом норм случае
@@ -331,6 +358,27 @@ void Magistral::logic(){
         // }
     }
 
+
+
+}
+
+void Magistral::logic_in_cyclical_states(){
+    if(get_current_mode_alg() == state_Alg_mag::retry_one_cycle_solo_and_wait && current_state->get_id() == 26){
+        if(millis() - time_for_long_cycle_solo > t_waiting_for_long_cycle_solo){
+            start(state_Alg_mag::retry_one_cycle_solo_and_wait);
+        }
+    }
+}
+
+void Magistral::go_to_next_state(){
+    one_state_Magistral * old_state = current_state;
+    current_state = current_state->get_next_state(id);
+
+    if(get_current_mode_alg() == state_Alg_mag::retry_one_cycle_solo_and_wait && old_state->get_id() == 25){
+        //это нужно для того чтобы при вызове нового retry_one_cycle_solo_and_wait проходили через цикличное состояние и потом снова в нем остановиись
+        current_state->set_choose_path(id, 0);
+        time_for_long_cycle_solo = millis();
+    }
 }
 
 char* Magistral::num_state_mag_to_char(state_Magistral state_input){
