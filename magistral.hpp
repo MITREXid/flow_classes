@@ -8,8 +8,7 @@
 
 
 
-constexpr const int32_t t_waiting_for_long_cycle_solo =  2 * 60 *1000;
-
+constexpr const uint32_t t_waiting_for_long_cycle_solo = 20u * 60u * 1000u;
 
 
 
@@ -294,6 +293,9 @@ void Magistral::start(state_Alg_mag mod){
     cycle_ready_sig.setState(false);//Сигнал
     d_println(F("========start"));
     set_current_mode_alg(mod);
+    if(mod == state_Alg_mag::retry_one_cycle_solo_and_wait){
+        time_for_long_cycle_solo = millis();
+    }
 }
 
 void Magistral::stop(){
@@ -344,14 +346,16 @@ void Magistral::logic(){
             d_print(F(")"));
             d_print(F("\n"));
             d_println(F("turn is:"));
+            if(current_state->get_curr_state()!=current_state->get_next_state(id)->get_curr_state()){
+                turn_to(current_state->get_next_state(id)->get_curr_state());
+            }
             go_to_next_state();
-            turn_to(current_state->get_curr_state());
             if(current_state->get_id() == current_state->get_next_state(id)->get_id()){
                 cycle_ready_sig.setState(true);//Сигнал
             }
         }else{
-            logic_in_cyclical_states();
-        }
+                logic_in_cyclical_states();
+            }
         // else{
         //     if(cycle_ready_sig.isChecked() == false || cycle_ready_sig.getStateWithoutSetChecked() == false ){//типа чтоб не обновляли при цикличности, когда посмотрели, cheked обнулится при условии выше в любом норм случае
         //         cycle_ready_sig.setState(true);//Сигнал
