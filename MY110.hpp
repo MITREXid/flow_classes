@@ -308,31 +308,32 @@ class MY110 : public Universal_object<state_MY110>{
         }
 
        void send_mask(uint32_t mask_, bool is_real_send = false){
+
+            mask_pins_curr = mask_;
+            
             if(is_real_send){
                 uint16_t reg97_mask = 0;//(Биты 1-16)
                 uint16_t reg98_mask = 0;//(Биты 17-32)
                 reg97_mask = mask_ & 0xFFFF; // Извлекаем младшие 16 бит
                 reg98_mask = (mask_ >> 16) & 0xFFFF; // Извлекаем старшие 16 бит
-                
 
                 node.setTransmitBuffer(0, reg98_mask); // Значение для регистра 0x0061
                 node.setTransmitBuffer(1, reg97_mask); // Значение для регистра 0x0062
                 uint8_t result = node.writeMultipleRegisters(0x0061, 2);
-                d_println(F("----> REAL send RS485"));
+                d_print(F("RS485 MY110: REAL send mask ("));
+                
+                char buffer[32];
+                d_print(to_binary_string(mask_, buffer));
+                d_print(F(") : "));
                 mask_pins_last = mask_pins_curr;
                 if(result == node.ku8MBSuccess){
-                    d_print(F("MY110 send_mask Success"));
+                    d_print(F("success"));
                 }else{
-                    d_print(F("MY110 send_mask error: "));
-                    d_println((int)result);
+                    d_print(F("error = "));
+                    d_print((int)result);
                 }
-            }else{
-                char buffer[32];
-                d_print(F("send_mask: "));
-                d_println(to_binary_string(mask_, buffer));
+                    d_println("");
             }
-            //можно добавить проверку result на успешность записи, если нужно
-            mask_pins_curr = mask_;
         }
 
         uint32_t set_mask(uint32_t mask, int8_t id_comp, const int8_t * const pins_mask[], int mode){//mode: 0 = set_bit_0, 1 = set_bit_1

@@ -311,12 +311,21 @@ void Magistral::logic(){
     if(current_state->get_time_in_this(id) < curr_time){ 
         if(current_state->get_curr_state() != current_state->get_next_state(id)->get_curr_state()){
             cycle_ready_sig.setState(false);//Сигнал
-            d_print(F("======== Magistral: "));
+            d_print(F("(t : "));
+            d_print(millis());
+            d_print(F(")"));
+            d_print(F("============ Magistral: "));
             d_print((int)id);
             d_print(F(" | state: "));
             d_print(this->num_state_mag_to_char(current_state->get_curr_state()));
-            d_print(F("->"));
-            d_println(this->num_state_mag_to_char(current_state->get_next_state(id)->get_curr_state()));
+            d_print(F("("));
+            d_print((int)current_state->get_id());
+            d_print(F(") ->"));
+            d_print(this->num_state_mag_to_char(current_state->get_next_state(id)->get_curr_state()));
+            d_print(F("("));
+            d_print((int)current_state->get_next_state(id)->get_id());
+            d_print(F(")"));
+            d_print(F("\n"));
             d_println(F("turn is:"));
             current_state = current_state->get_next_state(id);
             turn_to(current_state->get_curr_state());
