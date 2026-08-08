@@ -334,14 +334,14 @@ Data_alg &result){
     in_magistral_triplet->set_time_in_this(T_COMPLEX_POST_SKIP + T_COMPLEX_POST_LOAD, 2);
     in_magistral_triplet->set_time_in_this(T_COMPLEX_POST_SKIP , 3);
 
-    one_state_Magistral* all_close_triplet= new one_state_Magistral(1, kol_users, 15);//закрыл все клапана поочередно
+    one_state_Magistral* all_close_triplet= new one_state_Magistral(2, kol_users, 15);//закрыл все клапана поочередно
     all_close_triplet->set_curr_state(state_Magistral::all_close);
     all_close_triplet->set_time_in_this(T_COMPLEX_ALL_CLOSE_PRED_AIR);
     // all_close_complex->set_time_in_this(500, 0);
     // all_close_complex->set_time_in_this(500, 1);
     // all_close_complex->set_time_in_this(500, 2);
     all_close_triplet->set_time_in_this(0, 3);
-    one_state_Magistral* air_on_triplet= new one_state_Magistral(1, kol_users, 16);
+    one_state_Magistral* air_on_triplet= new one_state_Magistral(2, kol_users, 16);
     air_on_triplet->set_curr_state(state_Magistral::air_on);
     air_on_triplet->set_time_in_this(T_COMPLEX_AIRON_TRIPL);
     // air_on_complex->set_time_in_this(27000, 0);
@@ -349,51 +349,6 @@ Data_alg &result){
     // air_on_complex->set_time_in_this(27000, 2);
     air_on_triplet->set_time_in_this(T_COMPLEX_AIRON_SOLO, 3);
 
- 
-//    one_state_Magistral* starting_in_magistral_triplet = new one_state_Magistral(1, kol_users, 31);
-//     starting_in_magistral_triplet->set_curr_state(state_Magistral::all_close);
-//     // starting_in_magistral_triplet->set_time_in_this(650);
-//     starting_in_magistral_triplet->set_time_in_this(pred_pause_triplet_complex , 0);
-//     starting_in_magistral_triplet->set_time_in_this(pred_pause_triplet_complex + pause_for_one_triplet_complex, 1);
-//     starting_in_magistral_triplet->set_time_in_this(pred_pause_triplet_complex + pause_for_one_triplet_complex + pause_for_one_triplet_complex, 2);
-//     starting_in_magistral_triplet->set_time_in_this(0, 3);
-
-//     one_state_Magistral* preparing_in_magistral_triplet = new one_state_Magistral(1, kol_users, 32);
-//     preparing_in_magistral_triplet->set_curr_state(state_Magistral::in_magistral);
-//     preparing_in_magistral_triplet->set_time_in_this(t_preparing_in_magistral_triplet_complex);
-//     // preparing_in_magistral_triplet->set_time_in_this(500, 0);
-//     // preparing_in_magistral_triplet->set_time_in_this(500, 1);
-//     // preparing_in_magistral_triplet->set_time_in_this(500, 2);
-//     preparing_in_magistral_triplet->set_time_in_this(0, 3);
-//     one_state_Magistral* skip_gate_triplet = new one_state_Magistral(1, kol_users, 33);
-//     skip_gate_triplet->set_curr_state(state_Magistral::skip_gate);
-//     skip_gate_triplet->set_time_in_this(t_skip_gate_triplet_complex);
-//     // skip_gate_triplet->set_time_in_this(1500, 0);
-//     // skip_gate_triplet->set_time_in_this(1500, 1);
-//     // skip_gate_triplet->set_time_in_this(1500, 2);
-//     skip_gate_triplet->set_time_in_this(0, 3);
-//     one_state_Magistral* in_magistral_triplet = new one_state_Magistral(1, kol_users, 34);
-//     in_magistral_triplet->set_curr_state(state_Magistral::in_magistral);
-//     // in_magistral_triplet->set_time_in_this(t_in_magistral_triplet_complex);
-//     in_magistral_triplet->set_time_in_this(t_in_magistral_triplet_complex+ pause_for_one_triplet_complex + pause_for_one_triplet_complex + post_pause_triplet_complex, 0);
-//     in_magistral_triplet->set_time_in_this(t_in_magistral_triplet_complex + pause_for_one_triplet_complex + post_pause_triplet_complex, 1);
-//     in_magistral_triplet->set_time_in_this(t_in_magistral_triplet_complex + post_pause_triplet_complex, 2);
-//     in_magistral_triplet->set_time_in_this(0 , 3);
-
-//     one_state_Magistral* all_close_triplet = new one_state_Magistral(2, kol_users, 35);//закрыл все клапана поочередно
-//     all_close_triplet->set_curr_state(state_Magistral::all_close);
-//     all_close_triplet->set_time_in_this(T_COMPLEX_ALL_CLOSE_PRED_AIR*3);
-//     // all_close_triplet->set_time_in_this(500, 0);
-//     // all_close_triplet->set_time_in_this(500, 1);
-//     // all_close_triplet->set_time_in_this(500, 2);
-//     all_close_triplet->set_time_in_this(0, 3);
-//     one_state_Magistral* air_on_triplet = new one_state_Magistral(2, kol_users, 36);
-//     air_on_triplet->set_curr_state(state_Magistral::air_on);
-//     air_on_triplet->set_time_in_this(T_COMPLEX_AIRON_TRIPL);
-//     // air_on_triplet->set_time_in_this(27000, 0);
-//     // air_on_triplet->set_time_in_this(27000, 1);
-//     // air_on_triplet->set_time_in_this(27000, 2);
-//     air_on_triplet->set_time_in_this(0, 3);
 
     mag_start_state->set_path(4,starting_in_magistral_triplet);//триплет 4ый путь
     starting_in_magistral_triplet->set_path(0,preparing_in_magistral_triplet);
@@ -429,21 +384,21 @@ Data_alg &result){
     /*==========прочистка начало==========*/
     one_state_Magistral* preparing_in_magistral_clearing = new one_state_Magistral(1, kol_users, 51);
     preparing_in_magistral_clearing->set_curr_state(state_Magistral::in_magistral);
-    preparing_in_magistral_clearing->set_time_in_this(T_CLEARING_PRED*5);
+    preparing_in_magistral_clearing->set_time_in_this(T_CLEARING_PRED);
     //preparing_in_magistral_clearing->set_time_in_this(500, 0);
     //preparing_in_magistral_clearing->set_time_in_this(500, 1);
     //preparing_in_magistral_clearing->set_time_in_this(500, 2);
     //preparing_in_magistral_clearing->set_time_in_this(500, 3);
     one_state_Magistral* skip_gate_clearing = new one_state_Magistral(2, kol_users, 52);
     skip_gate_clearing->set_curr_state(state_Magistral::skip_gate);
-    skip_gate_clearing->set_time_in_this(T_CLEARING_SKIP*5);
+    skip_gate_clearing->set_time_in_this(T_CLEARING_SKIP);
     // skip_gate_clearing->set_time_in_this(1500, 0);
     // skip_gate_clearing->set_time_in_this(1500, 1);
     // skip_gate_clearing->set_time_in_this(1500, 2);
     // skip_gate_clearing->set_time_in_this(1500, 3);
     one_state_Magistral* in_magistral_clearing = new one_state_Magistral(1, kol_users, 53);
     in_magistral_clearing->set_curr_state(state_Magistral::in_magistral);
-    in_magistral_clearing->set_time_in_this(T_CLEARING_POST*5);
+    in_magistral_clearing->set_time_in_this(T_CLEARING_POST);
     // in_magistral_clearing->set_time_in_this(2000, 0);
     // in_magistral_clearing->set_time_in_this(2000, 1);
     // in_magistral_clearing->set_time_in_this(2000, 2);

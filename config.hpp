@@ -74,14 +74,14 @@ constexpr const uint32_t T_COMPLEX_AIRON_SOLO = 43000;
 
 constexpr const uint32_t T_SOLO_PRED_SKIP = 650;
 constexpr const uint32_t T_SOLO_SKIP = 3500;
-constexpr const uint32_t T_SOLO_POST_SKIP = 2000;
+constexpr const uint32_t T_SOLO_POST_SKIP = 3200;
 constexpr const uint32_t T_SOLO_AIRON = 43000;
 constexpr const uint32_t T_SOLO_WAIT_AIROFF = 10000;
 
 
 constexpr const uint32_t T_AIR_AIRON = 15000;
 
-constexpr const uint32_t T_CLEARING_PRED = 600*5;
+constexpr const uint32_t T_CLEARING_PRED = 600*4;
 constexpr const uint32_t T_CLEARING_SKIP = 500 + TIME_ACTUATOR_FULL_OPEN_CLOSE[0]+TIME_ACTUATOR_FULL_OPEN_CLOSE[1]+TIME_ACTUATOR_FULL_OPEN_CLOSE[2]+TIME_ACTUATOR_FULL_OPEN_CLOSE[3];
 constexpr const uint32_t T_CLEARING_POST = 500 + TIME_ACTUATOR_FULL_OPEN_CLOSE[0]+TIME_ACTUATOR_FULL_OPEN_CLOSE[1]+TIME_ACTUATOR_FULL_OPEN_CLOSE[2]+TIME_ACTUATOR_FULL_OPEN_CLOSE[3];
 
