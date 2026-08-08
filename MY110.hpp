@@ -3,7 +3,7 @@
 #include "universal_object.hpp"
 #include "signal.h"
 #include "flow.hpp"
-#include "config.h"
+#include "config.hpp"
 #include "other_components.hpp"
 
 #if !mode_work
