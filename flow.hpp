@@ -52,6 +52,7 @@ class Flow: public Universal_object<state_Flow>{
         my110.init();
         
         for(uint8_t i = 0; i<kol_all_mag;++i){
+            get_mag(i)->set_time_actuator(TIME_ACTUATOR_FULL_OPEN_CLOSE[i], TIME_ACTUATOR_FULL_OPEN_CLOSE[i]);
             get_mag(i)->init();
         }
 

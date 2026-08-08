@@ -28,6 +28,9 @@
 
 //время конфиги
 
+
+constexpr const uint32_t TIME_ACTUATOR_FULL_OPEN_CLOSE[kol_all_mag] = {600, 1000, 3000, 600};//соло с индексом 3
+
 constexpr const uint32_t T_COMPLEX_PRED_SKIP = 800;
 constexpr const uint32_t T_COMPLEX_PRED_SKIP_1_MAG = T_COMPLEX_PRED_SKIP;
 constexpr const uint32_t T_COMPLEX_PRED_SKIP_2_MAG = T_COMPLEX_PRED_SKIP;
@@ -79,17 +82,16 @@ constexpr const uint32_t T_SOLO_WAIT_AIROFF = 10000;
 constexpr const uint32_t T_AIR_AIRON = 15000;
 
 constexpr const uint32_t T_CLEARING_PRED = 800;
-constexpr const uint32_t T_CLEARING_SKIP = 700;
+constexpr const uint32_t T_CLEARING_SKIP = TIME_ACTUATOR_FULL_OPEN_CLOSE[0]+TIME_ACTUATOR_FULL_OPEN_CLOSE[1]+TIME_ACTUATOR_FULL_OPEN_CLOSE[2]+TIME_ACTUATOR_FULL_OPEN_CLOSE[3];
 constexpr const uint32_t T_CLEARING_POST = 800;
 
 
-constexpr const int16_t FREQ_SOLO = 4000;
-constexpr const int16_t FREQ_COMPLEX = 6000;
-constexpr const int16_t FREQ_COMPLEX_PART_SOLO = 4000;
-constexpr const int16_t FREQ_AIR = 5000;
-constexpr const int16_t FREQ_CLEARING = 5000;
-constexpr const int16_t FREQ_TRIPLET = 6000;
-
+constexpr const uint32_t FREQ_SOLO = 4000;
+constexpr const uint32_t FREQ_COMPLEX = 6000;
+constexpr const uint32_t FREQ_COMPLEX_PART_SOLO = 4000;
+constexpr const uint32_t FREQ_AIR = 5000;
+constexpr const uint32_t FREQ_CLEARING = 5000;
+constexpr const uint32_t FREQ_TRIPLET = 6000;
 
 
 

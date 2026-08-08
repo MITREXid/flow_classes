@@ -48,17 +48,12 @@ public:
     uint8_t get_curr_id_alg_state();
     bool isStartedState(bool check_coponents_no_goin = false);
     bool inThisStateId(uint8_t id_, bool check_coponents_no_goin = false);
+    void set_time_actuator(uint32_t time_open, uint32_t time_close);
 private:
     void logic();//Для объединения логики поведения(используется в update())
     void turn_to(state_Magistral next_state);
     void set_current_mode_alg(state_Alg_mag mod);
     void check_ball_for_dyvka();
-    // state_Magistral getState(one_state_Magistral* st = nullptr);
-    // one_state_Magistral* getNextState(one_state_Magistral* st = nullptr);
-    // uint32_t getTimeInState(one_state_Magistral* st = nullptr);
-    // void setPathFlag( bool val,one_state_Magistral* st = nullptr);
-    // bool getPathFlag(one_state_Magistral* st = nullptr);
-    // bool getFlagResetTimer(one_state_Magistral* st = nullptr);
     bool is_going_comp();
     char* num_state_mag_to_char(state_Magistral state_input);
 };
@@ -261,8 +256,14 @@ void Magistral::init(bool act, bool clap, bool ball)
         ball_cran.init();
     }
     cycle_ready_sig.setState(true);
+
+
 }
 
+void Magistral::set_time_actuator(uint32_t time_open, uint32_t time_close){
+    actuator.setTimeClosing(time_close);
+    actuator.setTimeOpening(time_open);
+}
 
 void Magistral::update()
 {
