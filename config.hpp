@@ -1,7 +1,6 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include "flow.hpp"
 #include "declorations.hpp"
 
 //RS485
@@ -17,6 +16,45 @@
 
 #define size_of_buf 15
 #define SerialXXX Serial3
+
+
+
+
+
+
+
+//время конфиги
+
+constexpr const uint32_t T_COMPLEX_PRED_SKIP = 800;
+constexpr const uint32_t T_COMPLEX_SKIP = 3500;
+constexpr const uint32_t T_COMPLEX_POST_SKIP = 800;
+constexpr const uint32_t T_COMPLEX_PRED_PAUSE = 100;
+constexpr const uint32_t T_COMPLEX_POST_PAUSE = 500;
+constexpr const uint32_t T_COMPLEX_ALL_CLOSE_PRED_AIR = 600;
+constexpr const uint32_t T_COMPLEX_AIRON_TRIPL = 30000;
+constexpr const uint32_t T_COMPLEX_AIRON_SOLO = 40000;
+
+constexpr const uint32_t T_SOLO_PRED_SKIP = 650;
+constexpr const uint32_t T_SOLO_SKIP = 3500;
+constexpr const uint32_t T_SOLO_POST_SKIP = 2000;
+constexpr const uint32_t T_SOLO_AIRON = 43000;
+constexpr const uint32_t T_SOLO_WAIT_AIROFF = 10000;
+
+
+constexpr const uint32_t T_AIR_AIRON = 15000;
+
+constexpr const uint32_t T_CLEARING_PRED = 800;
+constexpr const uint32_t T_CLEARING_SKIP = 700;
+constexpr const uint32_t T_CLEARING_POST = 800;
+
+
+constexpr const int16_t FREQ_SOLO = 4000;
+constexpr const int16_t FREQ_COMPLEX = 6000;
+constexpr const int16_t FREQ_COMPLEX_PART_SOLO = 4000;
+constexpr const int16_t FREQ_AIR = 5000;
+constexpr const int16_t FREQ_CLEARING = 5000;
+constexpr const int16_t FREQ_TRIPLET = 6000;
+
 
 
 

@@ -6,7 +6,7 @@
 #include "magistral.hpp"
 #include "flow.hpp"
 #include "display.hpp"
-#include "config.h"
+#include "config.hpp"
 
 Flow flow(
     RO_RS485,//пин RX(RO) для частоника

@@ -2,7 +2,7 @@
 #define FLOW_HPP
 #include "universal_object.hpp"
 #include "magistral.hpp"
-#include "config.h"
+// #include "config.hpp"
 #include "dyvka.hpp"
 #include "MY110.hpp"
 
@@ -240,32 +240,32 @@ private:
                 break;
             case state_Flow::do_solo:
                 num_curr_mag = mag;
-                dyvka.set_goal_frec(4000);
+                dyvka.set_goal_frec(FREQ_SOLO);
                 get_mag()->start(state_Alg_mag::one_cycle_solo);
                 break;
             case state_Flow::do_complex:
                     flag_already_started_solo_in_complex = false;
                 num_curr_mag = 0;
-                dyvka.set_goal_frec(6000);
+                dyvka.set_goal_frec(FREQ_COMPLEX);
                 for(uint8_t i = 0; i<kol_mag_group;++i){
                     get_mag(i)->start(state_Alg_mag::one_cycle_complex);
                 }
                 break;
             case state_Flow::do_produvka:
                 num_curr_mag = 3;
-                dyvka.set_goal_frec(5000);
+                dyvka.set_goal_frec(FREQ_AIR);
                 get_mag()->start(state_Alg_mag::produvka);
                 break;
             case state_Flow::do_clearing:
                 num_curr_mag = 0;
-                dyvka.set_goal_frec(5000);
+                dyvka.set_goal_frec(FREQ_CLEARING);
                 for(uint8_t i = 0; i<kol_all_mag;++i){
                     get_mag(i)->start(state_Alg_mag::clearing);
                 }
                 break;
             case state_Flow::do_triplet:
                 num_curr_mag = 0;
-                dyvka.set_goal_frec(6000);
+                dyvka.set_goal_frec(FREQ_TRIPLET);
                 for(uint8_t i = 0; i<kol_mag_group;++i){
                     get_mag(i)->start(state_Alg_mag::one_cycle_triplet);
                 }
