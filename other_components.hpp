@@ -4,43 +4,73 @@
 #include "Shared_power.hpp"
 
 class Actuator: public Component{
-protected:
-    uint8_t control_pin; 
 public:
-    Actuator(state_Component first_state, int8_t id);
+    Actuator(state_Component first_state, int8_t id_);
     void update();
     void init(){
         Component::init();
         update();
     }
-      
+       bool close(bool is_infinite_process = true) {
+        d_print(F("FLOW try Close Actuator("));
+        d_print((int)get_id());
+        d_print(F(")"));
+        d_print(F(" , ("));  
+        bool res = Component::close(is_infinite_process);
+        d_print(F(")\n"));  
+        return res;
+    }
+       bool open(bool is_infinite_process = true) {
+        d_print(F("FLOW try Open Actuator("));
+        d_print((int)get_id());
+        d_print(F(")"));
+        d_print(F(" , ("));  
+        bool res = Component::open(is_infinite_process);
+        d_print(F(")\n"));  
+        return res;
+       }
+
     void funcSigStartOpen(){
-        d_println(F("Start Open Actuator"));  
+        d_print(F(" func SigStart Open Actuator("));  
+        d_print((int)get_id());
+        d_println(F(") "));
     }
 
     void funcSigEndOpen(){
-        d_println(F("End Open Actuator"));
+        d_print(F(" func SigEnd Open Actuator("));
+        d_print((int)get_id());
+        d_println(F(") "));
     }
 
     void funcSigStartClose(){
-        d_println(F("Start Close Actuator")); 
+        d_print(F(" func SigStart Close Actuator("));
+        d_print((int)get_id());
+        d_println(F(") "));
         
     }
     void funcSigEndClose(){
-        d_println(F("End Close Actuator"));
+        d_print(F(" func SigEnd Close Actuator("));
+        d_print((int)get_id());
+        d_println(F(") "));
     }
 
     Actuator* getPointer() {
         return this;
     }
+
+    uint8_t get_id() {
+        return id;
+    }
 };
  
-Actuator::Actuator(state_Component first_state, int8_t id)
+Actuator::Actuator(state_Component first_state, int8_t id_)
     : Component(
-        first_state, //состояние по умолчанию
-        600, //время открытия
-        600 //время закрытия
+        id_, // идентификатор
+        first_state, // состояние по умолчанию
+        600, // время открытия
+        600 // время закрытия
     )
+
 {}
 
 void Actuator::update(){
@@ -49,32 +79,56 @@ void Actuator::update(){
 
 
 class Clapan: public Component{
-private:
-    int control_pin; 
 public:
     
-    Clapan(state_Component first_state, int8_t id);
+    Clapan(state_Component first_state, int8_t id_);
     void update();
 
     void init(){
         Component::init();
         update();
     }
-
+       bool close(bool is_infinite_process = true) {
+        d_print(F("FLOW try Close Clapan("));
+        d_print((int)get_id());
+        d_print(F(")"));
+        d_print(F(" , ("));  
+        bool res = Component::close(is_infinite_process);
+        d_print(F(")\n"));  
+        return res;
+    }
+       bool open(bool is_infinite_process = true) {
+        d_print(F("FLOW try Open Clapan("));
+        d_print((int)get_id());
+        d_print(F(")"));
+        d_print(F(" , ("));  
+        bool res = Component::open(is_infinite_process);
+        d_print(F(")\n"));  
+        return res;
+       }
 
     void funcSigStartOpen(){
-        d_println(F("Start Open Clapan"));  
+        d_print(F(" func SigStartOpen Clapan("));  
+        d_print((int)get_id());
+        d_println(F(") "));
     }
 
     void funcSigEndOpen(){
-        d_println(F("End Open Clapan"));
+        d_print(F(" func SigEnd Open Clapan("));
+        d_print((int)get_id());
+        d_println(F(") "));
     }
 
     void funcSigStartClose(){
-        d_println(F("Start Close Clapan")); 
+        d_print(F(" func SigStart Close Clapan("));
+        d_print((int)get_id());
+        d_println(F(") "));
+        
     }
     void funcSigEndClose(){
-        d_println(F("End Close Clapan")); 
+        d_print(F(" func SigEnd Close Clapan("));
+        d_print((int)get_id());
+        d_println(F(") "));
     }
 
     Clapan* getPointer() {
@@ -82,11 +136,12 @@ public:
     }
 };
  
-Clapan::Clapan(state_Component first_state, int8_t id)
+Clapan::Clapan(state_Component first_state, int8_t id_)
     : Component(
-        first_state, //состояние по умолчанию
-        500, //время открытия
-        500 //время закрытия
+        id_, // идентификатор
+        first_state, // состояние по умолчанию
+        500, // время открытия
+        500 // время закрытия
     )
 {}
 void Clapan::update(){
@@ -97,43 +152,70 @@ void Clapan::update(){
 
 
 class Ball_cran: public Component{
-protected:
-    int control_pin = -1; 
 public:
-    Ball_cran(state_Component first_state, int8_t id);
+    Ball_cran(state_Component first_state, int8_t id_);
     void update();
 
     void init(){
         Component::init();
         update();
     }
-    
-     void funcSigStartOpen(){
-        d_println(F("Start Open Ball_cran"));  
+           bool close(bool is_infinite_process = true) {
+        d_print(F("FLOW try Close Ball_cran("));
+        d_print((int)get_id());
+        d_print(F(")"));
+        d_print(F(" , ("));  
+        bool res = Component::close(is_infinite_process);
+        d_print(F(")\n"));  
+        return res;
     }
+       bool open(bool is_infinite_process = true) {
+        d_print(F("FLOW try Open Ball_cran("));
+        d_print((int)get_id());
+        d_print(F(")"));
+        d_print(F(" , ("));  
+        bool res = Component::open(is_infinite_process);
+        d_print(F(")\n"));  
+        return res;
+       }
+
+    void funcSigStartOpen(){
+        d_print(F(" func SigStartOpen Ball_cran("));  
+        d_print((int)get_id());
+        d_println(F(") "));
+    }
+
     void funcSigEndOpen(){
-        d_println(F("End Open Ball_cran"));
+        d_print(F(" func SigEnd Open Ball_cran("));
+        d_print((int)get_id());
+        d_println(F(") "));
     }
 
     void funcSigStartClose(){
-        d_println(F("Start Close Ball_cran")); 
+        d_print(F(" func SigStart Close Ball_cran("));
+        d_print((int)get_id());
+        d_println(F(") "));
         
     }
     void funcSigEndClose(){
-        d_println(F("End Close Ball_cran")); 
+        d_print(F(" func SigEnd Close Ball_cran("));
+        d_print((int)get_id());
+        d_println(F(") "));
     }
+    
       
     Ball_cran* getPointer() {
         return this;
     }
 };
 
-Ball_cran::Ball_cran(state_Component first_state, int8_t id)
+Ball_cran::Ball_cran(state_Component first_state, int8_t id_)
 : Component(
+        id_, // идентификатор
         first_state, //состояние по умолчанию
         15500, //время открытия
         15500 //время закрытия
- ) 
+ )
 {}
 
 void Ball_cran::update(){

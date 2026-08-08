@@ -183,6 +183,12 @@ private:
             case state_Flow::do_solo:
                 break;
             case state_Flow::do_complex:
+                if(get_mag(0)->inThisStateId(16, false) && get_mag(1)->inThisStateId(16, false) 
+                && get_mag(2)->inThisStateId(16, false) && get_mag(3)->isStartedState(true)){
+                    dyvka.set_goal_frec(4000);
+                    get_mag(3)->start(state_Alg_mag::one_cycle_complex);
+                }
+
                 if(isStartState(0, true) && !flag_already_started_solo_in_complex){
                     flag_already_started_solo_in_complex = true;
                     dyvka.set_goal_frec(4000);

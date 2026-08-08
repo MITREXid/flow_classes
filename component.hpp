@@ -23,14 +23,15 @@ protected:
     virtual void funcSigEndOpen(){};
     virtual void funcSigStartClose(){};
     virtual void funcSigEndClose(){};
+
+    int8_t id = -1; // идентификатор компонента, может быть использован в производных классах
 public:
-    Component(){}
+    Component(int8_t id_) : id(id_) {}
     
     
         /// @brief конструктор задает начальные параметры
         /// @param curr_state состояние по умолчанию
-    Component(state_Component curr_state) {
-        Component();
+    Component(int8_t id_,state_Component curr_state) : id(id_) {
         if(curr_state == going_close || curr_state == going_open) {
             d_println(F("Not correct start state. set close"));
             curr_state = state_Component::close;
@@ -44,11 +45,11 @@ public:
         /// @param in_time_open время на открытие 
         /// @param in_time_close время на закрытие    
     Component(
+        int8_t id_,
         state_Component curr_state, 
         unsigned long in_time_open, 
         unsigned long in_time_close
-    ) {
-        Component();
+    ): id(id_)  {
         if(curr_state == going_close || curr_state == going_open) {
             d_println(F("Not correct start state. set close"));
             curr_state = state_Component::close;
@@ -96,13 +97,13 @@ public:
         //     return false;
         // }
         if(getStatus() == state_Component::open) {
-            d_println(F("already open"));
+            d_print(F("already open"));
             return false;
         }else{
             if(getStatus() == state_Component::going_close) {
-                d_println(F("was going_close, let's go open"));
+                d_print(F("was going_close, let's go open"));
             }else if(getStatus() == state_Component::going_open) {
-                d_println(F("yet going_open, restart"));
+                d_print(F("yet going_open, restart"));
             }   
             timer_opening.restart();
             timer_closing.stop();
@@ -117,13 +118,13 @@ public:
         //     return false;
         // }
         if(getStatus() == state_Component::close) {
-            d_println(F("already close"));
+            d_print(F("already close"));
             return true;
         } else{
             if(getStatus() == state_Component::going_open) {
-                d_println(F("was going_open, let's go close"));
+                d_print(F("was going_open, let's go close"));
             }else if(getStatus() == state_Component::going_close) {
-                d_println(F("yet going_close, restart"));
+                d_print(F("yet going_close, restart"));
             }
             timer_closing.restart();
             timer_opening.stop();
@@ -163,6 +164,10 @@ public:
     bool can_open() { return (getStatus() == state_Component::close); }
     bool can_close() { return (getStatus() == state_Component::open); }
     bool is_going(){if(getStatus() == going_close || getStatus() == going_open) {return true;}return false;}
+
+    int8_t get_id() {
+        return id;
+    }
 };
 
 

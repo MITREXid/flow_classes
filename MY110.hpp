@@ -198,8 +198,8 @@ class MY110 : public Universal_object<state_MY110>{
         }
 
         void turn_ball(int8_t id_ball, state_Component state_prev){
-            d_print(F("turn_ball id = "));
-            d_print((int)id_ball);
+            d_print(F("MY110: turn_ball id = "));
+            d_print((int)pointers_to_components.ball_cran[id_ball]->get_id());
             d_print(F(" state_prev = "));
             d_println((int)state_prev);
             if(pointers_to_components.ball_cran[id_ball]->getStatus() == state_Component::going_close){
@@ -231,8 +231,8 @@ class MY110 : public Universal_object<state_MY110>{
 
 
         void turn_clap(int8_t id_clap, state_Component state_prev){
-            d_print(F("turn_clap id = "));
-            d_print((int)id_clap);
+            d_print(F("MY110: turn_clap id = "));
+            d_print((int) pointers_to_components.clapan[id_clap]->get_id());
             d_print(F(" state_prev = "));
             d_println((int)state_prev);
             turn_to_default_act_and_clap();
@@ -262,8 +262,8 @@ class MY110 : public Universal_object<state_MY110>{
         }
 
         void turn_act(int8_t id_act, state_Component state_prev){
-            d_print(F("turn_act id = "));
-            d_print((int)id_act);
+            d_print(F("MY110: turn_act id = "));
+            d_print((int)pointers_to_components.actuator[id_act]->get_id());
             d_print(F(" state_prev = "));
             d_println((int)state_prev);
             turn_to_default_act_and_clap();
