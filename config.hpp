@@ -2,14 +2,17 @@
 #define CONFIG_HPP
 
 #include "declorations.hpp"
-
+#include "types_for_magistral.hpp"
 //RS485
 #define RO_RS485 12//пин RX(RO) 
 #define DI_RS485 10//пин TX(DI) 
 
 #define pin_DE_RE 11
 
-
+//для флоу
+#define kol_mag_group 3
+#define kol_all_mag 4
+#define solo_mag 3//nomer от 0
 
 //=================экран
 
@@ -26,13 +29,45 @@
 //время конфиги
 
 constexpr const uint32_t T_COMPLEX_PRED_SKIP = 800;
+constexpr const uint32_t T_COMPLEX_PRED_SKIP_1_MAG = T_COMPLEX_PRED_SKIP;
+constexpr const uint32_t T_COMPLEX_PRED_SKIP_2_MAG = T_COMPLEX_PRED_SKIP;
+constexpr const uint32_t T_COMPLEX_PRED_SKIP_3_MAG = T_COMPLEX_PRED_SKIP;
+constexpr const uint32_t T_COMPLEX_PRED_SKIP_4_MAG = T_COMPLEX_PRED_SKIP;
+
 constexpr const uint32_t T_COMPLEX_SKIP = 3500;
+constexpr const uint32_t T_COMPLEX_SKIP_1_MAG = T_COMPLEX_SKIP;
+constexpr const uint32_t T_COMPLEX_SKIP_2_MAG = T_COMPLEX_SKIP;
+constexpr const uint32_t T_COMPLEX_SKIP_3_MAG = T_COMPLEX_SKIP;
+constexpr const uint32_t T_COMPLEX_SKIP_4_MAG = T_COMPLEX_SKIP;
+
 constexpr const uint32_t T_COMPLEX_POST_SKIP = 800;
-constexpr const uint32_t T_COMPLEX_PRED_PAUSE = 100;
-constexpr const uint32_t T_COMPLEX_POST_PAUSE = 500;
-constexpr const uint32_t T_COMPLEX_ALL_CLOSE_PRED_AIR = 600;
-constexpr const uint32_t T_COMPLEX_AIRON_TRIPL = 30000;
-constexpr const uint32_t T_COMPLEX_AIRON_SOLO = 40000;
+constexpr const uint32_t T_COMPLEX_POST_SKIP_1_MAG = T_COMPLEX_POST_SKIP;
+constexpr const uint32_t T_COMPLEX_POST_SKIP_2_MAG = T_COMPLEX_POST_SKIP;
+constexpr const uint32_t T_COMPLEX_POST_SKIP_3_MAG = T_COMPLEX_POST_SKIP;
+constexpr const uint32_t T_COMPLEX_POST_SKIP_4_MAG = T_COMPLEX_POST_SKIP;
+
+
+
+constexpr const Time_in_this T_COMPLEX_PAUSE_ONE_CYCLE_LOAD_1_MAG = T_COMPLEX_PRED_SKIP_1_MAG + T_COMPLEX_SKIP_1_MAG + T_COMPLEX_POST_SKIP_1_MAG ;
+constexpr const Time_in_this T_COMPLEX_PAUSE_ONE_CYCLE_LOAD_2_MAG = T_COMPLEX_PRED_SKIP_2_MAG + T_COMPLEX_SKIP_2_MAG + T_COMPLEX_POST_SKIP_2_MAG ;
+constexpr const Time_in_this T_COMPLEX_PAUSE_ONE_CYCLE_LOAD_3_MAG = T_COMPLEX_PRED_SKIP_3_MAG + T_COMPLEX_SKIP_3_MAG + T_COMPLEX_POST_SKIP_3_MAG ;
+constexpr const Time_in_this T_COMPLEX_PAUSE_ONE_CYCLE_LOAD_4_MAG = T_COMPLEX_PRED_SKIP_4_MAG + T_COMPLEX_SKIP_4_MAG + T_COMPLEX_POST_SKIP_4_MAG ;
+
+
+constexpr const uint32_t T_COMPLEX_PRED_LOAD = 100;
+constexpr const uint32_t T_COMPLEX_POST_LOAD = 500;
+constexpr const uint32_t T_COMPLEX_ALL_CLOSE_PRED_AIR = 600*3;
+constexpr const uint32_t T_COMPLEX_AIRON_TRIPL = 25000;
+constexpr const uint32_t T_COMPLEX_AIRON_SOLO = 43000;
+
+// constexpr const uint32_t T_TRIPLET_PRED_SKIP = T_COMPLEX_PRED_SKIP;
+// constexpr const uint32_t T_TRIPLET_SKIP = T_COMPLEX_SKIP;
+// constexpr const uint32_t T_TRIPLET_POST_SKIP = T_COMPLEX_POST_SKIP;
+// constexpr const uint32_t T_TRIPLET_PRED_PAUSE = T_COMPLEX_PRED_PAUSE;
+// constexpr const uint32_t T_TRIPLET_POST_PAUSE = T_COMPLEX_POST_PAUSE;
+// constexpr const uint32_t T_TRIPLET_ALL_CLOSE_PRED_AIR = T_COMPLEX_ALL_CLOSE_PRED_AIR;
+// constexpr const uint32_t T_TRIPLET_AIRON_TRIPL = T_COMPLEX_AIRON_TRIPL;
+// constexpr const uint32_t T_TRIPLET_AIRON_SOLO = T_COMPLEX_AIRON_SOLO;
 
 constexpr const uint32_t T_SOLO_PRED_SKIP = 650;
 constexpr const uint32_t T_SOLO_SKIP = 3500;
@@ -75,12 +110,7 @@ void postTransmission() {
 
 
 
-//для флоу
 
-
-#define kol_mag_group 3
-#define kol_all_mag 4
-#define solo_mag 3//nomer от 0
 
 //для MY110(-1 это конец массива, для того чтоб была динамичность кол-ва пинов)
 constexpr int8_t pins_MY110_mag1_act_forward[] = {25,29,17,21,-1};
