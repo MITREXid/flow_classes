@@ -19,24 +19,21 @@ enum class state_Dyvka{
 
 class Dyvka : public Universal_object<state_Dyvka>{
     private:
-        SoftwareSerial &rs485;
-        ModbusMaster node;
+        int8_t control_pin = 42;
         Signal<> (&sig_ball_not_close)[kol_all_mag];
         uint16_t goal_freq_chastot = 3500;//целевая частота для чатотника(умноженная 100) 
         // uint16_t curr_freq_chastot = 0;//текущая частота для чатотника(умноженная 100) 
         enum class State_air{on, off} state_air;
     public:
+        
         Dyvka(SoftwareSerial &rs485_, Signal<> (&sig)[kol_all_mag]):
-        sig_ball_not_close{sig},
-        rs485(rs485_)
+        sig_ball_not_close{sig}
         {
             setStatus(state_Dyvka::no_air);
         }
 
         void init(){
-            node.begin(1, rs485);
-            node.preTransmission(preTransmission);
-            node.postTransmission(postTransmission);
+            pinMode(control_pin, OUTPUT);
             air_off();
         }
         void update(){
@@ -58,25 +55,32 @@ class Dyvka : public Universal_object<state_Dyvka>{
                 frec = 10000;
             }
             goal_freq_chastot = frec;
+           digitalWrite(control_pin, convert_to_255_range(goal_freq_chastot));
+            d_print(F("DYVKA change val ("));
+            d_print(convert_to_255_range(goal_freq_chastot));
+            d_println(F(")"));
+        }
+        uint16_t convert_to_255_range(uint16_t frec){
+            float f_frec = (float)frec/6000.0 * 255;
+            return (uint16_t)f_frec;
         }
 
     private:
 
         void air_on(){
             if(state_air == State_air::on){return;}
-            d_println(F("Dyet"));
+            d_print(F("DYVKA on ("));
+            d_print(convert_to_255_range(goal_freq_chastot));
+            d_println(F(")"));
             state_air = State_air::on;
-            node.writeSingleRegister(0x3000, goal_freq_chastot);//настроили частоту
-            time_break(10);
-            node.writeSingleRegister(0x2000, 1);    // Пуск
+           digitalWrite(control_pin, convert_to_255_range(goal_freq_chastot));
             //нужна реализация
         }
         void air_off(){
             if(state_air == State_air::off){return;}
-            d_println(F("Ne Dyet"));
+            d_println(F("DYVKA: off (0)"));
             state_air = State_air::off;
-            node.writeSingleRegister(0x2000, 5);    // Стоп
-            //нужна реализация
+           digitalWrite(control_pin, 0);
         }
 
         void logic(){
