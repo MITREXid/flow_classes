@@ -202,7 +202,6 @@ void Magistral::turn_to(state_Magistral next_state){
                 mag_state = state_Magistral::undefine;
             break;
         case state_Magistral::start_state://актуатор закрыт клапан закрыт шаровой кран закрыт
-                data_alg.start_state->set_choose_path(id, 0);
                 actuator.close();
                 clapan.close();
                 ball_cran.close();
