@@ -63,11 +63,14 @@ class Dyvka : public Universal_object<state_Dyvka>{
             d_print(convert_to_255_range(goal_freq_chastot));
             d_println(F(")"));
         }
+
         uint16_t convert_to_255_range(uint16_t frec){
             float f_frec = (float)frec/6000.0 * 255;
             return (uint16_t)f_frec;
         }
-
+        uint16_t get_curr_goal_frec(){
+            return goal_freq_chastot;
+        }
 
          void air_on(){
             if(state_air == State_air::on){return;}
