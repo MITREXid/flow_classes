@@ -18,7 +18,7 @@ private:
     uint8_t id;
     uint32_t time_to_start_new_state = 0;//время старта
     // bool was_reset_time = false;//для того чтоб в состоянии в котором надо обнулить вермя не обнулять его бесконечно
-    
+    state_Magistral mag_state = state_Magistral::start_state;
     one_state_Magistral* current_state ;
     Data_alg &data_alg;
     state_Alg_mag curr_Alg_mode;
@@ -84,7 +84,7 @@ bool Magistral::inThisStateId(uint8_t id_, bool check_coponents_no_goin)
 
 
 state_Magistral Magistral::getState(){
-    return current_state->get_curr_state();
+    return mag_state;
 }
 
 bool Magistral::isStartedState(bool check_coponents_no_goin)
@@ -199,48 +199,55 @@ void Magistral::turn_to(state_Magistral next_state){
                 data_alg.start_state->set_choose_path(id, 0);
                 turn_to(start_state);
                 current_state = data_alg.start_state;
+                mag_state = state_Magistral::undefine;
             break;
         case state_Magistral::start_state://актуатор закрыт клапан закрыт шаровой кран закрыт
                 data_alg.start_state->set_choose_path(id, 0);
                 actuator.close();
                 clapan.close();
                 ball_cran.close();
+                mag_state = state_Magistral::start_state;
             break;
         case state_Magistral::going_to_gate://актуатор открыт клапан закрыт шаровой кран закрыт
                 actuator.open();
                 clapan.close();
                 ball_cran.close();
+                mag_state = state_Magistral::going_to_gate;
             break;
          case state_Magistral::all_close://актуатор закрыт клапан закрыт шаровой кран закрыт
                 actuator.close();
                 clapan.close();
                 ball_cran.close();
+                mag_state = state_Magistral::all_close;
             break;
         case state_Magistral::in_magistral://актуатор закрыт клапан открыт шаровой кран закрыт
                 actuator.close();
                 clapan.open();
                 ball_cran.close();
+                mag_state = state_Magistral::in_magistral;
             break;
         case state_Magistral::air_on://актуатор закрыт клапан закрыт шаровой кран открыт
                 actuator.close();
                 clapan.close();
                 ball_cran.open();
+                mag_state = state_Magistral::air_on;
             break;
         case state_Magistral::full_open:
                 actuator.open();
                 clapan.open();
                 ball_cran.open();
+                mag_state = state_Magistral::full_open;
             break;
         case state_Magistral::skip_gate:
                 actuator.open();
                 clapan.open();
                 ball_cran.close();
+                mag_state = state_Magistral::skip_gate;
             break;
         default:
             d_println("ERRROR: not correct state Magistral");
             break;
     };
-    time_to_start_new_state = millis();
 }
 
 //Надо чтоб на этом этапе data_alg уже было заполнено
@@ -328,9 +335,15 @@ void Magistral::logic(){
             d_print((int)current_state->get_next_state(id)->get_id());
             d_print(F(")"));
             d_print(F("\n"));
-            d_println(F("turn is:"));
-            if(current_state->get_curr_state()!=current_state->get_next_state(id)->get_curr_state() && current_state->get_next_state(id)->get_time_in_this(id) != 0){
+            if(current_state->get_next_state(id)->get_time_in_this(id) != 0){
+                if(getState()!=current_state->get_next_state(id)->get_curr_state()) {
                 turn_to(current_state->get_next_state(id)->get_curr_state());
+                d_println(F("turn is:"));
+                }else{
+                    d_println(F("turn is: NO, same state"));
+                }
+            }else{
+                d_println(F("turn is: NO, time in this state = 0"));
             }
             go_to_next_state();
             if(current_state->get_id() == current_state->get_next_state(id)->get_id()){
@@ -355,7 +368,10 @@ void Magistral::logic_in_cyclical_states(){
 void Magistral::go_to_next_state(){
     one_state_Magistral * old_state = current_state;
     current_state = current_state->get_next_state(id);
-
+    time_to_start_new_state = millis();
+    if(old_state->get_id() == state_Magistral::start_state && current_state->get_id() != state_Magistral::start_state){
+        data_alg.start_state->set_choose_path(id, 0);
+    }
 }
 
 
