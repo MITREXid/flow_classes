@@ -29,7 +29,7 @@
 //время конфиги
 
 
-constexpr const uint32_t TIME_ACTUATOR_FULL_OPEN_CLOSE[kol_all_mag] = {3000, 1300, 2800, 2800};//соло с индексом 3
+constexpr const uint32_t TIME_ACTUATOR_FULL_OPEN_CLOSE[kol_all_mag] = {3000, 3000, 3000, 3000};//соло с индексом 3
 
 constexpr const uint32_t T_COMPLEX_PRED_SKIP = 800;
 constexpr const uint32_t T_COMPLEX_PRED_SKIP_1_MAG = T_COMPLEX_PRED_SKIP;
@@ -45,7 +45,7 @@ constexpr const uint32_t T_COMPLEX_SKIP_4_MAG = T_COMPLEX_SKIP;
 
 constexpr const uint32_t T_COMPLEX_POST_SKIP = 800;
 constexpr const uint32_t T_COMPLEX_POST_SKIP_1_MAG = T_COMPLEX_POST_SKIP;
-constexpr const uint32_t T_COMPLEX_POST_SKIP_2_MAG = 2000;
+constexpr const uint32_t T_COMPLEX_POST_SKIP_2_MAG = T_COMPLEX_POST_SKIP;
 constexpr const uint32_t T_COMPLEX_POST_SKIP_3_MAG = T_COMPLEX_POST_SKIP;
 constexpr const uint32_t T_COMPLEX_POST_SKIP_4_MAG = T_COMPLEX_POST_SKIP;
 
@@ -56,6 +56,8 @@ constexpr const Time_in_this T_COMPLEX_PAUSE_ONE_CYCLE_LOAD_2_MAG = T_COMPLEX_PR
 constexpr const Time_in_this T_COMPLEX_PAUSE_ONE_CYCLE_LOAD_3_MAG = T_COMPLEX_PRED_SKIP_3_MAG + T_COMPLEX_SKIP_3_MAG + T_COMPLEX_POST_SKIP_3_MAG ;
 constexpr const Time_in_this T_COMPLEX_PAUSE_ONE_CYCLE_LOAD_4_MAG = T_COMPLEX_PRED_SKIP_4_MAG + T_COMPLEX_SKIP_4_MAG + T_COMPLEX_POST_SKIP_4_MAG ;
 
+
+constexpr const uint32_t T_COMPLEX_DELAY_FOR_START_SOLO_PRED_END_TRIPLET = T_COMPLEX_PAUSE_ONE_CYCLE_LOAD_4_MAG;
 
 constexpr const uint32_t T_COMPLEX_PRED_LOAD = 100;
 constexpr const uint32_t T_COMPLEX_POST_LOAD = 500;

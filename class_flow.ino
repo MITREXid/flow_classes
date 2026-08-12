@@ -28,7 +28,7 @@ unsigned long state;
 void setup()
 {
     #if(!mode_work)//arduino
-        Serial.begin(9600);
+        Serial.begin(1000000);
         d_println(F("start"));
         int val = freeRAM();
         d_println(freeRAM());
@@ -50,7 +50,7 @@ void setup()
 
 void loop()
 {
-    if(millis() - timer_delay_loop >= 10){
+    if(millis() - timer_delay_loop >= 0){
         #if(!mode_work)//g++
             if(Ser_PC.available() > 0){
                 char c = Ser_PC.read();

@@ -226,9 +226,16 @@ Data_alg &result){
     // all_close_complex->set_time_in_this(500, 1);
     // all_close_complex->set_time_in_this(500, 2);
     all_close_complex->set_time_in_this(0, 3);
-    one_state_Magistral* air_on_complex= new one_state_Magistral(1, kol_users, 16);
+     one_state_Magistral* air_on_until_start_solo_in_complex= new one_state_Magistral(1, kol_users, 16);//закрыл все клапана поочередно
+    air_on_until_start_solo_in_complex->set_curr_state(state_Magistral::air_on);
+    air_on_until_start_solo_in_complex->set_time_in_this(T_COMPLEX_AIRON_TRIPL - T_COMPLEX_DELAY_FOR_START_SOLO_PRED_END_TRIPLET);
+    // air_on_until_start_solo_in_complex->set_time_in_this(500, 0);
+    // air_on_until_start_solo_in_complex->set_time_in_this(500, 1);
+    // air_on_until_start_solo_in_complex->set_time_in_this(500, 2);
+    air_on_until_start_solo_in_complex->set_time_in_this(0, 3);
+    one_state_Magistral* air_on_complex= new one_state_Magistral(1, kol_users, 17);
     air_on_complex->set_curr_state(state_Magistral::air_on);
-    air_on_complex->set_time_in_this(T_COMPLEX_AIRON_TRIPL);
+    air_on_complex->set_time_in_this(T_COMPLEX_DELAY_FOR_START_SOLO_PRED_END_TRIPLET);
     // air_on_complex->set_time_in_this(27000, 0);
     // air_on_complex->set_time_in_this(27000, 1);
     // air_on_complex->set_time_in_this(27000, 2);
@@ -242,7 +249,8 @@ Data_alg &result){
 
     in_magistral_complex->set_path(0,all_close_complex);
 
-    all_close_complex->set_path(0,air_on_complex);
+    all_close_complex->set_path(0,air_on_until_start_solo_in_complex);
+    air_on_until_start_solo_in_complex->set_path(0,air_on_complex);
     air_on_complex->set_path(0,mag_start_state);
 
     result.exit_main_cycle_complex = air_on_complex;
