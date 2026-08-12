@@ -54,8 +54,6 @@ public:
     void set_time_actuator(uint32_t time_open, uint32_t time_close);
 private:
     void logic();//Для объединения логики поведения(используется в update())
-    void go_to_next_state();
-    void logic_in_cyclical_states();
     void turn_to(state_Magistral next_state);
     void set_current_mode_alg(state_Alg_mag mod);
     void check_ball_for_dyvka();
@@ -215,7 +213,6 @@ void Magistral::turn_to(state_Magistral next_state){
                 mag_state = state_Magistral::undefine;
             break;
         case state_Magistral::start_state://актуатор закрыт клапан закрыт шаровой кран закрыт
-                data_alg.start_state->set_choose_path(id, 0);
                 actuator.close();
                 clapan.close();
                 ball_cran.close();
@@ -380,12 +377,6 @@ void Magistral::logic(){
 
 
 void Magistral::logic_in_cyclical_states(){
-
-
-
-}
-
-void Magistral::logic_in_cyclical_states(){
     if(get_current_mode_alg() == state_Alg_mag::retry_one_cycle_solo_and_wait && current_state->get_id() == 26){
         if(millis() - time_for_long_cycle_solo > t_waiting_for_long_cycle_solo){
             start(state_Alg_mag::retry_one_cycle_solo_and_wait);
@@ -396,7 +387,10 @@ void Magistral::logic_in_cyclical_states(){
 void Magistral::go_to_next_state(){
     one_state_Magistral * old_state = current_state;
     current_state = current_state->get_next_state(id);
-
+    time_to_start_new_state = millis();
+    if(old_state->get_id() == state_Magistral::start_state && current_state->get_id() != state_Magistral::start_state){
+        data_alg.start_state->set_choose_path(id, 0);
+    }
     if(get_current_mode_alg() == state_Alg_mag::retry_one_cycle_solo_and_wait && old_state->get_id() == 25){
         //это нужно для того чтобы при вызове нового retry_one_cycle_solo_and_wait проходили через цикличное состояние и потом снова в нем остановиись
         current_state->set_choose_path(id, 0);
@@ -404,14 +398,6 @@ void Magistral::go_to_next_state(){
     }
 }
 
-void Magistral::go_to_next_state(){
-    one_state_Magistral * old_state = current_state;
-    current_state = current_state->get_next_state(id);
-    time_to_start_new_state = millis();
-    if(old_state->get_id() == state_Magistral::start_state && current_state->get_id() != state_Magistral::start_state){
-        data_alg.start_state->set_choose_path(id, 0);
-    }
-}
 
 
 
