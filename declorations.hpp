@@ -31,7 +31,7 @@
     #define digitalWrite(a,b) d_print("digitalWrite(");\
                             d_print((int)a);\
                             d_print(", ");\
-                            d_print(((int)b==HIGH?"HIGH":"LOW"));\
+                            d_print((int)b);\
                             d_println(")")
 
     // #define OUTPUT "OUTPUT"

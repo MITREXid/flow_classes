@@ -8,7 +8,7 @@
 
 #if !mode_work
     #include <SoftwareSerial.h>
-    #include <ModbusMaster.h>
+    #include "ModbusMaster/ModbusMaster.h"
 #endif
 
 enum class state_MY110{
