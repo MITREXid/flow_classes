@@ -56,6 +56,8 @@ private:
     void check_ball_for_dyvka();
     bool is_going_comp();
     char* num_state_mag_to_char(state_Magistral state_input);
+    void logic_in_cyclical_states();
+    void go_to_next_state();
 };
 
 
@@ -299,7 +301,6 @@ bool Magistral::is_going_comp(){
     }
     return false;
 }
-
 void Magistral::logic(){
     
 
@@ -310,7 +311,7 @@ void Magistral::logic(){
 
     uint32_t curr_time = millis() - time_to_start_new_state;
     if(current_state->get_time_in_this(id) < curr_time){ 
-        if(current_state->get_curr_state() != current_state->get_next_state(id)->get_curr_state()){
+        if(current_state->get_id() != current_state->get_next_state(id)->get_id()){
             cycle_ready_sig.setState(false);//Сигнал
             d_print(F("(t : "));
             d_print(millis());
@@ -328,11 +329,15 @@ void Magistral::logic(){
             d_print(F(")"));
             d_print(F("\n"));
             d_println(F("turn is:"));
-            current_state = current_state->get_next_state(id);
-            turn_to(current_state->get_curr_state());
-            if(current_state->get_curr_state() == current_state->get_next_state(id)->get_curr_state()){
+            if(current_state->get_curr_state()!=current_state->get_next_state(id)->get_curr_state() && current_state->get_next_state(id)->get_time_in_this(id) != 0){
+                turn_to(current_state->get_next_state(id)->get_curr_state());
+            }
+            go_to_next_state();
+            if(current_state->get_id() == current_state->get_next_state(id)->get_id()){
                 cycle_ready_sig.setState(true);//Сигнал
             }
+        }else{
+                logic_in_cyclical_states();
         }
         // else{
         //     if(cycle_ready_sig.isChecked() == false || cycle_ready_sig.getStateWithoutSetChecked() == false ){//типа чтоб не обновляли при цикличности, когда посмотрели, cheked обнулится при условии выше в любом норм случае
@@ -340,8 +345,20 @@ void Magistral::logic(){
         //     }
         // }
     }
+}
+
+
+void Magistral::logic_in_cyclical_states(){
 
 }
+
+void Magistral::go_to_next_state(){
+    one_state_Magistral * old_state = current_state;
+    current_state = current_state->get_next_state(id);
+
+}
+
+
 
 char* Magistral::num_state_mag_to_char(state_Magistral state_input){
     switch(state_input){
