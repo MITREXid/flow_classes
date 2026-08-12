@@ -29,7 +29,7 @@
 //время конфиги
 
 
-constexpr const uint32_t TIME_ACTUATOR_FULL_OPEN_CLOSE[kol_all_mag] = {3000, 3000, 3000, 3000};//соло с индексом 3
+constexpr const uint32_t TIME_ACTUATOR_FULL_OPEN_CLOSE[kol_all_mag] = {600, 3000, 600, 600};//соло с индексом 3
 
 constexpr const uint32_t T_COMPLEX_PRED_SKIP = 800;
 constexpr const uint32_t T_COMPLEX_PRED_SKIP_1_MAG = T_COMPLEX_PRED_SKIP;
@@ -80,6 +80,8 @@ constexpr const uint32_t T_SOLO_POST_SKIP = 3200;
 constexpr const uint32_t T_SOLO_AIRON = 39000;
 constexpr const uint32_t T_SOLO_WAIT_AIROFF = 10000;
 
+
+constexpr const uint32_t T_SOLO_WAITING_FOR_LONG_CYCLE_SOLO = ((uint32_t)20 * 60 * 1000);
 
 constexpr const uint32_t T_AIR_AIRON = 10000;
 

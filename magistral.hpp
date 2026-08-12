@@ -8,9 +8,6 @@
 
 
 
-constexpr const uint32_t t_waiting_for_long_cycle_solo = 20u * 60u * 1000u;
-
-
 
 class Magistral{//}: public Universal_object<state_Magistral>{
 private:
@@ -299,9 +296,6 @@ void Magistral::start(state_Alg_mag mod){
     cycle_ready_sig.setState(false);//Сигнал
     d_println(F("========start"));
     set_current_mode_alg(mod);
-    if(mod == state_Alg_mag::retry_one_cycle_solo_and_wait){
-        time_for_long_cycle_solo = millis();
-    }
 }
 
 void Magistral::stop(){
@@ -378,8 +372,9 @@ void Magistral::logic(){
 
 void Magistral::logic_in_cyclical_states(){
     if(get_current_mode_alg() == state_Alg_mag::retry_one_cycle_solo_and_wait && current_state->get_id() == 26){
-        if(millis() - time_for_long_cycle_solo > t_waiting_for_long_cycle_solo){
+        if( time_for_long_cycle_solo != 0 && millis() - time_for_long_cycle_solo > T_SOLO_WAITING_FOR_LONG_CYCLE_SOLO){
             start(state_Alg_mag::retry_one_cycle_solo_and_wait);
+            time_for_long_cycle_solo = 0;
         }
     }
 }
@@ -391,7 +386,7 @@ void Magistral::go_to_next_state(){
     if(old_state->get_id() == state_Magistral::start_state && current_state->get_id() != state_Magistral::start_state){
         data_alg.start_state->set_choose_path(id, 0);
     }
-    if(get_current_mode_alg() == state_Alg_mag::retry_one_cycle_solo_and_wait && old_state->get_id() == 25){
+    if(get_current_mode_alg() == state_Alg_mag::retry_one_cycle_solo_and_wait && old_state->get_id() == 25 && time_for_long_cycle_solo == 0){
         //это нужно для того чтобы при вызове нового retry_one_cycle_solo_and_wait проходили через цикличное состояние и потом снова в нем остановиись
         current_state->set_choose_path(id, 0);
         time_for_long_cycle_solo = millis();
