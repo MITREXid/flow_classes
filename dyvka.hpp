@@ -21,9 +21,9 @@ class Dyvka : public Universal_object<state_Dyvka>{
     private:
         int8_t control_pin = 42;
         Signal<> (&sig_ball_not_close)[kol_all_mag];
-        uint16_t goal_freq_chastot = 3500;//целевая частота для чатотника(умноженная 100) 
+        uint16_t goal_freq_chastot = 0;//целевая частота для чатотника(умноженная 100) 
         // uint16_t curr_freq_chastot = 0;//текущая частота для чатотника(умноженная 100) 
-        enum class State_air{on, off} state_air;
+        enum class State_air{on, off} state_air = State_air::on;//для того чтобы air_off стработало
     public:
         
         Dyvka(SoftwareSerial &rs485_, Signal<> (&sig)[kol_all_mag]):
@@ -34,6 +34,7 @@ class Dyvka : public Universal_object<state_Dyvka>{
 
         void init(){
             pinMode(control_pin, OUTPUT);
+        //    digitalWrite(control_pin, 0);
             air_off();
         }
         void update(){
@@ -50,12 +51,14 @@ class Dyvka : public Universal_object<state_Dyvka>{
             air_off();
             setStatus(state_Dyvka::no_air);
         }
-        void set_goal_frec(uint16_t frec){
+        void set_goal_frec(uint16_t frec, bool set_now = false){//нужно для случаев когда air_on или off не запускаются но надо поменять мощность(комплекс переход от триплета к соло)
             if(frec>10000){
                 frec = 10000;
             }
             goal_freq_chastot = frec;
-           digitalWrite(control_pin, convert_to_255_range(goal_freq_chastot));
+            if(set_now){
+                digitalWrite(control_pin, convert_to_255_range(goal_freq_chastot));
+            }
             d_print(F("DYVKA change val ("));
             d_print(convert_to_255_range(goal_freq_chastot));
             d_println(F(")"));
@@ -65,9 +68,8 @@ class Dyvka : public Universal_object<state_Dyvka>{
             return (uint16_t)f_frec;
         }
 
-    private:
 
-        void air_on(){
+         void air_on(){
             if(state_air == State_air::on){return;}
             d_print(F("DYVKA on ("));
             d_print(convert_to_255_range(goal_freq_chastot));
@@ -82,6 +84,10 @@ class Dyvka : public Universal_object<state_Dyvka>{
             state_air = State_air::off;
            digitalWrite(control_pin, 0);
         }
+
+    private:
+
+       
 
         void logic(){
             switch(getStatus()){

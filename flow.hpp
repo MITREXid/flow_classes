@@ -185,7 +185,7 @@ private:
             case state_Flow::do_complex:
                 if(get_mag(0)->inThisStateId(16, false) && get_mag(1)->inThisStateId(16, false) 
                 && get_mag(2)->inThisStateId(16, false) && get_mag(3)->isStartedState(true)){
-                    dyvka.set_goal_frec(4000);
+                    dyvka.set_goal_frec(FREQ_COMPLEX_PART_SOLO, true);
                     get_mag(3)->start(state_Alg_mag::one_cycle_complex);
                 }
 
