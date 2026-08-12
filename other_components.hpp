@@ -108,7 +108,7 @@ public:
        }
 
     void funcSigStartOpen(){
-        d_print(F(" func SigStartOpen Clapan("));  
+        d_print(F(" func SigStart Open Clapan("));  
         d_print((int)get_id());
         d_println(F(") "));
     }
@@ -180,7 +180,7 @@ public:
        }
 
     void funcSigStartOpen(){
-        d_print(F(" func SigStartOpen Ball_cran("));  
+        d_print(F(" func SigStart Open Ball_cran("));  
         d_print((int)get_id());
         d_println(F(") "));
     }
