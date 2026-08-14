@@ -368,7 +368,7 @@ void Magistral::go_to_next_state(){
     one_state_Magistral * old_state = current_state;
     current_state = current_state->get_next_state(id);
     time_to_start_new_state = millis();
-    if(old_state->get_id() == state_Magistral::start_state && current_state->get_id() != state_Magistral::start_state){
+    if(old_state->get_id() == 1 && current_state->get_id() != 1){//для того читобы при возврате в start_state, зацикоиться и остаться в нем
         data_alg.start_state->set_choose_path(id, 0);
     }
 }
