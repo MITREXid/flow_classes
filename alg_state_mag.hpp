@@ -390,37 +390,48 @@ Data_alg &result){
 
 
     /*==========прочистка начало==========*/
-    one_state_Magistral* preparing_in_magistral_clearing = new one_state_Magistral(1, kol_users, 51);
-    preparing_in_magistral_clearing->set_curr_state(state_Magistral::in_magistral);
-    preparing_in_magistral_clearing->set_time_in_this(T_CLEARING_PRED);
-    //preparing_in_magistral_clearing->set_time_in_this(500, 0);
-    //preparing_in_magistral_clearing->set_time_in_this(500, 1);
-    //preparing_in_magistral_clearing->set_time_in_this(500, 2);
-    //preparing_in_magistral_clearing->set_time_in_this(500, 3);
-    one_state_Magistral* skip_gate_clearing = new one_state_Magistral(2, kol_users, 52);
-    skip_gate_clearing->set_curr_state(state_Magistral::skip_gate);
-    skip_gate_clearing->set_time_in_this(T_CLEARING_SKIP);
-    // skip_gate_clearing->set_time_in_this(1500, 0);
-    // skip_gate_clearing->set_time_in_this(1500, 1);
-    // skip_gate_clearing->set_time_in_this(1500, 2);
-    // skip_gate_clearing->set_time_in_this(1500, 3);
-    one_state_Magistral* in_magistral_clearing = new one_state_Magistral(1, kol_users, 53);
-    in_magistral_clearing->set_curr_state(state_Magistral::in_magistral);
-    in_magistral_clearing->set_time_in_this(T_CLEARING_POST);
-    // in_magistral_clearing->set_time_in_this(2000, 0);
-    // in_magistral_clearing->set_time_in_this(2000, 1);
-    // in_magistral_clearing->set_time_in_this(2000, 2);
-    // in_magistral_clearing->set_time_in_this(2000, 3);
+    one_state_Magistral* open_clap_clearing = new one_state_Magistral(1, kol_users, 51);
+    open_clap_clearing->set_curr_state(state_Magistral::in_magistral);
+    open_clap_clearing->set_time_in_this(T_CLEARING_GAP_CLAP + T_CLEARING_TOGGLE_CLAP);
+
+    one_state_Magistral* open_act_clearing = new one_state_Magistral(1, kol_users, 52);
+    open_act_clearing->set_curr_state(state_Magistral::skip_gate);
+    open_act_clearing->set_time_in_this(TIME_ACTUATOR_FULL_OPEN_CLOSE[0] + T_CLEARING_GAP_ACT, 0);
+    open_act_clearing->set_time_in_this(TIME_ACTUATOR_FULL_OPEN_CLOSE[1] + T_CLEARING_GAP_ACT, 1);
+    open_act_clearing->set_time_in_this(TIME_ACTUATOR_FULL_OPEN_CLOSE[2] + T_CLEARING_GAP_ACT, 2);
+    open_act_clearing->set_time_in_this(TIME_ACTUATOR_FULL_OPEN_CLOSE[3] + T_CLEARING_GAP_ACT, 3);
+    
+
+    one_state_Magistral* skip_gate_waiting_clearing = new one_state_Magistral(2, kol_users, 53);
+    skip_gate_waiting_clearing->set_curr_state(state_Magistral::skip_gate);
+    skip_gate_waiting_clearing->set_time_in_this(10);
 
 
-    mag_start_state->set_path(3,preparing_in_magistral_clearing);//прочистка 3bй путь
-    preparing_in_magistral_clearing->set_path(0,skip_gate_clearing);
-    skip_gate_clearing->set_path(0,skip_gate_clearing);
-    skip_gate_clearing->set_path(1,in_magistral_clearing);
-    in_magistral_clearing->set_path(0,mag_start_state);
+    one_state_Magistral* close_act_clearing = new one_state_Magistral(1, kol_users, 54);
+    close_act_clearing->set_curr_state(state_Magistral::in_magistral);
+    close_act_clearing->set_time_in_this(TIME_ACTUATOR_FULL_OPEN_CLOSE[0] + T_CLEARING_GAP_ACT, 0);
+    close_act_clearing->set_time_in_this(TIME_ACTUATOR_FULL_OPEN_CLOSE[1] + T_CLEARING_GAP_ACT, 1);
+    close_act_clearing->set_time_in_this(TIME_ACTUATOR_FULL_OPEN_CLOSE[2] + T_CLEARING_GAP_ACT, 2);
+    close_act_clearing->set_time_in_this(TIME_ACTUATOR_FULL_OPEN_CLOSE[3] + T_CLEARING_GAP_ACT, 3);
+    
+      one_state_Magistral* close_clap_clearing = new one_state_Magistral(1, kol_users, 55);
+    close_clap_clearing->set_curr_state(state_Magistral::all_close);
+    close_clap_clearing->set_time_in_this(T_CLEARING_GAP_CLAP + T_CLEARING_TOGGLE_CLAP);
 
-    result.wait_clearing = skip_gate_clearing;//нажали на стоп и переключили
-    /*==========прочистка конец==========*/
+
+
+    mag_start_state->set_path(3,open_clap_clearing);//прочистка 3bй путь
+    open_clap_clearing->set_path(0,open_act_clearing);
+    open_act_clearing->set_path(0,skip_gate_waiting_clearing);
+
+    skip_gate_waiting_clearing->set_path(0,skip_gate_waiting_clearing);
+    skip_gate_waiting_clearing->set_path(1,close_act_clearing);
+
+    close_act_clearing->set_path(0,close_clap_clearing);
+    close_clap_clearing->set_path(0,mag_start_state);
+
+    result.wait_clearing = skip_gate_waiting_clearing;//нажали на стоп и переключили
+   /*==========прочистка конец==========*/
 
 
 
