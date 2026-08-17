@@ -33,6 +33,11 @@
                             d_print(", ");\
                             d_print((int)b);\
                             d_println(")")
+    #define analogWrite(a,b) d_print("analogWrite(");\
+                            d_print((int)a);\
+                            d_print(", ");\
+                            d_print((int)b);\
+                            d_println(")")
 
     // #define OUTPUT "OUTPUT"
     // #define INPUT "INPUT"

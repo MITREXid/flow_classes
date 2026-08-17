@@ -89,12 +89,12 @@ constexpr const uint32_t T_CLEARING_POST = 500 + TIME_ACTUATOR_FULL_OPEN_CLOSE[0
 
 
 
-constexpr const uint32_t FREQ_SOLO = 4000;
-constexpr const uint32_t FREQ_COMPLEX = 6000;
-constexpr const uint32_t FREQ_COMPLEX_PART_SOLO = 4000;
-constexpr const uint32_t FREQ_AIR = 5000;
-constexpr const uint32_t FREQ_CLEARING = 5000;
-constexpr const uint32_t FREQ_TRIPLET = 6000;
+constexpr const uint32_t DYVKA_POWER_SOLO = 50;
+constexpr const uint32_t DYVKA_POWER_COMPLEX = 70;
+constexpr const uint32_t DYVKA_POWER_COMPLEX_PART_SOLO = 50;
+constexpr const uint32_t DYVKA_POWER_AIR = 70;
+constexpr const uint32_t DYVKA_POWER_CLEARING = 70;
+constexpr const uint32_t DYVKA_POWER_TRIPLET = 70;
 
 
 
@@ -210,5 +210,9 @@ constexpr const int8_t* pins_MY110_all_mags_clear[] = {
     pins_MY110_clear_act_clap, 
     pins_MY110_clear_ball
 };
+
+
+//для регулятора дувки (Костанай)
+#define DYVKA_CONTROL_PIN 44
 
 #endif // CONFIG_HPPs

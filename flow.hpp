@@ -184,11 +184,11 @@ private:
                 break;
             case state_Flow::do_complex:
                 if(get_mag(2)->inThisStateId(17, true) && get_mag(3)->isStartedState(true)){
-                    // dyvka.set_goal_frec(FREQ_COMPLEX_PART_SOLO, true);
+                    // dyvka.set_goal_frec(DYVKA_POWER_COMPLEX_PART_SOLO, true);
                     get_mag(3)->start(state_Alg_mag::one_cycle_complex);
                 }
-                if(get_mag(3)->inThisStateId(17, true) && dyvka.get_curr_goal_frec() != FREQ_COMPLEX_PART_SOLO){
-                    dyvka.set_goal_frec(FREQ_COMPLEX_PART_SOLO, true);
+                if(get_mag(3)->inThisStateId(17, true) && dyvka.get_curr_goal_frec() != DYVKA_POWER_COMPLEX_PART_SOLO){
+                    dyvka.set_goal_frec(DYVKA_POWER_COMPLEX_PART_SOLO, true);
                 }
                 break;
             case state_Flow::do_produvka:
@@ -237,32 +237,32 @@ private:
                 break;
             case state_Flow::do_solo:
                 num_curr_mag = mag;
-                dyvka.set_goal_frec(FREQ_SOLO);
+                dyvka.set_goal_frec(DYVKA_POWER_SOLO);
                 get_mag()->start(state_Alg_mag::one_cycle_solo);
                 break;
             case state_Flow::do_complex:
                     flag_already_started_solo_in_complex = false;
                 num_curr_mag = 0;
-                dyvka.set_goal_frec(FREQ_COMPLEX);
+                dyvka.set_goal_frec(DYVKA_POWER_COMPLEX);
                 for(uint8_t i = 0; i<kol_mag_group;++i){
                     get_mag(i)->start(state_Alg_mag::one_cycle_complex);
                 }
                 break;
             case state_Flow::do_produvka:
                 num_curr_mag = 3;
-                dyvka.set_goal_frec(FREQ_AIR);
+                dyvka.set_goal_frec(DYVKA_POWER_AIR);
                 get_mag()->start(state_Alg_mag::produvka);
                 break;
             case state_Flow::do_clearing:
                 num_curr_mag = 0;
-                dyvka.set_goal_frec(FREQ_CLEARING);
+                dyvka.set_goal_frec(DYVKA_POWER_CLEARING);
                 for(uint8_t i = 0; i<kol_all_mag;++i){
                     get_mag(i)->start(state_Alg_mag::clearing);
                 }
                 break;
             case state_Flow::do_triplet:
                 num_curr_mag = 0;
-                dyvka.set_goal_frec(FREQ_TRIPLET);
+                dyvka.set_goal_frec(DYVKA_POWER_TRIPLET);
                 for(uint8_t i = 0; i<kol_mag_group;++i){
                     get_mag(i)->start(state_Alg_mag::one_cycle_triplet);
                 }

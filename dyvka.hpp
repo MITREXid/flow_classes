@@ -19,7 +19,7 @@ enum class state_Dyvka{
 
 class Dyvka : public Universal_object<state_Dyvka>{
     private:
-        int8_t control_pin = 42;
+        int8_t control_pin = DYVKA_CONTROL_PIN;
         Signal<> (&sig_ball_not_close)[kol_all_mag];
         uint16_t goal_freq_chastot = 0;//целевая частота для чатотника(умноженная 100) 
         // uint16_t curr_freq_chastot = 0;//текущая частота для чатотника(умноженная 100) 
@@ -34,7 +34,7 @@ class Dyvka : public Universal_object<state_Dyvka>{
 
         void init(){
             pinMode(control_pin, OUTPUT);
-        //    digitalWrite(control_pin, 0);
+        //    analogWrite(control_pin, 0);
             air_off();
         }
         void update(){
@@ -57,7 +57,7 @@ class Dyvka : public Universal_object<state_Dyvka>{
             }
             goal_freq_chastot = frec;
             if(set_now){
-                digitalWrite(control_pin, convert_to_255_range(goal_freq_chastot));
+                analogWrite(control_pin, convert_to_255_range(goal_freq_chastot));
             }
             d_print(F("DYVKA change val ("));
             d_print(convert_to_255_range(goal_freq_chastot));
@@ -65,7 +65,7 @@ class Dyvka : public Universal_object<state_Dyvka>{
         }
 
         uint16_t convert_to_255_range(uint16_t frec){
-            float f_frec = (float)frec/6000.0 * 255;
+            float f_frec = (float)frec/100.0 * 255;
             return (uint16_t)f_frec;
         }
         uint16_t get_curr_goal_frec(){
@@ -78,14 +78,14 @@ class Dyvka : public Universal_object<state_Dyvka>{
             d_print(convert_to_255_range(goal_freq_chastot));
             d_println(F(")"));
             state_air = State_air::on;
-           digitalWrite(control_pin, convert_to_255_range(goal_freq_chastot));
+           analogWrite(control_pin, convert_to_255_range(goal_freq_chastot));
             //нужна реализация
         }
         void air_off(){
             if(state_air == State_air::off){return;}
             d_println(F("DYVKA: off (0)"));
             state_air = State_air::off;
-           digitalWrite(control_pin, 0);
+           analogWrite(control_pin, 0);
         }
 
     private:
