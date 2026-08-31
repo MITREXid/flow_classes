@@ -37,7 +37,7 @@ constexpr const uint32_t T_COMPLEX_PRED_SKIP_2_MAG = T_COMPLEX_PRED_SKIP;
 constexpr const uint32_t T_COMPLEX_PRED_SKIP_3_MAG = T_COMPLEX_PRED_SKIP;
 constexpr const uint32_t T_COMPLEX_PRED_SKIP_4_MAG = T_COMPLEX_PRED_SKIP;
 
-constexpr const uint32_t T_COMPLEX_SKIP = 3500;
+constexpr const uint32_t T_COMPLEX_SKIP = 3200;
 constexpr const uint32_t T_COMPLEX_SKIP_1_MAG = T_COMPLEX_SKIP;
 constexpr const uint32_t T_COMPLEX_SKIP_2_MAG = T_COMPLEX_SKIP;
 constexpr const uint32_t T_COMPLEX_SKIP_3_MAG = T_COMPLEX_SKIP;
@@ -62,8 +62,8 @@ constexpr const uint32_t T_COMPLEX_DELAY_FOR_START_SOLO_PRED_END_TRIPLET = T_COM
 constexpr const uint32_t T_COMPLEX_PRED_LOAD = 100;
 constexpr const uint32_t T_COMPLEX_POST_LOAD = 500;
 constexpr const uint32_t T_COMPLEX_ALL_CLOSE_PRED_AIR = 600*3;
-constexpr const uint32_t T_COMPLEX_AIRON_TRIPL = 25000;
-constexpr const uint32_t T_COMPLEX_AIRON_SOLO = 39000;
+constexpr const uint32_t T_COMPLEX_AIRON_TRIPL = 40000;
+constexpr const uint32_t T_COMPLEX_AIRON_SOLO = 60000;
 
 // constexpr const uint32_t T_TRIPLET_PRED_SKIP = T_COMPLEX_PRED_SKIP;
 // constexpr const uint32_t T_TRIPLET_SKIP = T_COMPLEX_SKIP;
@@ -75,9 +75,9 @@ constexpr const uint32_t T_COMPLEX_AIRON_SOLO = 39000;
 // constexpr const uint32_t T_TRIPLET_AIRON_SOLO = T_COMPLEX_AIRON_SOLO;
 
 constexpr const uint32_t T_SOLO_PRED_SKIP = 650;
-constexpr const uint32_t T_SOLO_SKIP = 3000;
+constexpr const uint32_t T_SOLO_SKIP = 3500;
 constexpr const uint32_t T_SOLO_POST_SKIP = 3200;
-constexpr const uint32_t T_SOLO_AIRON = 39000;
+constexpr const uint32_t T_SOLO_AIRON = 60000;
 constexpr const uint32_t T_SOLO_WAIT_AIROFF = 10000;
 
 
@@ -89,12 +89,12 @@ constexpr const uint32_t T_CLEARING_GAP_ACT = 500;
 
 
 
-constexpr const uint32_t FREQ_SOLO = 4000;
-constexpr const uint32_t FREQ_COMPLEX = 6000;
-constexpr const uint32_t FREQ_COMPLEX_PART_SOLO = 4000;
+constexpr const uint32_t FREQ_SOLO = 3250;
+constexpr const uint32_t FREQ_COMPLEX = 5000;
+constexpr const uint32_t FREQ_COMPLEX_PART_SOLO = FREQ_SOLO;
 constexpr const uint32_t FREQ_AIR = 5000;
 constexpr const uint32_t FREQ_CLEARING = 5000;
-constexpr const uint32_t FREQ_TRIPLET = 6000;
+constexpr const uint32_t FREQ_TRIPLET = FREQ_COMPLEX;
 
 
 
