@@ -202,6 +202,12 @@ private:
                 }
                 break;
             case state_Flow::do_clearing:
+                if(get_mag(num_curr_mag)->inThisStateId(53, true)){
+                    if(num_curr_mag != 0){//чтоб только по 1 разу кадждую
+                        num_curr_mag = get_num_curr_mag_prev();
+                        get_mag()->start(state_Alg_mag::clearing);
+                    }
+                }
                 break;
             case state_Flow::do_triplet:
                 break;
@@ -254,11 +260,9 @@ private:
                 get_mag()->start(state_Alg_mag::produvka);
                 break;
             case state_Flow::do_clearing:
-                num_curr_mag = 0;
+                num_curr_mag = 3;
                 dyvka.set_goal_frec(DYVKA_POWER_CLEARING);
-                for(uint8_t i = 0; i<kol_all_mag;++i){
-                    get_mag(i)->start(state_Alg_mag::clearing);
-                }
+                get_mag(num_curr_mag)->start(state_Alg_mag::clearing);
                 break;
             case state_Flow::do_triplet:
                 num_curr_mag = 0;
