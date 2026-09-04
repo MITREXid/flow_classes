@@ -220,11 +220,12 @@ Data_alg &result){
 
     one_state_Magistral* all_close_complex= new one_state_Magistral(1, kol_users, 15);//закрыл все клапана поочередно
     all_close_complex->set_curr_state(state_Magistral::all_close);
-    all_close_complex->set_time_in_this(T_COMPLEX_ALL_CLOSE_PRED_AIR);
-    // all_close_complex->set_time_in_this(500, 0);
-    // all_close_complex->set_time_in_this(500, 1);
-    // all_close_complex->set_time_in_this(500, 2);
+
+    all_close_complex->set_time_in_this(T_COMPLEX_WAITING_PRED_AIR_1_MAG, 0);
+    all_close_complex->set_time_in_this(T_COMPLEX_WAITING_PRED_AIR_2_MAG, 1);
+    all_close_complex->set_time_in_this(T_COMPLEX_WAITING_PRED_AIR_3_MAG, 2);
     all_close_complex->set_time_in_this(0, 3);
+
      one_state_Magistral* air_on_until_start_solo_in_complex= new one_state_Magistral(1, kol_users, 16);//закрыл все клапана поочередно
     air_on_until_start_solo_in_complex->set_curr_state(state_Magistral::air_on);
     air_on_until_start_solo_in_complex->set_time_in_this(T_COMPLEX_AIRON_TRIPL - T_COMPLEX_DELAY_FOR_START_SOLO_PRED_END_TRIPLET);
@@ -232,6 +233,7 @@ Data_alg &result){
     // air_on_until_start_solo_in_complex->set_time_in_this(500, 1);
     // air_on_until_start_solo_in_complex->set_time_in_this(500, 2);
     air_on_until_start_solo_in_complex->set_time_in_this(0, 3);
+
     one_state_Magistral* air_on_complex= new one_state_Magistral(1, kol_users, 17);
     air_on_complex->set_curr_state(state_Magistral::air_on);
     air_on_complex->set_time_in_this(T_COMPLEX_DELAY_FOR_START_SOLO_PRED_END_TRIPLET);
@@ -344,10 +346,10 @@ Data_alg &result){
 
     one_state_Magistral* all_close_triplet= new one_state_Magistral(2, kol_users, 15);//закрыл все клапана поочередно
     all_close_triplet->set_curr_state(state_Magistral::all_close);
-    all_close_triplet->set_time_in_this(T_COMPLEX_ALL_CLOSE_PRED_AIR);
-    // all_close_complex->set_time_in_this(500, 0);
-    // all_close_complex->set_time_in_this(500, 1);
-    // all_close_complex->set_time_in_this(500, 2);
+    
+    all_close_triplet->set_time_in_this(T_COMPLEX_WAITING_PRED_AIR_1_MAG, 0);
+    all_close_triplet->set_time_in_this(T_COMPLEX_WAITING_PRED_AIR_2_MAG, 1);
+    all_close_triplet->set_time_in_this(T_COMPLEX_WAITING_PRED_AIR_3_MAG, 2);
     all_close_triplet->set_time_in_this(0, 3);
     one_state_Magistral* air_on_triplet= new one_state_Magistral(2, kol_users, 16);
     air_on_triplet->set_curr_state(state_Magistral::air_on);

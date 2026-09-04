@@ -57,13 +57,21 @@ constexpr const Time_in_this T_COMPLEX_PAUSE_ONE_CYCLE_LOAD_3_MAG = T_COMPLEX_PR
 constexpr const Time_in_this T_COMPLEX_PAUSE_ONE_CYCLE_LOAD_4_MAG = T_COMPLEX_PRED_SKIP_4_MAG + T_COMPLEX_SKIP_4_MAG + T_COMPLEX_POST_SKIP_4_MAG ;
 
 
+
+
 constexpr const uint32_t T_COMPLEX_DELAY_FOR_START_SOLO_PRED_END_TRIPLET = T_COMPLEX_PAUSE_ONE_CYCLE_LOAD_4_MAG;
 
 constexpr const uint32_t T_COMPLEX_PRED_LOAD = 100;
 constexpr const uint32_t T_COMPLEX_POST_LOAD = 500;
-constexpr const uint32_t T_COMPLEX_ALL_CLOSE_PRED_AIR = 600*3;
+constexpr const uint32_t T_COMPLEX_CLOSE_CLAP_PRED_AIR = 600;
+
 constexpr const uint32_t T_COMPLEX_AIRON_TRIPL = 25000;
 constexpr const uint32_t T_COMPLEX_AIRON_SOLO = 39000;
+
+constexpr const uint32_t T_COMPLEX_WAITING_PRED_AIR_1_MAG = 0;
+constexpr const uint32_t T_COMPLEX_WAITING_PRED_AIR_2_MAG = T_COMPLEX_AIRON_TRIPL;
+constexpr const uint32_t T_COMPLEX_WAITING_PRED_AIR_3_MAG = T_COMPLEX_AIRON_TRIPL + T_COMPLEX_AIRON_TRIPL;
+
 
 // constexpr const uint32_t T_TRIPLET_PRED_SKIP = T_COMPLEX_PRED_SKIP;
 // constexpr const uint32_t T_TRIPLET_SKIP = T_COMPLEX_SKIP;
@@ -90,11 +98,11 @@ constexpr const uint32_t T_CLEARING_GAP_ACT = 500;
 
 
 constexpr const uint32_t DYVKA_POWER_SOLO = 50;
-constexpr const uint32_t DYVKA_POWER_COMPLEX = 70;
-constexpr const uint32_t DYVKA_POWER_COMPLEX_PART_SOLO = 50;
-constexpr const uint32_t DYVKA_POWER_AIR = 70;
-constexpr const uint32_t DYVKA_POWER_CLEARING = 70;
-constexpr const uint32_t DYVKA_POWER_TRIPLET = 70;
+constexpr const uint32_t DYVKA_POWER_COMPLEX = 50;
+constexpr const uint32_t DYVKA_POWER_COMPLEX_PART_SOLO = DYVKA_POWER_SOLO;
+constexpr const uint32_t DYVKA_POWER_AIR = 50;
+constexpr const uint32_t DYVKA_POWER_CLEARING = DYVKA_POWER_COMPLEX;
+constexpr const uint32_t DYVKA_POWER_TRIPLET = DYVKA_POWER_COMPLEX;
 
 
 
