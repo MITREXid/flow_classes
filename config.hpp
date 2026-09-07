@@ -83,7 +83,7 @@ constexpr const uint32_t T_COMPLEX_WAITING_PRED_AIR_3_MAG = T_COMPLEX_AIRON_TRIP
 // constexpr const uint32_t T_TRIPLET_AIRON_SOLO = T_COMPLEX_AIRON_SOLO;
 
 constexpr const uint32_t T_SOLO_PRED_SKIP = 650;
-constexpr const uint32_t T_SOLO_SKIP = 3000;
+constexpr const uint32_t T_SOLO_SKIP = 3500;
 constexpr const uint32_t T_SOLO_POST_SKIP = 3200;
 constexpr const uint32_t T_SOLO_AIRON = 39000;
 constexpr const uint32_t T_SOLO_WAIT_AIROFF = 10000;
@@ -100,7 +100,7 @@ constexpr const uint32_t T_CLEARING_GAP_ACT = 500;
 constexpr const uint32_t DYVKA_POWER_SOLO = 50;
 constexpr const uint32_t DYVKA_POWER_COMPLEX = 50;
 constexpr const uint32_t DYVKA_POWER_COMPLEX_PART_SOLO = DYVKA_POWER_SOLO;
-constexpr const uint32_t DYVKA_POWER_AIR = 50;
+constexpr const uint32_t DYVKA_POWER_AIR = 70;
 constexpr const uint32_t DYVKA_POWER_CLEARING = DYVKA_POWER_COMPLEX;
 constexpr const uint32_t DYVKA_POWER_TRIPLET = DYVKA_POWER_COMPLEX;
 
