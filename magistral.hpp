@@ -5,6 +5,7 @@
 #include "math.h"
 #include "alg_state_mag.hpp"
 #include "types_for_magistral.hpp"
+#include "logger.hpp"
 
 
 
@@ -49,6 +50,19 @@ public:
     bool isStartedState(bool check_coponents_no_goin = false);
     bool inThisStateId(uint8_t id_, bool check_coponents_no_goin = false);
     void set_time_actuator(uint32_t time_open, uint32_t time_close);
+    //ход актуатора: полный (до концевика) и открытие при дозировании (порция меньше хода - приоткрыть)
+    void set_act_times(uint32_t full_ms, uint32_t dose_cx, uint32_t dose_tr, uint32_t dose_so){
+        act_full_ms = full_ms; act_dose_cx = dose_cx; act_dose_tr = dose_tr; act_dose_so = dose_so;
+    }
+    uint32_t act_full_ms = 1000;
+    uint32_t act_dose_cx = 1000, act_dose_tr = 1000, act_dose_so = 1000;
+    uint32_t act_open_for(one_state_Magistral *st){
+        if(st == data_alg.skip_gate_complex){ return act_dose_cx; }
+        if(st == data_alg.skip_gate_triplet){ return act_dose_tr; }
+        if(st == data_alg.skip_gate_solo){ return act_dose_so; }
+        return act_full_ms;//прочистка - полностью
+    }
+    uint32_t get_remaining_ms();//для обратного отсчёта на экране; 0 - состояние без конца
 private:
     void logic();//Для объединения логики поведения(используется в update())
     void turn_to(state_Magistral next_state);
@@ -268,6 +282,26 @@ void Magistral::init(bool act, bool clap, bool ball)
 
 }
 
+uint32_t Magistral::get_remaining_ms(){
+    if(current_state->get_id() == current_state->get_next_state(id)->get_id()){
+        return 0;//зациклено (ожидание) - отсчёта нет
+    }
+    uint32_t t = current_state->get_time_in_this(id);
+    uint32_t e = millis() - time_to_start_new_state;
+    uint32_t rest = e >= t ? 0 : t - e;
+    //воздух в комплексе - два шага подряд ("до старта соло" + хвост): показываем общий остаток
+    if(current_state->get_curr_state() == state_Magistral::air_on){
+        one_state_Magistral * nx = current_state->get_next_state(id);
+        for(uint8_t i = 0; i < 3 && nx != current_state && nx->get_curr_state() == state_Magistral::air_on
+                                 && nx->get_next_state(id) != nx; ++i){
+            if(nx == data_alg.air_solo || nx == data_alg.air_triplet){ break; }//новый цикл - не складываем
+            rest += nx->get_time_in_this(id);
+            nx = nx->get_next_state(id);
+        }
+    }
+    return rest;
+}
+
 void Magistral::set_time_actuator(uint32_t time_open, uint32_t time_close){
     actuator.setTimeClosing(time_close);
     actuator.setTimeOpening(time_open);
@@ -336,6 +370,10 @@ void Magistral::logic(){
             d_print(F("\n"));
             if(current_state->get_next_state(id)->get_time_in_this(id) != 0){
                 if(getState()!=current_state->get_next_state(id)->get_curr_state()) {
+                if(current_state->get_next_state(id)->get_curr_state() == state_Magistral::skip_gate){
+                    //шлюз загрузки - открыть на порцию своей программы; шлюз прочистки - полностью
+                    actuator.setTimeOpening(act_open_for(current_state->get_next_state(id)));
+                }
                 turn_to(current_state->get_next_state(id)->get_curr_state());
                 d_println(F("turn is:"));
                 }else{
@@ -345,6 +383,9 @@ void Magistral::logic(){
                 d_println(F("turn is: NO, time in this state = 0"));
             }
             go_to_next_state();
+            #if LOG_MAG_STATES
+            log_event(LOG_MAG, id, current_state->get_id());
+            #endif
             if(current_state->get_id() == current_state->get_next_state(id)->get_id()){
                 cycle_ready_sig.setState(true);//Сигнал
             }

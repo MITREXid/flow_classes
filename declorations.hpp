@@ -71,6 +71,7 @@
       void begin(uint32_t bod){}
       char read(){return 0;}
       uint8_t available(){return 0;}
+      int availableForWrite(){return 63;}
       void print(std::string val){d_print("(Serial.print) = ");d_print(val);}
       void write(char val[], uint8_t size){
         d_print("(Serial.write) = ");

@@ -7,6 +7,15 @@
 #include "flow.hpp"
 #include "display.hpp"
 #include "config.hpp"
+#include "logger.hpp"
+#include "settings.hpp"
+
+// FIX: сторожевой таймер. Если Arduino зависнет, она перезагрузится, а MY110::init()
+// выключит все выходы МУ. 0 - отключить (если старый загрузчик Mega зацикливается после сброса WDT)
+#define USE_WATCHDOG 1
+#if(!mode_work) && USE_WATCHDOG
+    #include <avr/wdt.h>
+#endif
 
 Flow flow(
     RO_RS485,//пин RX(RO) для частоника
@@ -25,8 +34,105 @@ unsigned long state;
 
 // #define mag 0
 
+// Команды из монитора порта: журнал (log, err, clear, help) и отладочные цифры 0-5
+void serial_command(char c){
+    log_cmd_source = 1;//USB
+    if(c == '1'){
+        flow.start(state_Flow::do_complex);
+    }
+    if(c == '2'){
+        flow.start(state_Flow::do_solo);
+    }
+    if(c == '3'){
+        flow.start(state_Flow::do_clearing);
+    }
+    if(c == '4'){
+        flow.start(state_Flow::do_triplet);
+    }
+    if(c == '5'){
+        flow.start(state_Flow::do_produvka);
+    }
+    if(c == '0'){
+        flow.stop();
+    }
+}
+
+// cfg - все настройки по программам; cfg <ключ> <значение> - изменить; cfg default - по умолчанию; cfg times
+void cfg_command(char *args){
+    #if(!mode_work)
+    while(*args == ' '){ ++args; }
+    if(*args == 0){
+        settings_print();
+        return;
+    }
+    char name[10] = {0};
+    uint8_t n = 0;
+    while(*args && *args != ' ' && n < sizeof(name) - 1){ name[n++] = *args++; }
+    if(strcmp(name, "times") == 0){
+        flow.print_timing();
+        return;
+    }
+    FlowSettings s = g_set;
+    if(strcmp(name, "default") == 0){
+        settings_default(s);
+    }else{
+        int8_t idx = -1;
+        for(uint8_t i = 0; i < SET_N; ++i){
+            if(strcmp(name, SET_PARAMS[i].key) == 0){ idx = i; break; }
+        }
+        if(idx < 0){
+            Serial.println(F("cfg: неизвестный ключ, список - cfg"));
+            return;
+        }
+        float v = atof(args);
+        if(SET_PARAMS[idx].dec){ v = v * 10 + 0.5; }
+        set_ref(s, idx) = (uint8_t)(v > 255 ? 255 : (v < 0 ? 0 : v));
+    }
+    if(flow.change_settings(s)){
+        settings_print();
+    }else{
+        Serial.println(F("Не принято: сначала остановите FLOW"));
+    }
+    #endif
+}
+
+void serial_poll(){
+    #if(!mode_work)
+    static char buf[32];
+    static uint8_t len = 0;
+    while(Ser_PC.available() > 0){
+        char c = Ser_PC.read();
+        //цифра без перевода строки - сразу команда (как было раньше)
+        if(len == 0 && c >= '0' && c <= '5'){
+            serial_command(c);
+            continue;
+        }
+        if(c == '\r' || c == '\n'){
+            buf[len] = 0;
+            if(strncmp(buf, "cfg", 3) == 0){
+                cfg_command(buf + 3);
+            }else if(len > 4 && strncmp(buf, "mbr ", 4) == 0){
+                //mbr <регистр hex> [кол-во] - читать регистры частотника
+                char *end;
+                uint16_t reg = (uint16_t)strtol(buf + 4, &end, 16);
+                uint8_t cnt = (uint8_t)strtol(end, NULL, 10);
+                flow.debug_read_vfd(reg, cnt ? cnt : 1);
+            }else if(len > 0 && !log_command(buf)){
+                Serial.println(F("Неизвестная команда. help - список команд"));
+            }
+            len = 0;
+        }else if(len < sizeof(buf) - 1){
+            buf[len++] = (c >= 'A' && c <= 'Z') ? c + 32 : c;
+        }
+    }
+    #endif
+}
+
 void setup()
 {
+    #if(!mode_work) && USE_WATCHDOG
+        wdt_disable();
+    #endif
     #if(!mode_work)//arduino
         Serial.begin(1000000);
         d_println(F("start"));
@@ -34,8 +140,13 @@ void setup()
         d_println(freeRAM());
     #endif
     
+    log_begin();//запись "ЗАПУСК" в журнал (с причиной перезагрузки)
     display.init();
     flow.init();
+    if(!settings_load(LOG_SETTINGS_BASE)){//загружает и значения по умолчанию
+        d_println(F("Настройки не найдены в EEPROM - значения по умолчанию"));
+    }
+    flow.apply_settings();
 
     #if(!mode_work)//arduino
         d_println(freeRAM());
@@ -46,39 +157,25 @@ void setup()
     timer_event = millis();
     state = 0;
     d_println(F("Staart"));
+    #if(!mode_work) && USE_WATCHDOG
+        wdt_enable(WDTO_2S);
+    #endif
 }
 
 void loop()
 {
+    #if(!mode_work) && USE_WATCHDOG
+        wdt_reset();
+    #endif
     if(millis() - timer_delay_loop >= 0){
         #if(!mode_work)//g++
-            if(Ser_PC.available() > 0){
-                char c = Ser_PC.read();
-                d_print("available: ");
-                d_println(c);
-                if(c == '1'){
-                    flow.start(state_Flow::do_complex);
-                }
-                if(c == '2'){
-                    flow.start(state_Flow::do_solo);
-                }
-                if(c == '3'){
-                    flow.start(state_Flow::do_clearing);
-                }
-                if(c == '4'){
-                    flow.start(state_Flow::do_triplet);
-                }
-                if(c == '5'){
-                    flow.start(state_Flow::do_produvka);
-                }
-                if(c == '0'){
-                    flow.stop();
-                }
-            }
+            serial_poll();
         #endif
         timer_delay_loop = millis();
         display.update();
         flow.update();
+        log_dump_allowed = flow.can_dump_log();
+        log_write_step();//журнал: один байт EEPROM за проход
 
     }
     #if(mode_work)//g++

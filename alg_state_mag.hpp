@@ -167,7 +167,84 @@ struct Data_alg{
     one_state_Magistral * wait_with_coffe_in_mag_solo =nullptr;  
     one_state_Magistral * wait_with_coffe_in_mag_triplet =nullptr;  
     one_state_Magistral * wait_clearing = nullptr;
+    //состояния, время которых зависит от порции (время "актуатор открыт")
+    one_state_Magistral * skip_gate_complex = nullptr;
+    one_state_Magistral * skip_gate_triplet = nullptr;
+    one_state_Magistral * skip_gate_solo = nullptr;
+    one_state_Magistral * starting_complex = nullptr;
+    one_state_Magistral * starting_triplet = nullptr;
+    one_state_Magistral * in_magistral_complex = nullptr;
+    one_state_Magistral * in_magistral_triplet = nullptr;
+    one_state_Magistral * air_until_solo_complex = nullptr;
+    one_state_Magistral * air_complex = nullptr;
+    //прочистка: ход актуатора + пауза
+    one_state_Magistral * open_act_clearing = nullptr;
+    one_state_Magistral * close_act_clearing = nullptr;
+    //воздух после загрузки (время по магистралям из настроек)
+    one_state_Magistral * air_solo = nullptr;
+    one_state_Magistral * air_triplet = nullptr;
+    one_state_Magistral * produv = nullptr;
 };
+
+//Ход актуатора в прочистке (шаги "открыть"/"закрыть" = ход + T_CLEARING_GAP_ACT)
+void apply_act_time(Data_alg &d, uint32_t act_ms){
+    if(d.open_act_clearing){ d.open_act_clearing->set_time_in_this(act_ms + T_CLEARING_GAP_ACT); }
+    if(d.close_act_clearing){ d.close_act_clearing->set_time_in_this(act_ms + T_CLEARING_GAP_ACT); }
+}
+
+//Порция: время шага "шлюз" (от команды "открыть актуатор" до "закрыть"). От него зависят сдвиги
+//загрузки магистралей в триплете и комплексе - пересчитываем так же, как это было задано константами.
+//extra_ms - на сколько ход актуатора дольше 1 с, на которую рассчитаны константы: шаг после шлюза
+//(актуатор закрывается, потом клапан) удлиняем, чтоб воздух и следующая магистраль не начинали раньше.
+//Возвращает длительность одного цикла загрузки магистрали.
+uint32_t apply_load(one_state_Magistral *skip, one_state_Magistral *starting, one_state_Magistral *in_mag,
+                    uint32_t skip_ms, uint32_t extra_ms){
+    const uint32_t post = T_COMPLEX_POST_SKIP + extra_ms;
+    const uint32_t pause = T_COMPLEX_PRED_SKIP + skip_ms + post;
+    if(skip){ skip->set_time_in_this(skip_ms); }
+    if(starting){
+        starting->set_time_in_this(T_COMPLEX_PRED_LOAD, 0);
+        starting->set_time_in_this(T_COMPLEX_PRED_LOAD + pause, 1);
+        starting->set_time_in_this(T_COMPLEX_PRED_LOAD + 2 * pause, 2);
+        starting->set_time_in_this(T_COMPLEX_PRED_LOAD, 3);
+    }
+    if(in_mag){
+        in_mag->set_time_in_this(post + 2 * pause + T_COMPLEX_POST_LOAD, 0);
+        in_mag->set_time_in_this(post + pause + T_COMPLEX_POST_LOAD, 1);
+        in_mag->set_time_in_this(post + T_COMPLEX_POST_LOAD, 2);
+        in_mag->set_time_in_this(post, 3);
+    }
+    return pause;
+}
+
+//Комплекс: магистрали 1-3 дуют "до старта соло" + хвост (pause), 4-я - соло-часть
+void apply_complex(Data_alg &d, uint32_t skip_ms, uint32_t extra_ms, const uint32_t air_ms[4]){
+    const uint32_t pause = apply_load(d.skip_gate_complex, d.starting_complex, d.in_magistral_complex, skip_ms, extra_ms);
+    for(uint8_t m = 0; m < 3; ++m){
+        const uint32_t tail = air_ms[m] < pause ? air_ms[m] : pause;
+        if(d.air_until_solo_complex){ d.air_until_solo_complex->set_time_in_this(air_ms[m] - tail, m); }
+        if(d.air_complex){ d.air_complex->set_time_in_this(tail, m); }
+    }
+    if(d.air_until_solo_complex){ d.air_until_solo_complex->set_time_in_this(0, 3); }
+    if(d.air_complex){ d.air_complex->set_time_in_this(air_ms[3], 3); }
+}
+
+void apply_triplet(Data_alg &d, uint32_t skip_ms, uint32_t extra_ms, const uint32_t air_ms[3]){
+    apply_load(d.skip_gate_triplet, d.starting_triplet, d.in_magistral_triplet, skip_ms, extra_ms);
+    for(uint8_t m = 0; m < 3; ++m){
+        if(d.air_triplet){ d.air_triplet->set_time_in_this(air_ms[m], m); }
+    }
+}
+
+void apply_solo(Data_alg &d, uint32_t skip_ms, uint32_t extra_ms, uint32_t air_ms){
+    if(d.skip_gate_solo){ d.skip_gate_solo->set_time_in_this(skip_ms); }
+    if(d.wait_with_coffe_in_mag_solo){ d.wait_with_coffe_in_mag_solo->set_time_in_this(T_SOLO_POST_SKIP + extra_ms); }
+    if(d.air_solo){ d.air_solo->set_time_in_this(air_ms); }
+}
+
+void apply_produv(Data_alg &d, uint32_t ms){
+    if(d.produv){ d.produv->set_time_in_this(ms); }
+}
 
 bool setup_alg_magistral(uint8_t kol_users, 
 Data_alg &result){
@@ -253,6 +330,11 @@ Data_alg &result){
     air_on_complex->set_path(0,mag_start_state);
 
     result.exit_main_cycle_complex = air_on_complex;
+    result.skip_gate_complex = skip_gate_complex;
+    result.starting_complex = starting_in_magistral_complex;
+    result.in_magistral_complex = in_magistral_complex;
+    result.air_until_solo_complex = air_on_until_start_solo_in_complex;
+    result.air_complex = air_on_complex;
     /*==========комплекс конец==========*/
 
 
@@ -305,6 +387,8 @@ Data_alg &result){
     waiting_for_air_off_solo->set_path(0,preparing_in_magistral_solo);
     
     result.exit_main_cycle_solo = air_on_solo;
+    result.air_solo = air_on_solo;
+    result.skip_gate_solo = skip_gate_solo;
     result.wait_with_coffe_in_mag_solo = in_magistral_solo;
     /*==========соло конец==========*/
 
@@ -371,6 +455,10 @@ Data_alg &result){
     air_on_triplet->set_path(1, mag_start_state);
 
     result.exit_main_cycle_triplet = air_on_triplet;
+    result.air_triplet = air_on_triplet;
+    result.skip_gate_triplet = skip_gate_triplet;
+    result.starting_triplet = starting_in_magistral_triplet;
+    result.in_magistral_triplet = in_magistral_triplet;
     result.wait_with_coffe_in_mag_triplet = all_close_triplet;
     /*==========триплет конец==========*/
 
@@ -385,6 +473,7 @@ Data_alg &result){
     // produv_->set_time_in_this(27000, 3);
     
     mag_start_state->set_path(5,produv_);//продувка 5ый путь
+    result.produv = produv_;
     produv_->set_path(0,mag_start_state);
     /*==========продувка конец==========*/
 
@@ -413,6 +502,8 @@ Data_alg &result){
     close_act_clearing->set_time_in_this(TIME_ACTUATOR_FULL_OPEN_CLOSE[1] + T_CLEARING_GAP_ACT, 1);
     close_act_clearing->set_time_in_this(TIME_ACTUATOR_FULL_OPEN_CLOSE[2] + T_CLEARING_GAP_ACT, 2);
     close_act_clearing->set_time_in_this(TIME_ACTUATOR_FULL_OPEN_CLOSE[3] + T_CLEARING_GAP_ACT, 3);
+    result.open_act_clearing = open_act_clearing;
+    result.close_act_clearing = close_act_clearing;
     
       one_state_Magistral* close_clap_clearing = new one_state_Magistral(1, kol_users, 55);
     close_clap_clearing->set_curr_state(state_Magistral::all_close);

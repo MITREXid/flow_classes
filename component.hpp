@@ -91,6 +91,12 @@ public:
     }
     
     bool open(bool is_infinite_process = true) {
+        // FIX: повторная команда от магистрали (is_infinite_process = true) во время открытия
+        // раньше перезапускала таймер и ставила бесконечный процесс -> компонент навсегда
+        // оставался going_open, реле МУ держали мотор под током в упоре.
+        if(getStatus() == state_Component::going_open && is_infinite_process) {
+            return true;
+        }
         flag_infinite_process = is_infinite_process;
         // if(!is_going()) {
         //     d_println(F("cant open: in going"));
@@ -112,6 +118,10 @@ public:
     }
     
     bool close(bool is_infinite_process = true) {
+        // FIX: см. open() — повторная команда во время закрытия ничего не меняет
+        if(getStatus() == state_Component::going_close && is_infinite_process) {
+            return true;
+        }
         flag_infinite_process = is_infinite_process;
         // if(!is_going()) {
         //     d_println(F("cant close: in going"));

@@ -29,21 +29,21 @@
 //время конфиги
 
 
-constexpr const uint32_t TIME_ACTUATOR_FULL_OPEN_CLOSE[kol_all_mag] = {3000, 3000, 3000, 3000};//соло с индексом 3
+constexpr const uint32_t TIME_ACTUATOR_FULL_OPEN_CLOSE[kol_all_mag] = {1000, 1000, 1000, 1000};//соло с индексом 3
 
-constexpr const uint32_t T_COMPLEX_PRED_SKIP = 800;
+constexpr const uint32_t T_COMPLEX_PRED_SKIP = 600;
 constexpr const uint32_t T_COMPLEX_PRED_SKIP_1_MAG = T_COMPLEX_PRED_SKIP;
 constexpr const uint32_t T_COMPLEX_PRED_SKIP_2_MAG = T_COMPLEX_PRED_SKIP;
 constexpr const uint32_t T_COMPLEX_PRED_SKIP_3_MAG = T_COMPLEX_PRED_SKIP;
 constexpr const uint32_t T_COMPLEX_PRED_SKIP_4_MAG = T_COMPLEX_PRED_SKIP;
 
-constexpr const uint32_t T_COMPLEX_SKIP = 3500;
+constexpr const uint32_t T_COMPLEX_SKIP = 2000;
 constexpr const uint32_t T_COMPLEX_SKIP_1_MAG = T_COMPLEX_SKIP;
 constexpr const uint32_t T_COMPLEX_SKIP_2_MAG = T_COMPLEX_SKIP;
 constexpr const uint32_t T_COMPLEX_SKIP_3_MAG = T_COMPLEX_SKIP;
 constexpr const uint32_t T_COMPLEX_SKIP_4_MAG = T_COMPLEX_SKIP;
 
-constexpr const uint32_t T_COMPLEX_POST_SKIP = 3200;
+constexpr const uint32_t T_COMPLEX_POST_SKIP = 2000;
 constexpr const uint32_t T_COMPLEX_POST_SKIP_1_MAG = T_COMPLEX_POST_SKIP;
 constexpr const uint32_t T_COMPLEX_POST_SKIP_2_MAG = T_COMPLEX_POST_SKIP;
 constexpr const uint32_t T_COMPLEX_POST_SKIP_3_MAG = T_COMPLEX_POST_SKIP;
@@ -62,8 +62,8 @@ constexpr const uint32_t T_COMPLEX_DELAY_FOR_START_SOLO_PRED_END_TRIPLET = T_COM
 constexpr const uint32_t T_COMPLEX_PRED_LOAD = 100;
 constexpr const uint32_t T_COMPLEX_POST_LOAD = 500;
 constexpr const uint32_t T_COMPLEX_ALL_CLOSE_PRED_AIR = 600*3;
-constexpr const uint32_t T_COMPLEX_AIRON_TRIPL = 25000;
-constexpr const uint32_t T_COMPLEX_AIRON_SOLO = 39000;
+constexpr const uint32_t T_COMPLEX_AIRON_TRIPL = 33000;
+constexpr const uint32_t T_COMPLEX_AIRON_SOLO = 33000;
 
 // constexpr const uint32_t T_TRIPLET_PRED_SKIP = T_COMPLEX_PRED_SKIP;
 // constexpr const uint32_t T_TRIPLET_SKIP = T_COMPLEX_SKIP;
@@ -75,9 +75,9 @@ constexpr const uint32_t T_COMPLEX_AIRON_SOLO = 39000;
 // constexpr const uint32_t T_TRIPLET_AIRON_SOLO = T_COMPLEX_AIRON_SOLO;
 
 constexpr const uint32_t T_SOLO_PRED_SKIP = 650;
-constexpr const uint32_t T_SOLO_SKIP = 3000;
-constexpr const uint32_t T_SOLO_POST_SKIP = 3200;
-constexpr const uint32_t T_SOLO_AIRON = 39000;
+constexpr const uint32_t T_SOLO_SKIP = 2000;
+constexpr const uint32_t T_SOLO_POST_SKIP = 2000;
+constexpr const uint32_t T_SOLO_AIRON = 33000;
 constexpr const uint32_t T_SOLO_WAIT_AIROFF = 10000;
 
 
@@ -90,28 +90,91 @@ constexpr const uint32_t T_CLEARING_GAP_ACT = 500;
 
 
 constexpr const uint32_t FREQ_SOLO = 4000;
-constexpr const uint32_t FREQ_COMPLEX = 6000;
+constexpr const uint32_t FREQ_COMPLEX = 5700;
 constexpr const uint32_t FREQ_COMPLEX_PART_SOLO = 4000;
 constexpr const uint32_t FREQ_AIR = 5000;
 constexpr const uint32_t FREQ_CLEARING = 5000;
-constexpr const uint32_t FREQ_TRIPLET = 6000;
+constexpr const uint32_t FREQ_TRIPLET = 5700;
 
 
 
 //=============для RS485
 
 
+// FIX: было time_break(20) до и после каждой передачи (40 мс простоя на кадр).
+// SoftwareSerial передаёт байты блокирующе, поэтому после последнего байта DE/RE можно
+// отпускать сразу. Если на объекте появятся ошибки связи — поставить обратно 20.
+constexpr uint16_t T_RS485_PRE_TX_MS = 1;
+constexpr uint16_t T_RS485_POST_TX_MS = 0;
+
 void preTransmission() {
     digitalWrite(pin_DE_RE, 1);
-    time_break(20);
-    // delayMicroseconds(10);
+    time_break(T_RS485_PRE_TX_MS);
 }
 
 void postTransmission() {
     digitalWrite(pin_DE_RE, 0);
-    time_break(20);
-    // delayMicroseconds(10);
+    time_break(T_RS485_POST_TX_MS);
 }
+
+//=============безопасность силовых выходов МУ110 (FIX залипания реле)
+// Пауза после снятия питания с мотора (DO25..DO32) до переключения выбора/полярности:
+// мотор останавливается, дуга на контактах гаснет.
+constexpr uint32_t T_MY110_MOTOR_BRAKE = 250;
+// Пауза после переключения реле выбора (DO9..DO24) до подачи питания.
+constexpr uint32_t T_MY110_SELECT_SETTLE = 60;
+// Пауза между отпусканием OPEN и включением CLOSE шарового крана (и наоборот).
+constexpr uint32_t T_MY110_BALL_GAP = 150;
+// Максимум непрерывной подачи питания на мотор. Страховка от зависания логики/связи.
+// Должно быть больше самого долгого хода (TIME_ACTUATOR_FULL_OPEN_CLOSE, клапан 500 мс).
+constexpr uint32_t T_MY110_MAX_MOTOR_ON = 6000;//ход актуатора настраивается до 5.0 с
+// Задержка от команды до реальной подачи питания на мотор (снять питание -> выбор -> питание), с запасом.
+// Добавляется к шлюзу, чтобы приоткрытие на порцию успело закончиться до команды "закрыть".
+constexpr uint32_t T_DOSE_START = 400;
+// Период повторной отправки маски, даже если она не менялась (для таймаута связи МУ).
+constexpr uint32_t T_MY110_KEEPALIVE = 500;
+// Компонент дольше этого времени "в движении" на МУ -> запись в журнал ошибок.
+constexpr uint32_t T_MY110_STUCK = 5000;
+// При запуске ждём, пока МУ включится (он стартует дольше Arduino), мс.
+constexpr uint32_t T_MY110_INIT_WAIT = 4000;
+
+// Ножевые (нижние) клапаны, у которых мотор подключён в обратной полярности:
+// на "закрыть" они открывались. true - направление в прошивке меняется местами.
+// Караганда: клапаны 1 и 3 работали наоборот (журнал 01.10.2026).
+// Если на объекте перекинут провода мотора - поставить false.
+constexpr bool CLAP_INVERT[kol_all_mag] = {true, false, true, false};
+
+// ---------- воздуходувка (частотник ESQ-770, адрес 1) ----------
+// Повтор команды частотнику, если он не ответил (после "стоп" сразу "пуск" он часто молчит).
+constexpr uint32_t T_DYVKA_RETRY = 300;
+
+// ---------- давление ----------
+// 0 - нет датчика (на экране "--"), 1 - читать регистр частотника по RS485
+#define PRESSURE_SOURCE 0
+// Регистр частотника с давлением (найти командой mbr в мониторе порта), значение -> кПа:
+//   кПа = (регистр + PRESSURE_OFFSET) * PRESSURE_SCALE
+constexpr uint16_t PRESSURE_REG = 0x0000;
+constexpr float PRESSURE_OFFSET = 0;
+constexpr float PRESSURE_SCALE = 0.1;
+constexpr uint32_t T_PRESSURE_READ = 1000;//как часто читать, мс
+
+// Пауза перед повтором записи после ошибки Modbus.
+constexpr uint32_t T_MY110_RETRY = 30;
+
+// Номера DO (1..32), которые нельзя включать одновременно:
+// плюс и минус на один общий провод (КЗ блока 12 В) и OPEN+CLOSE одного шарового крана.
+constexpr int8_t MY110_FORBIDDEN_PAIRS[][2] = {
+    {25,30}, {26,29},   // актуаторы: COM5 = DO25(+)/DO30(-), COM6 = DO26(+)/DO29(-)
+    {27,31}, {28,32},   // ножевые клапаны: COM3 = DO27(+)/DO31(-), COM4 = DO28(+)/DO32(-)
+    {1,5}, {2,6}, {3,7}, {4,8}  // шаровые краны OPEN/CLOSE
+};
+
+// Маски битов (бит = номер DO - 1)
+constexpr uint32_t MY110_BALL_BITS   = 0x000000FFUL; // DO1..DO8   шаровые краны
+constexpr uint32_t MY110_SELECT_BITS = 0x00FFFF00UL; // DO9..DO24  выбор клапана/актуатора
+constexpr uint32_t MY110_POWER_BITS  = 0xFF000000UL; // DO25..DO32 питание +12/-12 на общие
+constexpr uint32_t MY110_POWER_ACT   = (1UL<<24)|(1UL<<25)|(1UL<<28)|(1UL<<29); // DO25,26,29,30
+constexpr uint32_t MY110_POWER_CLAP  = (1UL<<26)|(1UL<<27)|(1UL<<30)|(1UL<<31); // DO27,28,31,32
 
 
 
