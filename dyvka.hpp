@@ -1,16 +1,13 @@
 #ifndef DYVKA_HPP
 #define DYVKA_HPP
 #include "universal_object.hpp"
-#include "signal.h"
 #include "flow.hpp"
 #include "config.hpp"
 #include "logger.hpp"
 #include "settings.hpp"
 
-#if !mode_work
     #include <SoftwareSerial.h>
     #include "ModbusMaster/ModbusMaster.h"
-#endif
 
 enum class state_Dyvka{
     do_if_open,
@@ -85,7 +82,6 @@ class Dyvka : public Universal_object<state_Dyvka>{
 
         //отладка: вывести регистры частотника в монитор порта
         void debug_read(uint16_t reg, uint8_t count){
-            #if !mode_work
             if(count < 1){ count = 1; }
             if(count > 16){ count = 16; }
             uint8_t r = node.readHoldingRegisters(reg, count);
@@ -100,7 +96,6 @@ class Dyvka : public Universal_object<state_Dyvka>{
                 Serial.print(F(" = "));
                 Serial.println((int16_t)node.getResponseBuffer(i));
             }
-            #endif
         }
         void start_anyway(){
             air_on();

@@ -74,7 +74,6 @@ bool log_dump_allowed = true;
 // Источник следующей команды для LOG_CMD
 uint8_t log_cmd_source = 0;
 
-#if !mode_work
 #include <EEPROM.h>
 #include <avr/eeprom.h>
 #include <avr/wdt.h>
@@ -385,11 +384,5 @@ bool log_command(const char *cmd) {
     return false;
 }
 
-#else  // g++ (mode_work): журнал не пишется
-inline void log_event(uint8_t, uint8_t = 0, uint32_t = 0) {}
-inline void log_begin() {}
-inline void log_write_step() {}
-inline bool log_command(const char *) { return false; }
-#endif
 
 #endif // LOGGER_HPP

@@ -1,16 +1,13 @@
 #ifndef MY110_HPP
 #define MY110_HPP
 #include "universal_object.hpp"
-#include "signal.h"
 #include "flow.hpp"
 #include "config.hpp"
 #include "other_components.hpp"
 #include "logger.hpp"
 
-#if !mode_work
     #include <SoftwareSerial.h>
     #include "ModbusMaster/ModbusMaster.h"
-#endif
 
 enum class state_MY110{
     working,
@@ -530,7 +527,7 @@ class MY110 : public Universal_object<state_MY110>{
             node.setTransmitBuffer(0, reg98_mask); // Значение для регистра 0x0061
             node.setTransmitBuffer(1, reg97_mask); // Значение для регистра 0x0062
             uint8_t result = node.writeMultipleRegisters(0x0061, 2);
-            bool ok = true;(result == node.ku8MBSuccess);
+            bool ok = (result == node.ku8MBSuccess);
             if(ok){
                 if(err_count > 0){
                     log_event(LOG_MB_OK, 0, err_count);

@@ -149,7 +149,6 @@ class Flow: public Universal_object<state_Flow>{
 
     //cfg times: рассчитанные времена шагов, зависящих от порции (для проверки на объекте)
     void print_timing(){
-        #if !mode_work
         Serial.println(F("=== ВРЕМЕНА ШАГОВ, мс (магистраль 1/2/3/4) ==="));
         one_state_Magistral * st[12] = {data_alg.skip_gate_complex, data_alg.starting_complex, data_alg.in_magistral_complex,
                                         data_alg.air_until_solo_complex, data_alg.air_complex,
@@ -165,7 +164,6 @@ class Flow: public Universal_object<state_Flow>{
                 if(m < kol_all_mag - 1){ Serial.print('/'); }else{ Serial.println(); }
             }
         }
-        #endif
     }
 
     //Изменить настройки (экран или USB). Нельзя только пока идёт режим

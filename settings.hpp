@@ -122,7 +122,6 @@ uint32_t settings_pack(const FlowSettings &s) {
 #define SETTINGS_MAGIC 0xF5
 #define SETTINGS_VERSION 5  // 5 - по программам; 1-4 - общие настройки (переносятся во все программы)
 
-#if !mode_work
 #include <EEPROM.h>
 // Раскладка v5: [0] magic [1] version [2..2+SET_SIZE) настройки [2+SET_SIZE] контрольная сумма
 uint8_t settings_crc(const uint8_t *p, uint8_t n) {
@@ -199,10 +198,5 @@ void settings_print() {
         }
     }
 }
-#else
-inline bool settings_load(uint16_t) { settings_default(g_set); return false; }
-inline void settings_save(uint16_t) {}
-inline void settings_print() {}
-#endif
 
 #endif // SETTINGS_HPP

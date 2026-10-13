@@ -13,7 +13,7 @@
 // FIX: сторожевой таймер. Если Arduino зависнет, она перезагрузится, а MY110::init()
 // выключит все выходы МУ. 0 - отключить (если старый загрузчик Mega зацикливается после сброса WDT)
 #define USE_WATCHDOG 1
-#if(!mode_work) && USE_WATCHDOG
+#if USE_WATCHDOG
     #include <avr/wdt.h>
 #endif
 
@@ -59,7 +59,6 @@ void serial_command(char c){
 
 // cfg - все настройки по программам; cfg <ключ> <значение> - изменить; cfg default - по умолчанию; cfg times
 void cfg_command(char *args){
-    #if(!mode_work)
     while(*args == ' '){ ++args; }
     if(*args == 0){
         settings_print();
@@ -93,11 +92,9 @@ void cfg_command(char *args){
     }else{
         Serial.println(F("Не принято: сначала остановите FLOW"));
     }
-    #endif
 }
 
 void serial_poll(){
-    #if(!mode_work)
     static char buf[32];
     static uint8_t len = 0;
     while(Ser_PC.available() > 0){
@@ -125,20 +122,17 @@ void serial_poll(){
             buf[len++] = (c >= 'A' && c <= 'Z') ? c + 32 : c;
         }
     }
-    #endif
 }
 
 void setup()
 {
-    #if(!mode_work) && USE_WATCHDOG
+    #if USE_WATCHDOG
         wdt_disable();
     #endif
-    #if(!mode_work)//arduino
         Serial.begin(1000000);
         d_println(F("start"));
         int val = freeRAM();
         d_println(freeRAM());
-    #endif
     
     log_begin();//запись "ЗАПУСК" в журнал (с причиной перезагрузки)
     display.init();
@@ -148,29 +142,25 @@ void setup()
     }
     flow.apply_settings();
 
-    #if(!mode_work)//arduino
         d_println(freeRAM());
         d_println(F("==="));
         d_println(val-freeRAM());
-    #endif
     timer_delay_loop = millis();
     timer_event = millis();
     state = 0;
     d_println(F("Staart"));
-    #if(!mode_work) && USE_WATCHDOG
+    #if USE_WATCHDOG
         wdt_enable(WDTO_2S);
     #endif
 }
 
 void loop()
 {
-    #if(!mode_work) && USE_WATCHDOG
+    #if USE_WATCHDOG
         wdt_reset();
     #endif
     if(millis() - timer_delay_loop >= 0){
-        #if(!mode_work)//g++
             serial_poll();
-        #endif
         timer_delay_loop = millis();
         display.update();
         flow.update();
@@ -178,27 +168,6 @@ void loop()
         log_write_step();//журнал: один байт EEPROM за проход
 
     }
-    #if(mode_work)//g++
-        if(millis() - timer_event >= 18000 && state == 0) {
-            timer_event = millis();
-            // flow.start(state_Flow::do_solo);
-            // flow.start(state_Flow::do_clearing);
-            // flow.start(state_Flow::do_produvka);
-            flow.start(state_Flow::do_complex);
-            // flow.start(state_Flow::do_triplet);
-            ++state;
-        }
-        //  if(millis() - timer_event >= 100000 && state == 1) {
-        //     timer_event = millis();
-        //     flow.stop(); 
-        //     ++state;
-        // }
-        // if(millis() - timer_event >= 15000 && state == 2) {
-        // timer_event = millis();
-        // flow.start(state_Flow::do_produvka);
-        // ++state;
-        // }
-    #endif
     // if(millis() - timer_event >= 15000 && state == 0) {
     //     timer_event = millis();
     //     flow.start(state_Flow::do_solo);
