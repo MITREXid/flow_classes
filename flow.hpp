@@ -53,8 +53,8 @@ class Flow: public Universal_object<state_Flow>{
 
         my110.init();
         
+        //времена шагов и ход актуаторов задаёт apply_settings() после загрузки настроек
         for(uint8_t i = 0; i<kol_all_mag;++i){
-            get_mag(i)->set_time_actuator(TIME_ACTUATOR_FULL_OPEN_CLOSE[i], TIME_ACTUATOR_FULL_OPEN_CLOSE[i]);
             get_mag(i)->init();
         }
 
@@ -126,7 +126,6 @@ class Flow: public Universal_object<state_Flow>{
     //+T_DOSE_START к шлюзу: питание на актуатор приходит ~0.3 с после команды (переключение реле полярности)
     void apply_settings(){
         const uint32_t act_ms = (uint32_t)g_set.act_ds * 100;
-        const uint32_t extra = act_ms > 1000 ? act_ms - 1000 : 0;
         const uint32_t por_cx = (uint32_t)g_set.cx_portion * 100;
         const uint32_t por_tr = (uint32_t)g_set.tr_portion * 100;
         const uint32_t por_so = (uint32_t)g_set.so_portion * 100;
@@ -135,32 +134,22 @@ class Flow: public Universal_object<state_Flow>{
             get_mag(i)->set_act_times(act_ms, por_cx < act_ms ? por_cx : act_ms, por_tr < act_ms ? por_tr : act_ms,
                                       por_so < act_ms ? por_so : act_ms);
         }
-        apply_act_time(data_alg, act_ms);
-        uint32_t air[4];
-        for(uint8_t m = 0; m < 4; ++m){ air[m] = (uint32_t)g_set.cx_air[m] * 1000; }
-        apply_complex(data_alg, por_cx + T_DOSE_START, extra, air);
-        for(uint8_t m = 0; m < 3; ++m){ air[m] = (uint32_t)g_set.tr_air[m] * 1000; }
-        apply_triplet(data_alg, por_tr + T_DOSE_START, extra, air);
-        apply_solo(data_alg, por_so + T_DOSE_START, extra, (uint32_t)g_set.so_air * 1000);
-        apply_produv(data_alg, (uint32_t)g_set.pv_s * 1000);
+        alg_apply_step_durations(data_alg, g_set);//времена всех шагов: alg_step_duration_ms()
         dyvka.set_ramp(g_set.ramp_s);
         dyvka.set_stop_ramp(g_set.stop_s);
     }
 
-    //cfg times: рассчитанные времена шагов, зависящих от порции (для проверки на объекте)
+    //cfg times: времена всех шагов по магистралям (для проверки на объекте)
     void print_timing(){
         Serial.println(F("=== ВРЕМЕНА ШАГОВ, мс (магистраль 1/2/3/4) ==="));
-        one_state_Magistral * st[12] = {data_alg.skip_gate_complex, data_alg.starting_complex, data_alg.in_magistral_complex,
-                                        data_alg.air_until_solo_complex, data_alg.air_complex,
-                                        data_alg.skip_gate_triplet, data_alg.starting_triplet, data_alg.air_triplet,
-                                        data_alg.skip_gate_solo, data_alg.wait_with_coffe_in_mag_solo, data_alg.air_solo, data_alg.produv};
-        const char * const names[12] = {"комплекс: шлюз", "комплекс: старт загрузки", "комплекс: после шлюза",
-                                         "комплекс: воздух до соло", "комплекс: воздух", "триплет: шлюз", "триплет: старт загрузки",
-                                         "триплет: воздух", "соло: шлюз", "соло: после шлюза", "соло: воздух", "продувка"};
-        for(uint8_t i = 0; i < 12; ++i){
-            Serial.print(names[i]); Serial.print(F(": "));
+        for(uint8_t i = 0; i < ALG_NODE_COUNT; ++i){
+            one_state_Magistral *node = data_alg.nodes[i];
+            Serial.print(node->get_id());
+            Serial.print(F(" "));
+            Serial.print(alg_step_name(node->get_id()));
+            Serial.print(F(": "));
             for(uint8_t m = 0; m < kol_all_mag; ++m){
-                Serial.print(st[i] ? st[i]->get_time_in_this(m) : 0);
+                Serial.print(node->get_time_in_this(m));
                 if(m < kol_all_mag - 1){ Serial.print('/'); }else{ Serial.println(); }
             }
         }
@@ -273,7 +262,7 @@ private:
             case state_Flow::do_solo:
                 break;
             case state_Flow::do_complex:
-                if(get_mag(2)->inThisStateId(17, true) && get_mag(3)->isStartedState(true)){
+                if(get_mag(2)->inThisStateId(STEP_COMPLEX_AIR_WHILE_SOLO_LOADS, true) && get_mag(3)->isStartedState(true)){
                     dyvka.set_goal_frec(g_set.cx_hz_s * 100);
                     get_mag(3)->start(state_Alg_mag::one_cycle_complex);
                 }
@@ -289,7 +278,7 @@ private:
                 }
                 break;
             case state_Flow::do_clearing:
-                if(get_mag(num_curr_mag)->inThisStateId(53, true)){
+                if(get_mag(num_curr_mag)->inThisStateId(STEP_CLEARING_WAIT_UNTIL_STOP, true)){
                     if(num_curr_mag != 0){//чтоб только по 1 разу кадждую
                         num_curr_mag = get_num_curr_mag_prev();
                         get_mag()->start(state_Alg_mag::clearing);

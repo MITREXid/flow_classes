@@ -26,75 +26,27 @@
 
 
 
-//время конфиги
+//=============времена шагов алгоритма, мс
+// Порции, ход актуатора, время воздуха и частоты задаются в настройках (settings.hpp, экран, USB «cfg»).
+// Здесь - постоянные части шагов. Как из них складываются времена: alg_step_duration_ms() в alg_state_mag.hpp,
+// проверить на плате: команда «cfg times».
 
+// комплекс и триплет
+constexpr const uint32_t T_COMPLEX_PRED_LOAD = 100;           // ожидание перед загрузкой первой магистрали
+constexpr const uint32_t T_COMPLEX_PRED_SKIP = 600;           // открыт клапан, до открытия актуатора
+constexpr const uint32_t T_COMPLEX_POST_SKIP = 2000;          // после шлюза (рассчитано на ход актуатора 1 с)
+constexpr const uint32_t T_COMPLEX_POST_LOAD = 500;           // после загрузки последней магистрали
+constexpr const uint32_t T_COMPLEX_ALL_CLOSE_PRED_AIR = 600*3;// всё закрыто перед воздухом
 
-constexpr const uint32_t TIME_ACTUATOR_FULL_OPEN_CLOSE[kol_all_mag] = {1000, 1000, 1000, 1000};//соло с индексом 3
+// соло
+constexpr const uint32_t T_SOLO_PRED_SKIP = 650;              // открыт клапан, до открытия актуатора
+constexpr const uint32_t T_SOLO_POST_SKIP = 2000;             // после шлюза (рассчитано на ход актуатора 1 с)
+constexpr const uint32_t T_SOLO_WAIT_AIROFF = 10000;          // пауза между циклами соло
 
-constexpr const uint32_t T_COMPLEX_PRED_SKIP = 600;
-constexpr const uint32_t T_COMPLEX_PRED_SKIP_1_MAG = T_COMPLEX_PRED_SKIP;
-constexpr const uint32_t T_COMPLEX_PRED_SKIP_2_MAG = T_COMPLEX_PRED_SKIP;
-constexpr const uint32_t T_COMPLEX_PRED_SKIP_3_MAG = T_COMPLEX_PRED_SKIP;
-constexpr const uint32_t T_COMPLEX_PRED_SKIP_4_MAG = T_COMPLEX_PRED_SKIP;
-
-constexpr const uint32_t T_COMPLEX_SKIP = 2000;
-constexpr const uint32_t T_COMPLEX_SKIP_1_MAG = T_COMPLEX_SKIP;
-constexpr const uint32_t T_COMPLEX_SKIP_2_MAG = T_COMPLEX_SKIP;
-constexpr const uint32_t T_COMPLEX_SKIP_3_MAG = T_COMPLEX_SKIP;
-constexpr const uint32_t T_COMPLEX_SKIP_4_MAG = T_COMPLEX_SKIP;
-
-constexpr const uint32_t T_COMPLEX_POST_SKIP = 2000;
-constexpr const uint32_t T_COMPLEX_POST_SKIP_1_MAG = T_COMPLEX_POST_SKIP;
-constexpr const uint32_t T_COMPLEX_POST_SKIP_2_MAG = T_COMPLEX_POST_SKIP;
-constexpr const uint32_t T_COMPLEX_POST_SKIP_3_MAG = T_COMPLEX_POST_SKIP;
-constexpr const uint32_t T_COMPLEX_POST_SKIP_4_MAG = T_COMPLEX_POST_SKIP;
-
-
-
-constexpr const Time_in_this T_COMPLEX_PAUSE_ONE_CYCLE_LOAD_1_MAG = T_COMPLEX_PRED_SKIP_1_MAG + T_COMPLEX_SKIP_1_MAG + T_COMPLEX_POST_SKIP_1_MAG ;
-constexpr const Time_in_this T_COMPLEX_PAUSE_ONE_CYCLE_LOAD_2_MAG = T_COMPLEX_PRED_SKIP_2_MAG + T_COMPLEX_SKIP_2_MAG + T_COMPLEX_POST_SKIP_2_MAG ;
-constexpr const Time_in_this T_COMPLEX_PAUSE_ONE_CYCLE_LOAD_3_MAG = T_COMPLEX_PRED_SKIP_3_MAG + T_COMPLEX_SKIP_3_MAG + T_COMPLEX_POST_SKIP_3_MAG ;
-constexpr const Time_in_this T_COMPLEX_PAUSE_ONE_CYCLE_LOAD_4_MAG = T_COMPLEX_PRED_SKIP_4_MAG + T_COMPLEX_SKIP_4_MAG + T_COMPLEX_POST_SKIP_4_MAG ;
-
-
-constexpr const uint32_t T_COMPLEX_DELAY_FOR_START_SOLO_PRED_END_TRIPLET = T_COMPLEX_PAUSE_ONE_CYCLE_LOAD_4_MAG;
-
-constexpr const uint32_t T_COMPLEX_PRED_LOAD = 100;
-constexpr const uint32_t T_COMPLEX_POST_LOAD = 500;
-constexpr const uint32_t T_COMPLEX_ALL_CLOSE_PRED_AIR = 600*3;
-constexpr const uint32_t T_COMPLEX_AIRON_TRIPL = 33000;
-constexpr const uint32_t T_COMPLEX_AIRON_SOLO = 33000;
-
-// constexpr const uint32_t T_TRIPLET_PRED_SKIP = T_COMPLEX_PRED_SKIP;
-// constexpr const uint32_t T_TRIPLET_SKIP = T_COMPLEX_SKIP;
-// constexpr const uint32_t T_TRIPLET_POST_SKIP = T_COMPLEX_POST_SKIP;
-// constexpr const uint32_t T_TRIPLET_PRED_PAUSE = T_COMPLEX_PRED_PAUSE;
-// constexpr const uint32_t T_TRIPLET_POST_PAUSE = T_COMPLEX_POST_PAUSE;
-// constexpr const uint32_t T_TRIPLET_ALL_CLOSE_PRED_AIR = T_COMPLEX_ALL_CLOSE_PRED_AIR;
-// constexpr const uint32_t T_TRIPLET_AIRON_TRIPL = T_COMPLEX_AIRON_TRIPL;
-// constexpr const uint32_t T_TRIPLET_AIRON_SOLO = T_COMPLEX_AIRON_SOLO;
-
-constexpr const uint32_t T_SOLO_PRED_SKIP = 650;
-constexpr const uint32_t T_SOLO_SKIP = 2000;
-constexpr const uint32_t T_SOLO_POST_SKIP = 2000;
-constexpr const uint32_t T_SOLO_AIRON = 33000;
-constexpr const uint32_t T_SOLO_WAIT_AIROFF = 10000;
-
-
-constexpr const uint32_t T_AIR_AIRON = 15000;
-
+// чистка
 constexpr const uint32_t T_CLEARING_TOGGLE_CLAP = 600;
 constexpr const uint32_t T_CLEARING_GAP_CLAP = 200;
 constexpr const uint32_t T_CLEARING_GAP_ACT = 500;
-
-
-
-constexpr const uint32_t FREQ_SOLO = 4000;
-constexpr const uint32_t FREQ_COMPLEX = 5700;
-constexpr const uint32_t FREQ_COMPLEX_PART_SOLO = 4000;
-constexpr const uint32_t FREQ_AIR = 5000;
-constexpr const uint32_t FREQ_CLEARING = 5000;
-constexpr const uint32_t FREQ_TRIPLET = 5700;
 
 
 
@@ -142,7 +94,7 @@ constexpr uint32_t T_MY110_INIT_WAIT = 4000;
 // на "закрыть" они открывались. true - направление в прошивке меняется местами.
 // Караганда: клапаны 1 и 3 работали наоборот (журнал 01.10.2026).
 // Если на объекте перекинут провода мотора - поставить false.
-constexpr bool CLAP_INVERT[kol_all_mag] = {true, false, true, false};
+constexpr bool CLAP_INVERT[kol_all_mag] = {false, false, false, false};
 
 // ---------- воздуходувка (частотник ESQ-770, адрес 1) ----------
 // Повтор команды частотнику, если он не ответил (после "стоп" сразу "пуск" он часто молчит).

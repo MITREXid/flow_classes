@@ -57,16 +57,19 @@ public:
     uint32_t act_full_ms = 1000;
     uint32_t act_dose_cx = 1000, act_dose_tr = 1000, act_dose_so = 1000;
     uint32_t act_open_for(one_state_Magistral *st){
-        if(st == data_alg.skip_gate_complex){ return act_dose_cx; }
-        if(st == data_alg.skip_gate_triplet){ return act_dose_tr; }
-        if(st == data_alg.skip_gate_solo){ return act_dose_so; }
-        return act_full_ms;//прочистка - полностью
+        switch(st->get_id()){
+            case STEP_COMPLEX_GATE_DOSING: return act_dose_cx;
+            case STEP_TRIPLET_GATE_DOSING: return act_dose_tr;
+            case STEP_SOLO_GATE_DOSING:    return act_dose_so;
+            default:                       return act_full_ms;//чистка - полностью
+        }
     }
     uint32_t get_remaining_ms();//для обратного отсчёта на экране; 0 - состояние без конца
 private:
     void logic();//Для объединения логики поведения(используется в update())
     void turn_to(state_Magistral next_state);
     void set_current_mode_alg(state_Alg_mag mod);
+    void choose_path(uint8_t step, uint8_t path);
     void check_ball_for_dyvka();
     bool is_going_comp();
     char* num_state_mag_to_char(state_Magistral state_input);
@@ -126,70 +129,66 @@ state_Alg_mag Magistral::get_current_mode_alg(){
     return curr_Alg_mode;
 }
 
+//Выбрать путь на развилке step для этой магистрали
+void Magistral::choose_path(uint8_t step, uint8_t path){
+    data_alg[step]->set_choose_path(id, path);
+}
+
+//Режим = какой путь выбрать на каждой развилке графа (alg_state_mag.hpp)
 void Magistral::set_current_mode_alg(state_Alg_mag mod){
 curr_Alg_mode = mod;
 switch(mod){
-    case state_Alg_mag::stop:
-        data_alg.start_state->set_choose_path(id,0);
-
-        data_alg.wait_with_coffe_in_mag_solo->set_choose_path(id,0);
-        data_alg.wait_with_coffe_in_mag_triplet->set_choose_path(id,0);
-
-        data_alg.exit_main_cycle_solo->set_choose_path(id,1);
-        data_alg.exit_main_cycle_complex->set_choose_path(id,0);
-        data_alg.exit_main_cycle_triplet->set_choose_path(id,1);
-
-        data_alg.wait_clearing->set_choose_path(id,1);
+    case state_Alg_mag::stop://доработать текущий цикл и остаться в старте
+        choose_path(STEP_START_IDLE,                   PATH_START_STAY);
+        choose_path(STEP_SOLO_AFTER_GATE,              PATH_WAIT_GO_ON);
+        choose_path(STEP_TRIPLET_CLOSE_ALL_BEFORE_AIR, PATH_WAIT_GO_ON);
+        choose_path(STEP_SOLO_AIR,                     PATH_CYCLE_EXIT);
+        choose_path(STEP_TRIPLET_AIR,                  PATH_CYCLE_EXIT);
+        choose_path(STEP_CLEARING_WAIT_UNTIL_STOP,     PATH_WAIT_GO_ON);
         break;
 
-
-    case state_Alg_mag::prepare_solo:
-        data_alg.start_state->set_choose_path(id,2);
-        data_alg.wait_with_coffe_in_mag_solo->set_choose_path(id,1);
-        data_alg.exit_main_cycle_solo->set_choose_path(id,1);
+    case state_Alg_mag::prepare_solo://загрузить и ждать в магистрали
+        choose_path(STEP_START_IDLE,                   PATH_START_SOLO);
+        choose_path(STEP_SOLO_AFTER_GATE,              PATH_WAIT_HOLD);
+        choose_path(STEP_SOLO_AIR,                     PATH_CYCLE_EXIT);
         break;
-
     case state_Alg_mag::prepare_triplet:
-        data_alg.start_state->set_choose_path(id,4);
-        data_alg.wait_with_coffe_in_mag_triplet->set_choose_path(id,1);
-        data_alg.exit_main_cycle_triplet->set_choose_path(id,1);
+        choose_path(STEP_START_IDLE,                   PATH_START_TRIPLET);
+        choose_path(STEP_TRIPLET_CLOSE_ALL_BEFORE_AIR, PATH_WAIT_HOLD);
+        choose_path(STEP_TRIPLET_AIR,                  PATH_CYCLE_EXIT);
         break;
-
 
     case state_Alg_mag::one_cycle_solo:
-        data_alg.start_state->set_choose_path(id,2);
-        data_alg.wait_with_coffe_in_mag_solo->set_choose_path(id,0);
-        data_alg.exit_main_cycle_solo->set_choose_path(id,1);
+        choose_path(STEP_START_IDLE,                   PATH_START_SOLO);
+        choose_path(STEP_SOLO_AFTER_GATE,              PATH_WAIT_GO_ON);
+        choose_path(STEP_SOLO_AIR,                     PATH_CYCLE_EXIT);
         break;
-    case state_Alg_mag::one_cycle_complex:
-        data_alg.start_state->set_choose_path(id,1);
-        data_alg.exit_main_cycle_complex->set_choose_path(id,0);
+    case state_Alg_mag::one_cycle_complex://у комплекса развилок нет: один цикл и в старт
+        choose_path(STEP_START_IDLE,                   PATH_START_COMPLEX);
         break;
     case state_Alg_mag::one_cycle_triplet:
-        data_alg.start_state->set_choose_path(id,4);
-        data_alg.wait_with_coffe_in_mag_triplet->set_choose_path(id,0);
-        data_alg.exit_main_cycle_triplet->set_choose_path(id,1);
+        choose_path(STEP_START_IDLE,                   PATH_START_TRIPLET);
+        choose_path(STEP_TRIPLET_CLOSE_ALL_BEFORE_AIR, PATH_WAIT_GO_ON);
+        choose_path(STEP_TRIPLET_AIR,                  PATH_CYCLE_EXIT);
         break;
-
 
     case state_Alg_mag::cycle_solo:
-        data_alg.start_state->set_choose_path(id,2);
-        data_alg.wait_with_coffe_in_mag_solo->set_choose_path(id,0);
-        data_alg.exit_main_cycle_solo->set_choose_path(id,0);
+        choose_path(STEP_START_IDLE,                   PATH_START_SOLO);
+        choose_path(STEP_SOLO_AFTER_GATE,              PATH_WAIT_GO_ON);
+        choose_path(STEP_SOLO_AIR,                     PATH_CYCLE_REPEAT);
         break;
     case state_Alg_mag::cycle_triplet:
-        data_alg.start_state->set_choose_path(id,4);
-        data_alg.wait_with_coffe_in_mag_triplet->set_choose_path(id,0);
-        data_alg.exit_main_cycle_triplet->set_choose_path(id,0);
+        choose_path(STEP_START_IDLE,                   PATH_START_TRIPLET);
+        choose_path(STEP_TRIPLET_CLOSE_ALL_BEFORE_AIR, PATH_WAIT_GO_ON);
+        choose_path(STEP_TRIPLET_AIR,                  PATH_CYCLE_REPEAT);
         break;
-
 
     case state_Alg_mag::produvka:
-        data_alg.start_state->set_choose_path(id,5);
+        choose_path(STEP_START_IDLE,                   PATH_START_PRODUVKA);
         break;
-    case state_Alg_mag::clearing:
-        data_alg.start_state->set_choose_path(id,3);
-        data_alg.wait_clearing->set_choose_path(id,0);
+    case state_Alg_mag::clearing://открыть и ждать стопа
+        choose_path(STEP_START_IDLE,                   PATH_START_CLEARING);
+        choose_path(STEP_CLEARING_WAIT_UNTIL_STOP,     PATH_WAIT_HOLD);
         break;
     default:
         d_println(F("Error set_current_mode_alg HZ mod"));
@@ -210,9 +209,9 @@ void Magistral::check_ball_for_dyvka()
 void Magistral::turn_to(state_Magistral next_state){
     switch(next_state){
         case state_Magistral::undefine://актуатор закрыт клапан закрыт шаровой кран закрыт
-                data_alg.start_state->set_choose_path(id, 0);
+                choose_path(STEP_START_IDLE, PATH_START_STAY);
                 turn_to(start_state);
-                current_state = data_alg.start_state;
+                current_state = data_alg[STEP_START_IDLE];
                 mag_state = state_Magistral::undefine;
             break;
         case state_Magistral::start_state://актуатор закрыт клапан закрыт шаровой кран закрыт
@@ -267,7 +266,7 @@ void Magistral::turn_to(state_Magistral next_state){
 
 void Magistral::init(bool act, bool clap, bool ball)
 {
-    current_state = data_alg.start_state;
+    current_state = data_alg[STEP_START_IDLE];
     if(act){
         actuator.init();
     }
@@ -294,7 +293,7 @@ uint32_t Magistral::get_remaining_ms(){
         one_state_Magistral * nx = current_state->get_next_state(id);
         for(uint8_t i = 0; i < 3 && nx != current_state && nx->get_curr_state() == state_Magistral::air_on
                                  && nx->get_next_state(id) != nx; ++i){
-            if(nx == data_alg.air_solo || nx == data_alg.air_triplet){ break; }//новый цикл - не складываем
+            if(nx->get_id() == STEP_SOLO_AIR || nx->get_id() == STEP_TRIPLET_AIR){ break; }//новый цикл - не складываем
             rest += nx->get_time_in_this(id);
             nx = nx->get_next_state(id);
         }
@@ -409,8 +408,8 @@ void Magistral::go_to_next_state(){
     one_state_Magistral * old_state = current_state;
     current_state = current_state->get_next_state(id);
     time_to_start_new_state = millis();
-    if(old_state->get_id() == 1 && current_state->get_id() != 1){//для того читобы при возврате в start_state, зацикоиться и остаться в нем
-        data_alg.start_state->set_choose_path(id, 0);
+    if(old_state->get_id() == STEP_START_IDLE && current_state->get_id() != STEP_START_IDLE){//для того читобы при возврате в start_state, зацикоиться и остаться в нем
+        choose_path(STEP_START_IDLE, PATH_START_STAY);
     }
 }
 
