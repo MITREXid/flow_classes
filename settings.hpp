@@ -9,6 +9,10 @@
 //  Порция - от начала открытия актуатора до команды "закрыть" (меньше хода - актуатор приоткрывается).
 //  Воздух Мx - сколько дует воздуходувка после загрузки магистрали x, с.
 //  Вулкан - только настройки (режим пока не включён): высота Мx - сколько приоткрывается шаровой кран.
+//  Повтор соло - пауза между циклами в режиме "соло с повтором" (удержание кнопки "Соло", USB 6), мин.
+//
+//  Новое поле добавлять В КОНЕЦ FlowSettings (старые байты в EEPROM остаются на своих местах),
+//  поднять SETTINGS_VERSION и дописать перенос из прошлой версии в settings_load().
 // =====================================================================
 #include "declorations.hpp"
 
@@ -44,6 +48,8 @@ struct FlowSettings {
     uint8_t ramp_s;      // разгон воздуходувки от 10 Гц, с
     uint8_t stop_s;      // плавная остановка до 10 Гц, с
     uint8_t act_ds;      // ход актуатора (питание на открытие/закрытие), x0.1 с
+    // ---- конец раскладки v5 (32 байта) ----
+    uint8_t so_rep;      // соло с повтором: пауза между циклами, мин (v6)
 };
 
 constexpr uint8_t SET_HZ_MAX = 70;        // в частотнике макс. частота должна быть >= 70 Гц
@@ -64,22 +70,23 @@ const SetParam SET_PARAMS[] = {
     SP("cx.hzt", cx_hz_t, 10, 70, 57, 0), SP("cx.hzs", cx_hz_s, 10, 70, 40, 0), SP("cx.por", cx_portion, 10, 200, 20, 1),
     SPA("cx.air1", cx_air, 0, 5, 180, 33, 0), SPA("cx.air2", cx_air, 1, 5, 180, 33, 0),
     SPA("cx.air3", cx_air, 2, 5, 180, 33, 0), SPA("cx.air4", cx_air, 3, 5, 180, 33, 0),
-    // 7-9 соло
+    // 7-10 соло
     SP("so.hz", so_hz, 10, 70, 40, 0), SP("so.por", so_portion, 10, 200, 20, 1), SP("so.air", so_air, 5, 180, 33, 0),
-    // 10-14 триплет
+    SP("so.rep", so_rep, 1, 240, 20, 0),
+    // 11-15 триплет
     SP("tr.hz", tr_hz, 10, 70, 57, 0), SP("tr.por", tr_portion, 10, 200, 20, 1),
     SPA("tr.air1", tr_air, 0, 5, 180, 33, 0), SPA("tr.air2", tr_air, 1, 5, 180, 33, 0), SPA("tr.air3", tr_air, 2, 5, 180, 33, 0),
-    // 15-25 вулкан
+    // 16-26 вулкан
     SP("vu.por", vu_portion, 10, 200, 20, 1),
     SPA("vu.h1", vu_height, 0, 1, 100, 15, 1), SPA("vu.h2", vu_height, 1, 1, 100, 15, 1),
     SPA("vu.h3", vu_height, 2, 1, 100, 15, 1), SPA("vu.h4", vu_height, 3, 1, 100, 15, 1),
     SP("vu.phz", vu_pulse_hz, 10, 70, 30, 0), SP("vu.pul", vu_pulse_ds, 5, 100, 20, 1), SP("vu.pau", vu_pause_ds, 5, 100, 20, 1),
     SP("vu.rnd", vu_rounds, 1, 20, 5, 0), SP("vu.shz", vu_send_hz, 10, 70, 57, 0), SP("vu.snd", vu_send_s, 5, 180, 33, 0),
-    // 26 чистка
+    // 27 чистка
     SP("cl.hz", cl_hz, 10, 70, 50, 0),
-    // 27-28 продувка
+    // 28-29 продувка
     SP("pv.hz", pv_hz, 10, 70, 50, 0), SP("pv.s", pv_s, 5, 180, 15, 0),
-    // 29-31 общие
+    // 30-32 общие
     SP("ramp", ramp_s, 0, 20, 0, 0), SP("stop", stop_s, 0, 20, 3, 0), SP("act", act_ds, 5, 50, 30, 1),
 };
 constexpr uint8_t SET_N = sizeof(SET_PARAMS) / sizeof(SET_PARAMS[0]);
@@ -88,12 +95,12 @@ constexpr uint8_t SET_N = sizeof(SET_PARAMS) / sizeof(SET_PARAMS[0]);
 struct SetPage { uint8_t pic; uint8_t first; uint8_t count; };
 const SetPage SET_PAGES[] = {
     {19, 0, 5}, {20, 5, 2},             // 0-1 комплекс
-    {21, 7, 3},                         // 2 соло
-    {22, 10, 5},                        // 3 триплет
-    {23, 15, 5}, {24, 20, 5}, {25, 25, 1}, // 4-6 вулкан
-    {26, 26, 1},                        // 7 чистка
-    {27, 27, 2},                        // 8 продувка
-    {28, 29, 3},                        // 9 общие
+    {21, 7, 4},                         // 2 соло (4-я строка - повтор, мин: подпись на картинке 21)
+    {22, 11, 5},                        // 3 триплет
+    {23, 16, 5}, {24, 21, 5}, {25, 26, 1}, // 4-6 вулкан
+    {26, 27, 1},                        // 7 чистка
+    {27, 28, 2},                        // 8 продувка
+    {28, 30, 3},                        // 9 общие
 };
 // Программы меню (плитки экрана): первая страница и число страниц
 struct SetProg { uint8_t page; uint8_t pages; };
@@ -120,10 +127,12 @@ uint32_t settings_pack(const FlowSettings &s) {
 
 // Адрес в EEPROM: сразу после журнала ошибок (см. logger.hpp, LOG_SETTINGS_BASE)
 #define SETTINGS_MAGIC 0xF5
-#define SETTINGS_VERSION 5  // 5 - по программам; 1-4 - общие настройки (переносятся во все программы)
+#define SETTINGS_VERSION 6  // 6 - + повтор соло; 5 - по программам; 1-4 - общие настройки (переносятся во все программы)
+constexpr uint8_t SET_SIZE_V5 = 32; // размер настроек v5: v6 = v5 + so_rep в конце
+static_assert(offsetof(FlowSettings, so_rep) == SET_SIZE_V5, "новые поля - только в конец FlowSettings");
 
 #include <EEPROM.h>
-// Раскладка v5: [0] magic [1] version [2..2+SET_SIZE) настройки [2+SET_SIZE] контрольная сумма
+// Раскладка: [0] magic [1] version [2..2+SET_SIZE) настройки [2+SET_SIZE] контрольная сумма
 uint8_t settings_crc(const uint8_t *p, uint8_t n) {
     uint8_t c = 0x5A;
     for (uint8_t i = 0; i < n; ++i) { c = (c << 1 | c >> 7) ^ p[i]; }
@@ -159,6 +168,8 @@ bool settings_load(uint16_t addr) {
     if (buf[0] != SETTINGS_MAGIC) return false;
     if (buf[1] == SETTINGS_VERSION && settings_crc(buf, SET_SIZE + 2) == buf[SET_SIZE + 2]) {
         memcpy(&g_set, buf + 2, SET_SIZE);
+    } else if (buf[1] == 5 && settings_crc(buf, SET_SIZE_V5 + 2) == buf[SET_SIZE_V5 + 2]) {
+        memcpy(&g_set, buf + 2, SET_SIZE_V5);//v5 -> v6: новые поля остаются по умолчанию
     } else if (!settings_load_old(buf)) {
         return false;
     }

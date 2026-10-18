@@ -210,6 +210,7 @@ void log_print_cmd(uint8_t c) {
         case 3: Serial.print(F("продувка")); break;
         case 4: Serial.print(F("чистка")); break;
         case 5: Serial.print(F("триплет")); break;
+        case 6: Serial.print(F("соло с повтором")); break;
         default: Serial.print(c); break;
     }
 }
@@ -376,7 +377,7 @@ bool log_command(const char *cmd) {
     if (strcmp(cmd, "clear") == 0) { log_clear(); return true; }
     if (strcmp(cmd, "help") == 0) {
         Serial.println(F("Команды: log - журнал событий, err - журнал ошибок, clear - начать журналы заново"));
-        Serial.println(F("Отладка: 1 комплекс, 2 соло, 3 чистка, 4 триплет, 5 продувка, 0 стоп"));
+        Serial.println(F("Отладка: 1 комплекс, 2 соло, 3 чистка, 4 триплет, 5 продувка, 6 соло с повтором, 0 стоп"));
         Serial.println(F("mbr A201 1 - прочитать регистр частотника (по одному)"));
         Serial.println(F("cfg - настройки; cfg solo 45 | trip 60 | air 50 | ramp 5 | portion 2.5 | act 2.0 | air1 60 | default"));
         return true;

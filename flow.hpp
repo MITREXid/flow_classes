@@ -14,7 +14,8 @@ enum class state_Flow{
         do_complex,
         do_produvka,
         do_clearing,
-        do_triplet
+        do_triplet,
+        do_solo_repeat   //соло с повтором (магистраль 4 в режиме retry_one_cycle_solo_and_wait)
 };
 
 class Flow: public Universal_object<state_Flow>{
@@ -131,6 +132,7 @@ class Flow: public Universal_object<state_Flow>{
         const uint32_t por_so = (uint32_t)g_set.so_portion * 100;
         for(uint8_t i = 0; i < kol_all_mag; ++i){
             get_mag(i)->set_time_actuator(act_ms, act_ms);
+            get_mag(i)->set_solo_repeat_ms((uint32_t)g_set.so_rep * 60UL * 1000UL);
             get_mag(i)->set_act_times(act_ms, por_cx < act_ms ? por_cx : act_ms, por_tr < act_ms ? por_tr : act_ms,
                                       por_so < act_ms ? por_so : act_ms);
         }
@@ -287,6 +289,8 @@ private:
                 break;
             case state_Flow::do_triplet:
                 break;
+            case state_Flow::do_solo_repeat://повторы и паузы ведёт сама магистраль (шаг 26)
+                break;
          }
     }
 
@@ -321,6 +325,11 @@ private:
                 num_curr_mag = mag;
                 dyvka.set_goal_frec(g_set.so_hz * 100);
                 get_mag()->start(state_Alg_mag::one_cycle_solo);
+                break;
+            case state_Flow::do_solo_repeat:
+                num_curr_mag = mag;
+                dyvka.set_goal_frec(g_set.so_hz * 100);
+                get_mag()->start(state_Alg_mag::retry_one_cycle_solo_and_wait);
                 break;
             case state_Flow::do_complex:
                     flag_already_started_solo_in_complex = false;

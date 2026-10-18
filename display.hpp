@@ -9,6 +9,8 @@
  *
  * Экран -> Arduino (как раньше):
  *   A0 - комплекс, A1 - соло, A2 - чистка, A3 - триплет
+ *   H1 - нажата кнопка "Соло" (bt1, Touch Press Event: printh 48 31). A1 приходит при отпускании:
+ *        держали >= SCR_SOLO_HOLD_MS - соло с повтором, коротко - обычное соло
  *   @* - остановить активный режим (в том числе продувку)
  *   B1 - старт продувки, B0 - конец продувки
  *   E0 - (новое) сброс значка ошибки
@@ -30,7 +32,8 @@
  *                  bt4 продувка, bt5 вулкан)
  *   tsw bt0..bt5 - блокировка кнопок режимов, пока FLOW работает; bt5 (вулкан) пока выключена всегда
  *   vis p5 - мигающая рыжая точка "что-то не так" (журнал - по USB)
- *   t0..t3.txt - обратный отсчёт текущего шага магистрали ("25 с"), пусто в ожидании
+ *   t0..t3.txt - обратный отсчёт текущего шага магистрали ("25 с"), пусто в ожидании;
+ *                в паузе соло с повтором - до следующего цикла ("18 м", последняя минута - "45 с")
  *   t0..t3.picc / .pco - фон и цвет текста под состояние плитки
  *   t4.txt - давление ("12.5 кПа" или "-- кПа")
  * Текст на экран идёт в кодировке koi8-r (как в проекте экрана).
@@ -41,6 +44,7 @@
 #define SCR_COLOR_ORANGE 62570  // #f18c54 - на тёмной плитке
 // "с" и "кПа" в koi8-r
 #define SCR_KOI8_S "\xD3"
+#define SCR_KOI8_M "\xCD"
 #define SCR_KOI8_KPA "\xCB\xF0\xC1"
 
 // Номера картинок в проекте экрана
@@ -58,11 +62,15 @@
 #define SCR_PIC_ST_STOPPING 13
 #define SCR_PIC_TOAST_OK 17
 #define SCR_PIC_TOAST_FAIL 18
+#define SCR_PIC_ST_SOLO_REPEAT 29
+
 #define SCR_TOAST_MS 2000
 #define SCR_REPEAT_FIRST 400   // удержание "-"/"+": первый повтор
 #define SCR_REPEAT_MS 100      // и дальше
 #define SCR_BLINK_MS 500       // мигание точки ошибки
 #define SCR_VOLCANO_ENABLED 0  // кнопка "Вулкан" на главной: 0 - неактивна
+#define SCR_SOLO_HOLD_MS 2000  // удержание кнопки "Соло" дольше - соло с повтором
+#define SCR_CD_MINUTES 0x4000  // флаг в sent_cd: число в минутах
 
 #define SCR_REFRESH_MS 200      // как часто проверяем, что изменилось
 #define SCR_FULL_REFRESH_MS 5000 // полная перерисовка (на случай сбоя экрана)
@@ -83,7 +91,8 @@ private:
     MENU_PROG,
     PROG_OPEN,
     PROG_KEY,
-    PROG_NAV
+    PROG_NAV,
+    SOLO_PRESS
     };
     uint8_t page = 1;//какая страница сейчас на экране (главную обновляем только на page1)
     //страница программы
@@ -97,6 +106,9 @@ private:
     bool toast_on = false;
     uint8_t blink = 0;
     uint32_t t_blink = 0;
+    //кнопка "Соло": когда нажали (H1), чтобы при отпускании (A1) понять - коротко или удержание
+    bool solo_pressed = false;
+    uint32_t solo_press_ms = 0;
     void draw_prog_page();
     void send_value(uint8_t row);
     void step_value(uint8_t row, int8_t dir);
@@ -212,6 +224,7 @@ uint8_t Display::status_pic(){
         switch(flow.getStatus()){
             case state_Flow::do_complex:   return SCR_PIC_ST_COMPLEX;
             case state_Flow::do_solo:      return SCR_PIC_ST_SOLO;
+            case state_Flow::do_solo_repeat: return SCR_PIC_ST_SOLO_REPEAT;
             case state_Flow::do_triplet:   return SCR_PIC_ST_TRIPLET;
             case state_Flow::do_clearing:  return SCR_PIC_ST_CLEARING;
             case state_Flow::do_produvka:  return SCR_PIC_ST_AIR;
@@ -244,6 +257,7 @@ int8_t Display::active_btn(){
     switch(flow.getStatus()){
         case state_Flow::do_complex:   return 0;
         case state_Flow::do_solo:      return 1;
+        case state_Flow::do_solo_repeat: return 1;
         case state_Flow::do_triplet:   return 2;
         case state_Flow::do_clearing:  return 3;
         case state_Flow::do_produvka:  return 4;
@@ -314,20 +328,28 @@ void Display::refresh(){
             sent_cd_pic[i] = t;
             sent_cd[i] = 0xFFFF;
         }
-        uint16_t sec = 0;
-        if(t != SCR_PIC_TILE_IDLE){
-            uint32_t rem = flow.group[i].get_remaining_ms();
-            sec = (rem + 999) / 1000;
+        //секунды до конца шага; в паузе соло с повтором - больше минуты в минутах (вверх), потом секунды
+        uint32_t rem = 0;
+        bool repeat_pause = flow.group[i].get_curr_id_alg_state() == STEP_SOLO_WAITING_FOR_NEW_CYCLES;
+        if(t != SCR_PIC_TILE_IDLE || repeat_pause){
+            rem = flow.group[i].get_remaining_ms();
         }
-        if(sec != sent_cd[i]){
+        uint16_t shown = (rem + 999) / 1000;
+        if(repeat_pause && rem > 60000UL){
+            shown = SCR_CD_MINUTES | (uint16_t)((rem + 59999UL) / 60000UL);
+        }
+        if(shown != sent_cd[i]){
             if(!can_send(18)) return;
-            if(sec){
-                snprintf(cmd, sizeof(cmd), "t%u.txt=\"%u " SCR_KOI8_S "\"", i, sec);
-            }else{
+            unsigned number = shown & ~SCR_CD_MINUTES;
+            if(shown == 0){
                 snprintf(cmd, sizeof(cmd), "t%u.txt=\"\"", i);
+            }else if(shown & SCR_CD_MINUTES){
+                snprintf(cmd, sizeof(cmd), "t%u.txt=\"%u " SCR_KOI8_M "\"", i, number);
+            }else{
+                snprintf(cmd, sizeof(cmd), "t%u.txt=\"%u " SCR_KOI8_S "\"", i, number);
             }
             send_comand(cmd);
-            sent_cd[i] = sec;
+            sent_cd[i] = shown;
         }
     }
 
@@ -378,8 +400,12 @@ void Display::logic()
                 flow.start(state_Flow::do_complex);
                 break;
 
-            case 0x31:
-                flow.start(state_Flow::do_solo);
+            case 0x31://держали дольше SCR_SOLO_HOLD_MS - с повтором (без H1, старый экран - всегда обычное)
+                if (solo_pressed && millis() - solo_press_ms >= SCR_SOLO_HOLD_MS) {
+                    flow.start(state_Flow::do_solo_repeat);
+                } else {
+                    flow.start(state_Flow::do_solo);
+                }
                 break;
 
             case 0x32:
@@ -390,6 +416,15 @@ void Display::logic()
                 flow.start(state_Flow::do_triplet);
                 break;
         }
+    }
+
+    if (flag == events_Display::SOLO_PRESS) {
+        solo_pressed = true;
+        solo_press_ms = millis();
+    }
+
+    if (flag == events_Display::START_EVENT) {
+        solo_pressed = false;//нажатие "Соло" учтено
     }
 
     if (flag == events_Display::AIR_START && millis() - time_init >= time_waiting) {
@@ -551,6 +586,13 @@ Display::events_Display Display::Check_message() {
                 return events_Display::AIR_STOP;
             }
             break;
+
+        case 0x48://H1 - нажата кнопка "Соло" (отпускание придёт как A1)
+            SerialXXX.readBytes(buf, 2);
+            if (buf[1] == 0x31) {
+                return events_Display::SOLO_PRESS;
+            }
+            return events_Display::NOTHING;
 
         case 0x50://P1 - открыта главная
             SerialXXX.readBytes(buf, 2);

@@ -184,7 +184,10 @@ const AlgStepDefinition ALG_STEPS[] PROGMEM = {
     {STEP_SOLO_GATE_DOSING,                 state_Magistral::skip_gate,    {STEP_SOLO_AFTER_GATE,                 STEP_NONE}},
     {STEP_SOLO_AFTER_GATE,                  state_Magistral::in_magistral, {STEP_SOLO_AIR,                        STEP_SOLO_AFTER_GATE}},
     {STEP_SOLO_AIR,                         state_Magistral::air_on,       {STEP_SOLO_PAUSE_BETWEEN_CYCLES,       STEP_START_IDLE}},
-    {STEP_SOLO_PAUSE_BETWEEN_CYCLES,        state_Magistral::all_close,    {STEP_SOLO_OPEN_CLAPAN,                STEP_NONE}},
+    {STEP_SOLO_PAUSE_BETWEEN_CYCLES,        state_Magistral::all_close,    {STEP_SOLO_WAITING_FOR_NEW_CYCLES,     STEP_NONE}},
+    //соло с повтором: ждать so.rep минут (HOLD), потом в старт (GO_ON), а оттуда путь "соло" - новый цикл.
+    //Выход через старт, чтобы "стоп" в паузе сразу оставлял магистраль в старте, без лишнего цикла.
+    {STEP_SOLO_WAITING_FOR_NEW_CYCLES,      state_Magistral::all_close,    {STEP_START_IDLE,                      STEP_SOLO_WAITING_FOR_NEW_CYCLES}},
 
     // ---- триплет ----
     {STEP_TRIPLET_WAIT_LOAD_QUEUE,          state_Magistral::all_close,    {STEP_TRIPLET_OPEN_CLAPAN,             STEP_NONE}},
@@ -370,6 +373,7 @@ uint32_t alg_step_duration_ms(uint8_t step, uint8_t mag, const AlgStepTimings &t
         case STEP_SOLO_AFTER_GATE:                return T_SOLO_POST_SKIP + t.actuator_extra_ms;
         case STEP_SOLO_AIR:                       return (uint32_t)settings.so_air * 1000;
         case STEP_SOLO_PAUSE_BETWEEN_CYCLES:      return T_SOLO_WAIT_AIROFF;
+        case STEP_SOLO_WAITING_FOR_NEW_CYCLES:    return 500;//как часто проверять конец паузы и "стоп"; сама пауза - so.rep
 
         // ---- триплет ----
         case STEP_TRIPLET_WAIT_LOAD_QUEUE:        return load_queue_wait_ms(mag, t.load_one_magistral_triplet_ms);
@@ -429,6 +433,7 @@ const __FlashStringHelper *alg_step_name(uint8_t step) {
         case STEP_SOLO_AFTER_GATE:                return F("соло: после шлюза");
         case STEP_SOLO_AIR:                       return F("соло: воздух");
         case STEP_SOLO_PAUSE_BETWEEN_CYCLES:      return F("соло: пауза между циклами");
+        case STEP_SOLO_WAITING_FOR_NEW_CYCLES:    return F("соло: ждем нового цикла");
 
         case STEP_TRIPLET_WAIT_LOAD_QUEUE:        return F("триплет: ожидание очереди загрузки");
         case STEP_TRIPLET_OPEN_CLAPAN:            return F("триплет: открыт клапан");
@@ -565,7 +570,8 @@ enum class state_Alg_mag {
     cycle_solo,         // соло по кругу
     cycle_triplet,      // триплет по кругу
     produvka,
-    clearing
+    clearing,
+    retry_one_cycle_solo_and_wait  // соло с повтором: цикл, пауза so.rep в шаге 26, снова цикл - до "стоп"
 };
 
 #endif // ALG_STATE_MAG_HPP

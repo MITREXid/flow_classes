@@ -34,7 +34,7 @@ unsigned long state;
 
 // #define mag 0
 
-// Команды из монитора порта: журнал (log, err, clear, help) и отладочные цифры 0-5
+// Команды из монитора порта: журнал (log, err, clear, help) и отладочные цифры 0-6
 void serial_command(char c){
     log_cmd_source = 1;//USB
     if(c == '1'){
@@ -51,6 +51,9 @@ void serial_command(char c){
     }
     if(c == '5'){
         flow.start(state_Flow::do_produvka);
+    }
+    if(c == '6'){
+        flow.start(state_Flow::do_solo_repeat);
     }
     if(c == '0'){
         flow.stop();
@@ -100,7 +103,7 @@ void serial_poll(){
     while(Ser_PC.available() > 0){
         char c = Ser_PC.read();
         //цифра без перевода строки - сразу команда (как было раньше)
-        if(len == 0 && c >= '0' && c <= '5'){
+        if(len == 0 && c >= '0' && c <= '6'){
             serial_command(c);
             continue;
         }

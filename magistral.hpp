@@ -64,6 +64,9 @@ public:
             default:                       return act_full_ms;//чистка - полностью
         }
     }
+    //соло с повтором: пауза в шаге 26 (настройка so.rep), задаёт Flow::apply_settings()
+    uint32_t solo_repeat_ms = 20UL * 60 * 1000;
+    void set_solo_repeat_ms(uint32_t ms){ solo_repeat_ms = ms; }
     uint32_t get_remaining_ms();//для обратного отсчёта на экране; 0 - состояние без конца
 private:
     void logic();//Для объединения логики поведения(используется в update())
@@ -141,6 +144,7 @@ switch(mod){
     case state_Alg_mag::stop://доработать текущий цикл и остаться в старте
         choose_path(STEP_START_IDLE,                   PATH_START_STAY);
         choose_path(STEP_SOLO_AFTER_GATE,              PATH_WAIT_GO_ON);
+        choose_path(STEP_SOLO_WAITING_FOR_NEW_CYCLES,  PATH_WAIT_GO_ON);
         choose_path(STEP_TRIPLET_CLOSE_ALL_BEFORE_AIR, PATH_WAIT_GO_ON);
         choose_path(STEP_SOLO_AIR,                     PATH_CYCLE_EXIT);
         choose_path(STEP_TRIPLET_AIR,                  PATH_CYCLE_EXIT);
@@ -162,6 +166,12 @@ switch(mod){
         choose_path(STEP_START_IDLE,                   PATH_START_SOLO);
         choose_path(STEP_SOLO_AFTER_GATE,              PATH_WAIT_GO_ON);
         choose_path(STEP_SOLO_AIR,                     PATH_CYCLE_EXIT);
+        break;
+    case state_Alg_mag::retry_one_cycle_solo_and_wait:
+        choose_path(STEP_START_IDLE,                   PATH_START_SOLO);
+        choose_path(STEP_SOLO_AFTER_GATE,              PATH_WAIT_GO_ON);
+        choose_path(STEP_SOLO_AIR,                     PATH_CYCLE_REPEAT);
+        choose_path(STEP_SOLO_WAITING_FOR_NEW_CYCLES,  PATH_WAIT_HOLD);
         break;
     case state_Alg_mag::one_cycle_complex://у комплекса развилок нет: один цикл и в старт
         choose_path(STEP_START_IDLE,                   PATH_START_COMPLEX);
@@ -282,6 +292,13 @@ void Magistral::init(bool act, bool clap, bool ball)
 }
 
 uint32_t Magistral::get_remaining_ms(){
+    if(current_state->get_id() == STEP_SOLO_WAITING_FOR_NEW_CYCLES && curr_Alg_mode == state_Alg_mag::retry_one_cycle_solo_and_wait){
+        uint32_t waited = millis() - time_to_start_new_state;//в шаге 26 стоим на месте - время входа не сбрасывается
+        if(waited >= solo_repeat_ms){
+            return 0;
+        }
+        return solo_repeat_ms - waited;//до следующего цикла
+    }
     if(current_state->get_id() == current_state->get_next_state(id)->get_id()){
         return 0;//зациклено (ожидание) - отсчёта нет
     }
@@ -401,7 +418,14 @@ void Magistral::logic(){
 
 
 void Magistral::logic_in_cyclical_states(){
-
+    //соло с повтором: пауза прошла -> из шага 26 в старт, из старта путь "соло" - новый цикл.
+    //time_to_start_new_state - вход в шаг 26 (пока стоим в нём, переходов нет и время не сбрасывается)
+    if(curr_Alg_mode == state_Alg_mag::retry_one_cycle_solo_and_wait && current_state->get_id() == STEP_SOLO_WAITING_FOR_NEW_CYCLES){
+        if(millis() - time_to_start_new_state >= solo_repeat_ms){
+            choose_path(STEP_START_IDLE, PATH_START_SOLO);
+            choose_path(STEP_SOLO_WAITING_FOR_NEW_CYCLES, PATH_WAIT_GO_ON);
+        }
+    }
 }
 
 void Magistral::go_to_next_state(){
@@ -410,6 +434,10 @@ void Magistral::go_to_next_state(){
     time_to_start_new_state = millis();
     if(old_state->get_id() == STEP_START_IDLE && current_state->get_id() != STEP_START_IDLE){//для того читобы при возврате в start_state, зацикоиться и остаться в нем
         choose_path(STEP_START_IDLE, PATH_START_STAY);
+    }
+    //соло с повтором: из паузы ушли на новый цикл - в следующий раз снова ждать в ней
+    if(curr_Alg_mode == state_Alg_mag::retry_one_cycle_solo_and_wait && old_state->get_id() == STEP_SOLO_WAITING_FOR_NEW_CYCLES){
+        choose_path(STEP_SOLO_WAITING_FOR_NEW_CYCLES, PATH_WAIT_HOLD);
     }
 }
 

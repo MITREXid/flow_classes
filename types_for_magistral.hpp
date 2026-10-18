@@ -55,6 +55,7 @@ enum AlgStep : uint8_t {
     STEP_SOLO_AFTER_GATE = 23,                   // развилка: дальше / ждать здесь (режим «подготовка»)
     STEP_SOLO_AIR = 24,                          // развилка: новый цикл / выход в старт
     STEP_SOLO_PAUSE_BETWEEN_CYCLES = 25,
+    STEP_SOLO_WAITING_FOR_NEW_CYCLES = 26,       // развилка: в старт (стоп / новый цикл) / ждать (пауза so.rep)
 
     // триплет (магистрали 1-3). Раньше использовал те же номера 11-16, что и комплекс
     STEP_TRIPLET_WAIT_LOAD_QUEUE = 31,
