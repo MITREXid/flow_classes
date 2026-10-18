@@ -69,7 +69,7 @@
 #define SCR_REPEAT_MS 100      // и дальше
 #define SCR_BLINK_MS 500       // мигание точки ошибки
 #define SCR_VOLCANO_ENABLED 0  // кнопка "Вулкан" на главной: 0 - неактивна
-#define SCR_SOLO_HOLD_MS 2000  // удержание кнопки "Соло" дольше - соло с повтором
+#define SCR_SOLO_HOLD_MS 1000  // удержание кнопки "Соло" дольше - соло с повтором
 #define SCR_CD_MINUTES 0x4000  // флаг в sent_cd: число в минутах
 
 #define SCR_REFRESH_MS 200      // как часто проверяем, что изменилось
@@ -146,6 +146,7 @@ public:
     void update();
     void init();
     void logic();
+    void passive_logic();
     void send_comand(String cmd);
 };
 
@@ -173,6 +174,7 @@ void Display::update(){
         flag = Check_message();
         logic();
     }
+    passive_logic();
     if(millis() - t_refresh >= SCR_REFRESH_MS){
         t_refresh = millis();
         if(millis() - t_full_refresh >= SCR_FULL_REFRESH_MS){
@@ -330,12 +332,12 @@ void Display::refresh(){
         }
         //секунды до конца шага; в паузе соло с повтором - больше минуты в минутах (вверх), потом секунды
         uint32_t rem = 0;
-        bool repeat_pause = flow.group[i].get_curr_id_alg_state() == STEP_SOLO_WAITING_FOR_NEW_CYCLES;
-        if(t != SCR_PIC_TILE_IDLE || repeat_pause){
+        // bool repeat_pause = flow.group[i].get_curr_id_alg_state() == STEP_SOLO_WAITING_FOR_NEW_CYCLES || flow.group[i].get_curr_id_alg_state() == STEP_SOLO_PAUSE_BETWEEN_CYCLES;
+        // if(t != SCR_PIC_TILE_IDLE || repeat_pause){
             rem = flow.group[i].get_remaining_ms();
-        }
+        // }
         uint16_t shown = (rem + 999) / 1000;
-        if(repeat_pause && rem > 60000UL){
+        if(rem > 60000UL){
             shown = SCR_CD_MINUTES | (uint16_t)((rem + 59999UL) / 60000UL);
         }
         if(shown != sent_cd[i]){
@@ -394,17 +396,20 @@ void Display::logic()
         flow.stop();
     }
 
+
     if (flag == events_Display::START_EVENT && millis() - time_init >= time_waiting) {
         switch (buf[1]) {
             case 0x30:
                 flow.start(state_Flow::do_complex);
                 break;
 
-            case 0x31://держали дольше SCR_SOLO_HOLD_MS - с повтором (без H1, старый экран - всегда обычное)
-                if (solo_pressed && millis() - solo_press_ms >= SCR_SOLO_HOLD_MS) {
+            case 0x31:
+                if (solo_pressed && millis() - solo_press_ms <= SCR_SOLO_HOLD_MS) {
                     flow.start(state_Flow::do_solo_repeat);
+                    solo_pressed=false;
                 } else {
-                    flow.start(state_Flow::do_solo);
+                    solo_pressed = true;
+                    solo_press_ms = millis();
                 }
                 break;
 
@@ -418,14 +423,7 @@ void Display::logic()
         }
     }
 
-    if (flag == events_Display::SOLO_PRESS) {
-        solo_pressed = true;
-        solo_press_ms = millis();
-    }
 
-    if (flag == events_Display::START_EVENT) {
-        solo_pressed = false;//нажатие "Соло" учтено
-    }
 
     if (flag == events_Display::AIR_START && millis() - time_init >= time_waiting) {
         flow.start(state_Flow::do_produvka);
@@ -511,6 +509,14 @@ void Display::logic()
     flag = events_Display::NOTHING;
 }
 
+//Для того что надр проверять вне эвентов дисплея
+void Display::passive_logic(){
+    if (solo_pressed && millis() - solo_press_ms >= SCR_SOLO_HOLD_MS) {
+        flow.start(state_Flow::do_solo);
+        solo_pressed=false;
+    }
+}
+
 
 //Страница программы: сначала прячем лишние строки, потом фон, потом значения
 void Display::draw_prog_page(){
@@ -587,12 +593,6 @@ Display::events_Display Display::Check_message() {
             }
             break;
 
-        case 0x48://H1 - нажата кнопка "Соло" (отпускание придёт как A1)
-            SerialXXX.readBytes(buf, 2);
-            if (buf[1] == 0x31) {
-                return events_Display::SOLO_PRESS;
-            }
-            return events_Display::NOTHING;
 
         case 0x50://P1 - открыта главная
             SerialXXX.readBytes(buf, 2);

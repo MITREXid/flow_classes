@@ -292,12 +292,14 @@ void Magistral::init(bool act, bool clap, bool ball)
 }
 
 uint32_t Magistral::get_remaining_ms(){
-    if(current_state->get_id() == STEP_SOLO_WAITING_FOR_NEW_CYCLES && curr_Alg_mode == state_Alg_mag::retry_one_cycle_solo_and_wait){
-        uint32_t waited = millis() - time_to_start_new_state;//в шаге 26 стоим на месте - время входа не сбрасывается
-        if(waited >= solo_repeat_ms){
-            return 0;
+    if(curr_Alg_mode == state_Alg_mag::retry_one_cycle_solo_and_wait){
+        if(current_state->get_id() == STEP_SOLO_WAITING_FOR_NEW_CYCLES || current_state->get_id() == STEP_SOLO_PAUSE_BETWEEN_CYCLES ){
+            uint32_t waited = millis() - time_to_start_new_state;//в шаге 26 стоим на месте - время входа не сбрасывается
+            if(waited >= solo_repeat_ms){
+                return 0;
+            }
+            return (solo_repeat_ms + T_SOLO_WAIT_AIROFF) - waited;//до следующего цикла
         }
-        return solo_repeat_ms - waited;//до следующего цикла
     }
     if(current_state->get_id() == current_state->get_next_state(id)->get_id()){
         return 0;//зациклено (ожидание) - отсчёта нет
