@@ -3,7 +3,7 @@
 #include "universal_object.hpp"
 #include "other_components.hpp"
 #include "math.h"
-#include "alg_state_mag.hpp"
+#include "setup_alg.hpp"
 #include "types_for_magistral.hpp"
 #include "logger.hpp"
 
